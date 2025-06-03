@@ -26,18 +26,6 @@ const getSingleSr = catchAsync(async (req, res) => {
     });
 });
 
-// get sr dashboard data controller
-const getSrDashboardData = catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const result = await SrServices.getSrDashboardDataFromDB(id, req.query);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Sr Dashboard data has been retrieved successfully',
-        data: result,
-    });
-});
-
 // get sr overview controller
 const getSrOverview = catchAsync(async (req, res) => {
     const { id } = req.params;
@@ -62,10 +50,26 @@ const updateSrInfo = catchAsync(async (req, res) => {
     });
 });
 
+// get sr dashboard data controller
+const getSrDashboardData = catchAsync(async (req, res) => {
+    const { id, startDate, endDate } = req.query;
+    const result = await SrServices.getSrDashboardDataFromDB(
+        id as string,
+        startDate as string,
+        endDate as string
+    );
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Sr Dashboard data has been retrieved successfully',
+        data: result,
+    });
+});
+
 export const SrControllers = {
     getAllSr,
     getSingleSr,
-    getSrDashboardData,
     updateSrInfo,
     getSrOverview,
+    getSrDashboardData,
 };

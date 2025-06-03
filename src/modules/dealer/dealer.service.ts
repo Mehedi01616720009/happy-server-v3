@@ -2,10 +2,13 @@ import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
 import { Dealer } from './dealer.model';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { Sr } from '../sr/sr.model';
 import { Product } from '../product/product.model';
+import { Order, OrderDetails } from '../order/order.model';
+import moment from 'moment-timezone';
+import { TIMEZONE } from '../../constant';
 
 // get all dealer
 const getAllDealerFromDB = async (query: Record<string, unknown>) => {
@@ -163,6 +166,114 @@ const assignCompaniesToDealerIntoDB = async (
     return result;
 };
 
+// get dealer dashboard data
+const getDealerDashboardDataFromDB = async (
+    id: string,
+    startDate: string,
+    endDate: string
+) => {
+    const startDay = moment.tz(startDate, TIMEZONE).startOf('day').format();
+    const endDay = moment.tz(endDate, TIMEZONE).endOf('day').format();
+
+    const totalSales = await Order.aggregate([
+        {
+            $match: {
+                dealer: new mongoose.Types.ObjectId(id),
+                updatedAt: {
+                    $gte: startDay,
+                    $lte: endDay,
+                },
+                status: { $in: ['Delivered'] },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalSellAmount: { $sum: '$collectionAmount' },
+            },
+        },
+    ]);
+
+    const profit = await OrderDetails.aggregate([
+        {
+            $lookup: {
+                from: 'orders',
+                localField: 'orderId',
+                foreignField: '_id',
+                as: 'order',
+            },
+        },
+        { $unwind: '$order' },
+        {
+            $match: {
+                'order.dealer': new mongoose.Types.ObjectId(id),
+                'order.updatedAt': {
+                    $gte: startDay,
+                    $lte: endDay,
+                },
+                'order.status': { $in: ['Delivered'] },
+                'isCancelled.isCancelled': { $ne: true },
+            },
+        },
+        {
+            $project: {
+                profit: { $subtract: ['$dealerTotalAmount', '$totalAmount'] },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalProfit: { $sum: '$profit' },
+            },
+        },
+    ]);
+
+    const topSrs = await Order.aggregate([
+        {
+            $match: {
+                dealer: new mongoose.Types.ObjectId(id),
+                insertedDate: {
+                    $gte: startDay,
+                    $lte: endDay,
+                },
+                status: { $in: ['Delivered'] },
+                sr: { $exists: true, $ne: null },
+            },
+        },
+        {
+            $group: {
+                _id: '$sr',
+                totalSales: { $sum: '$collectionAmount' },
+            },
+        },
+        { $sort: { totalSales: -1 } },
+        { $limit: 5 },
+        {
+            $lookup: {
+                from: 'users',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'srInfo',
+            },
+        },
+        { $unwind: '$srInfo' },
+        {
+            $project: {
+                srId: '$_id',
+                totalSales: 1,
+                name: '$srInfo.name',
+                profileImg: '$srInfo.profileImg',
+            },
+        },
+    ]);
+
+    return {
+        totalSales: totalSales[0]?.totalSellAmount || 0,
+        profit: profit[0]?.totalProfit || 0,
+        topSrs: topSrs,
+    };
+};
+
 export const DealerServices = {
     getAllDealerFromDB,
     getAllDealerByUserFromDB,
@@ -170,4 +281,5 @@ export const DealerServices = {
     getSingleDealerFromDB,
     getSingleDealerWithSrAndProductFromDB,
     assignCompaniesToDealerIntoDB,
+    getDealerDashboardDataFromDB,
 };

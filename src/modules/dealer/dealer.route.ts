@@ -50,4 +50,11 @@ router.put(
     DealerControllers.assignCompaniesToDealer
 );
 
+// get dealer dashboard data route
+router.get(
+    '/dashboard/data',
+    auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.dealer),
+    DealerControllers.getDealerDashboardData
+);
+
 export const DealerRoutes = router;
