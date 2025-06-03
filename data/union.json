@@ -1,0 +1,499 @@
+[
+    {
+        "id": "1214",
+        "upazilla_id": "Paba",
+        "name": "Darsanpara",
+        "bn_name": "দর্শনপাড়া",
+        "url": "darsanparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1215",
+        "upazilla_id": "Paba",
+        "name": "Hujuripara",
+        "bn_name": "হুজুরী পাড়া",
+        "url": "hujuriparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1216",
+        "upazilla_id": "Paba",
+        "name": "Damkura",
+        "bn_name": "দামকুড়া",
+        "url": "damkuraup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1217",
+        "upazilla_id": "Paba",
+        "name": "Horipur",
+        "bn_name": "হরিপুর",
+        "url": "horipurup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1218",
+        "upazilla_id": "Paba",
+        "name": "Horogram",
+        "bn_name": "হড়গ্রাম",
+        "url": "horogramup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1219",
+        "upazilla_id": "Paba",
+        "name": "Harian",
+        "bn_name": "হরিয়ান",
+        "url": "harianup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1220",
+        "upazilla_id": "Paba",
+        "name": "Borgachi",
+        "bn_name": "বড়্গাছি",
+        "url": "borgachiup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1221",
+        "upazilla_id": "Paba",
+        "name": "Parila",
+        "bn_name": "পারিলা",
+        "url": "parilaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1222",
+        "upazilla_id": "Durgapur",
+        "name": "Naopara",
+        "bn_name": "নওপাড়া",
+        "url": "naoparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1223",
+        "upazilla_id": "Durgapur",
+        "name": "Kismatgankoir",
+        "bn_name": "কিসমতগণকৈড়",
+        "url": "kismatgankoirup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1224",
+        "upazilla_id": "Durgapur",
+        "name": "Pananagar",
+        "bn_name": "পানানগর",
+        "url": "pananagarup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1225",
+        "upazilla_id": "Durgapur",
+        "name": "Deluabari",
+        "bn_name": "দেলুয়াবাড়ী",
+        "url": "deluabariup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1226",
+        "upazilla_id": "Durgapur",
+        "name": "Jhaluka",
+        "bn_name": "ঝালুকা",
+        "url": "jhalukaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1227",
+        "upazilla_id": "Durgapur",
+        "name": "Maria",
+        "bn_name": "মাড়িয়া",
+        "url": "mariaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1228",
+        "upazilla_id": "Durgapur",
+        "name": "Joynogor",
+        "bn_name": "জয়নগর",
+        "url": "joynogorup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1229",
+        "upazilla_id": "Mohonpur",
+        "name": "Dhuroil",
+        "bn_name": "ধুরইল",
+        "url": "dhuroilup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1230",
+        "upazilla_id": "Mohonpur",
+        "name": "Ghasigram",
+        "bn_name": "ঘষিগ্রাম",
+        "url": "ghasigramup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1231",
+        "upazilla_id": "Mohonpur",
+        "name": "Raighati",
+        "bn_name": "রায়ঘাটি",
+        "url": "raighatiup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1232",
+        "upazilla_id": "Mohonpur",
+        "name": "Mougachi",
+        "bn_name": "মৌগাছি",
+        "url": "mougachiup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1233",
+        "upazilla_id": "Mohonpur",
+        "name": "Baksimoil",
+        "bn_name": "বাকশিমইল",
+        "url": "baksimoilup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1234",
+        "upazilla_id": "Mohonpur",
+        "name": "Jahanabad",
+        "bn_name": "জাহানাবাদ",
+        "url": "jahanabadup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1235",
+        "upazilla_id": "Charghat",
+        "name": "Yousufpur",
+        "bn_name": "ইউসুফপুর",
+        "url": "yousufpurup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1236",
+        "upazilla_id": "Charghat",
+        "name": "Solua",
+        "bn_name": "শলুয়া",
+        "url": "soluaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1237",
+        "upazilla_id": "Charghat",
+        "name": "Sardah",
+        "bn_name": "সরদহ",
+        "url": "sardahup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1238",
+        "upazilla_id": "Charghat",
+        "name": "Nimpara",
+        "bn_name": "নিমপাড়া",
+        "url": "nimparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1239",
+        "upazilla_id": "Charghat",
+        "name": "Charghat",
+        "bn_name": "চারঘাট",
+        "url": "charghatup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1240",
+        "upazilla_id": "Charghat",
+        "name": "Vialuxmipur",
+        "bn_name": "ভায়ালক্ষ্মীপুর",
+        "url": "vialuxmipurup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1241",
+        "upazilla_id": "Puthia",
+        "name": "Puthia",
+        "bn_name": "পুঠিয়া",
+        "url": "puthiaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1242",
+        "upazilla_id": "Puthia",
+        "name": "Belpukuria",
+        "bn_name": "বেলপুকুরিয়া",
+        "url": "belpukuriaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1243",
+        "upazilla_id": "Puthia",
+        "name": "Baneswar",
+        "bn_name": "বানেশ্বর",
+        "url": "baneswarup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1244",
+        "upazilla_id": "Puthia",
+        "name": "Valukgachi",
+        "bn_name": "ভালুক গাছি",
+        "url": "valukgachiup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1245",
+        "upazilla_id": "Puthia",
+        "name": "Shilmaria",
+        "bn_name": "শিলমাড়িয়া",
+        "url": "shilmariaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1246",
+        "upazilla_id": "Puthia",
+        "name": "Jewpara",
+        "bn_name": "জিউপাড়া",
+        "url": "jewparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1247",
+        "upazilla_id": "Bagha",
+        "name": "Bajubagha",
+        "bn_name": "বাজুবাঘা",
+        "url": "bajubaghaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1248",
+        "upazilla_id": "Bagha",
+        "name": "Gorgori",
+        "bn_name": "গড়গড়ি",
+        "url": "gorgoriup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1249",
+        "upazilla_id": "Bagha",
+        "name": "Pakuria",
+        "bn_name": "পাকুড়িয়া",
+        "url": "pakuriaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1250",
+        "upazilla_id": "Bagha",
+        "name": "Monigram",
+        "bn_name": "মনিগ্রাম",
+        "url": "monigramup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1251",
+        "upazilla_id": "Bagha",
+        "name": "Bausa",
+        "bn_name": "বাউসা",
+        "url": "bausaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1252",
+        "upazilla_id": "Bagha",
+        "name": "Arani",
+        "bn_name": "আড়ানী",
+        "url": "araniup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1253",
+        "upazilla_id": "Godagari",
+        "name": "Godagari",
+        "bn_name": "গোদাগাড়ী",
+        "url": "godagariup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1254",
+        "upazilla_id": "Godagari",
+        "name": "Mohonpur",
+        "bn_name": "মোহনপুর",
+        "url": "mohonpurup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1255",
+        "upazilla_id": "Godagari",
+        "name": "Pakri",
+        "bn_name": "পাকড়ী",
+        "url": "pakriup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1256",
+        "upazilla_id": "Godagari",
+        "name": "Risikul",
+        "bn_name": "রিশিকুল",
+        "url": "risikulup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1257",
+        "upazilla_id": "Godagari",
+        "name": "Gogram",
+        "bn_name": "গোগ্রাম",
+        "url": "gogramup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1258",
+        "upazilla_id": "Godagari",
+        "name": "Matikata",
+        "bn_name": "মাটিকাটা",
+        "url": "matikataup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1259",
+        "upazilla_id": "Godagari",
+        "name": "Dewpara",
+        "bn_name": "দেওপাড়া",
+        "url": "dewparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1260",
+        "upazilla_id": "Godagari",
+        "name": "Basudebpur",
+        "bn_name": "বাসুদেবপুর",
+        "url": "basudebpurup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1261",
+        "upazilla_id": "Godagari",
+        "name": "Asariadaha",
+        "bn_name": "আষাড়িয়াদহ",
+        "url": "asariadahaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1262",
+        "upazilla_id": "Tanore",
+        "name": "Kalma",
+        "bn_name": "কলমা",
+        "url": "kalmaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1263",
+        "upazilla_id": "Tanore",
+        "name": "Badhair",
+        "bn_name": "বাধাইড়",
+        "url": "badhairup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1264",
+        "upazilla_id": "Tanore",
+        "name": "Panchandar",
+        "bn_name": "পাঁচন্দর",
+        "url": "panchandarup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1265",
+        "upazilla_id": "Tanore",
+        "name": "Saranjai",
+        "bn_name": "সরঞ্জাই",
+        "url": "saranjaiup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1266",
+        "upazilla_id": "Tanore",
+        "name": "Talondo",
+        "bn_name": "তালন্দ",
+        "url": "talondoup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1267",
+        "upazilla_id": "Tanore",
+        "name": "Kamargaon",
+        "bn_name": "কামারগাঁ",
+        "url": "kamargaonup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1268",
+        "upazilla_id": "Tanore",
+        "name": "Chanduria",
+        "bn_name": "চান্দুড়িয়া",
+        "url": "chanduriaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1269",
+        "upazilla_id": "Bagmara",
+        "name": "Gobindopara",
+        "bn_name": "গোবিন্দপাড়া",
+        "url": "gobindoparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1270",
+        "upazilla_id": "Bagmara",
+        "name": "Nordas",
+        "bn_name": "নরদাস",
+        "url": "nordasup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1271",
+        "upazilla_id": "Bagmara",
+        "name": "Dippur",
+        "bn_name": "দ্বীপপুর",
+        "url": "dippurup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1272",
+        "upazilla_id": "Bagmara",
+        "name": "Borobihanoli",
+        "bn_name": "বড়বিহানলী",
+        "url": "borobihanoliup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1273",
+        "upazilla_id": "Bagmara",
+        "name": "Auchpara",
+        "bn_name": "আউচপাড়া",
+        "url": "auchparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1274",
+        "upazilla_id": "Bagmara",
+        "name": "Sreepur",
+        "bn_name": "শ্রীপুর",
+        "url": "sreepurup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1275",
+        "upazilla_id": "Bagmara",
+        "name": "Basupara",
+        "bn_name": "বাসুপাড়া",
+        "url": "basuparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1276",
+        "upazilla_id": "Bagmara",
+        "name": "Kacharikoalipara",
+        "bn_name": "কাচাড়ী কোয়লিপাড়া",
+        "url": "kacharikoaliparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1277",
+        "upazilla_id": "Bagmara",
+        "name": "Suvodanga",
+        "bn_name": "শুভডাঙ্গা",
+        "url": "suvodangaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1278",
+        "upazilla_id": "Bagmara",
+        "name": "Mariaup",
+        "bn_name": "মাড়িয়া",
+        "url": "mariaup10.rajshahi.gov.bd"
+    },
+    {
+        "id": "1279",
+        "upazilla_id": "Bagmara",
+        "name": "Ganipur",
+        "bn_name": "গণিপুর",
+        "url": "ganipurup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1280",
+        "upazilla_id": "Bagmara",
+        "name": "Zhikara",
+        "bn_name": "ঝিকড়া",
+        "url": "zhikaraup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1281",
+        "upazilla_id": "Bagmara",
+        "name": "Gualkandi",
+        "bn_name": "গোয়ালকান্দি",
+        "url": "gualkandiup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1282",
+        "upazilla_id": "Bagmara",
+        "name": "Hamirkutsa",
+        "bn_name": "হামিরকুৎসা",
+        "url": "hamirkutsaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1283",
+        "upazilla_id": "Bagmara",
+        "name": "Jogipara",
+        "bn_name": "যোগিপাড়া",
+        "url": "jogiparaup.rajshahi.gov.bd"
+    },
+    {
+        "id": "1284",
+        "upazilla_id": "Bagmara",
+        "name": "Sonadanga",
+        "bn_name": "সোনাডাঙ্গা",
+        "url": "sonadangaup.rajshahi.gov.bd"
+    }
+]
