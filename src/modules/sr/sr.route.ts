@@ -60,4 +60,11 @@ router.get(
     SrControllers.getSrDashboardData
 );
 
+// get sr dashboard data route
+router.get(
+    '/:id/home/data',
+    auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.sr),
+    SrControllers.getSrHomeData
+);
+
 export const SrRoutes = router;

@@ -66,10 +66,23 @@ const getSrDashboardData = catchAsync(async (req, res) => {
     });
 });
 
+// get sr home data controller
+const getSrHomeData = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await SrServices.getSrHomeDataFromDB(id, req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Sr Home data has been retrieved successfully',
+        data: result,
+    });
+});
+
 export const SrControllers = {
     getAllSr,
     getSingleSr,
     updateSrInfo,
     getSrOverview,
     getSrDashboardData,
+    getSrHomeData,
 };

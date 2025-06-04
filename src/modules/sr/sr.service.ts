@@ -280,10 +280,105 @@ const getSrDashboardDataFromDB = async (
     };
 };
 
+// get sr home data
+const getSrHomeDataFromDB = async (
+    id: string,
+    query: Record<string, unknown>
+) => {
+    const user = await User.findOne({ id, status: 'Active', isDeleted: false });
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No Sr Found');
+    }
+
+    const createdAt: { gte: string; lte: string } = query?.createdAt as {
+        gte: string;
+        lte: string;
+    };
+
+    const startDay = moment
+        .tz(createdAt?.gte, TIMEZONE)
+        .startOf('day')
+        .format();
+    const endDay = moment.tz(createdAt?.lte, TIMEZONE).endOf('day').format();
+
+    const todaySales = await Order.aggregate([
+        {
+            $match: {
+                sr: user._id,
+                insertedDate: {
+                    $gte: moment().tz(TIMEZONE).startOf('day').format(),
+                    $lte: moment().tz(TIMEZONE).endOf('day').format(),
+                },
+                status: { $in: ['Delivered'] },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalSellAmount: { $sum: '$collectionAmount' },
+            },
+        },
+    ]);
+
+    const totalSales = await Order.aggregate([
+        {
+            $match: {
+                sr: user._id,
+                insertedDate: { $gte: startDay, $lte: endDay },
+                status: { $in: ['Delivered'] },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalSellAmount: { $sum: '$collectionAmount' },
+            },
+        },
+    ]);
+
+    const oc = await OrderDetails.aggregate([
+        {
+            $lookup: {
+                from: 'orders',
+                localField: 'orderId',
+                foreignField: '_id',
+                as: 'order',
+            },
+        },
+        { $unwind: '$order' },
+        {
+            $match: {
+                'order.sr': user._id,
+                'order.insertedDate': { $gte: startDay, $lte: endDay },
+                'order.status': { $in: ['Delivered'] },
+                'isCancelled.isCancelled': { $ne: true },
+            },
+        },
+        {
+            $project: {
+                oc: { $subtract: ['$dealerTotalAmount', '$srTotalAmount'] },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalOC: { $sum: '$oc' },
+            },
+        },
+    ]);
+
+    return {
+        todaySales: todaySales[0]?.totalSellAmount || 0,
+        totalSales: totalSales[0]?.totalSellAmount || 0,
+        profit: oc[0]?.totalOC || 0,
+    };
+};
+
 export const SrServices = {
     getAllSrFromDB,
     getSingleSrFromDB,
     getSrOverviewFromDB,
     updateSrInfoIntoDB,
     getSrDashboardDataFromDB,
+    getSrHomeDataFromDB,
 };
