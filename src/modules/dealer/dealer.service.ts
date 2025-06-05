@@ -179,7 +179,7 @@ const getDealerDashboardDataFromDB = async (
         {
             $match: {
                 dealer: new mongoose.Types.ObjectId(id),
-                updatedAt: {
+                createdAt: {
                     $gte: startDay,
                     $lte: endDay,
                 },
@@ -207,7 +207,7 @@ const getDealerDashboardDataFromDB = async (
         {
             $match: {
                 'order.dealer': new mongoose.Types.ObjectId(id),
-                'order.updatedAt': {
+                'order.createdAt': {
                     $gte: startDay,
                     $lte: endDay,
                 },
@@ -232,7 +232,7 @@ const getDealerDashboardDataFromDB = async (
         {
             $match: {
                 dealer: new mongoose.Types.ObjectId(id),
-                insertedDate: {
+                createdAt: {
                     $gte: startDay,
                     $lte: endDay,
                 },

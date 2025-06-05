@@ -205,8 +205,8 @@ const getSrDashboardDataFromDB = async (
         {
             $match: {
                 sr: new mongoose.Types.ObjectId(id),
-                insertedDate: { $gte: startDay, $lte: endDay },
-                status: { $in: ['Delivered'] },
+                createdAt: { $gte: startDay, $lte: endDay },
+                status: 'Delivered',
             },
         },
         {
@@ -230,8 +230,8 @@ const getSrDashboardDataFromDB = async (
         {
             $match: {
                 'order.sr': new mongoose.Types.ObjectId(id),
-                'order.insertedDate': { $gte: startDay, $lte: endDay },
-                'order.status': { $in: ['Delivered'] },
+                'order.createdAt': { $gte: startDay, $lte: endDay },
+                'order.status': 'Delivered',
                 'isCancelled.isCancelled': { $ne: true },
             },
         },
@@ -252,7 +252,7 @@ const getSrDashboardDataFromDB = async (
         {
             $match: {
                 sr: new mongoose.Types.ObjectId(id),
-                insertedDate: { $gte: startDay, $lte: endDay },
+                createdAt: { $gte: startDay, $lte: endDay },
             },
         },
         {
@@ -276,7 +276,7 @@ const getSrDashboardDataFromDB = async (
     return {
         totalSales: totalSales[0]?.totalSellAmount || 0,
         profit: oc[0]?.totalOC || 0,
-        summary: orderSummary,
+        summary: orderSummary[0] || {},
     };
 };
 
@@ -305,7 +305,7 @@ const getSrHomeDataFromDB = async (
         {
             $match: {
                 sr: user._id,
-                insertedDate: {
+                createdAt: {
                     $gte: moment().tz(TIMEZONE).startOf('day').format(),
                     $lte: moment().tz(TIMEZONE).endOf('day').format(),
                 },
@@ -324,7 +324,7 @@ const getSrHomeDataFromDB = async (
         {
             $match: {
                 sr: user._id,
-                insertedDate: { $gte: startDay, $lte: endDay },
+                createdAt: { $gte: startDay, $lte: endDay },
                 status: { $in: ['Delivered'] },
             },
         },
@@ -349,7 +349,7 @@ const getSrHomeDataFromDB = async (
         {
             $match: {
                 'order.sr': user._id,
-                'order.insertedDate': { $gte: startDay, $lte: endDay },
+                'order.createdAt': { $gte: startDay, $lte: endDay },
                 'order.status': { $in: ['Delivered'] },
                 'isCancelled.isCancelled': { $ne: true },
             },

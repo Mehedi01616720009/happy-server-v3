@@ -56,7 +56,12 @@ router.put(
 // get sr dashboard data route
 router.get(
     '/dashboard/data',
-    auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.sr),
+    auth(
+        USER_ROLES.superAdmin,
+        USER_ROLES.admin,
+        USER_ROLES.dealer,
+        USER_ROLES.sr
+    ),
     SrControllers.getSrDashboardData
 );
 
