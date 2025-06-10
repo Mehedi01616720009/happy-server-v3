@@ -175,6 +175,25 @@ const getDealerDashboardDataFromDB = async (
     const startDay = moment.tz(startDate, TIMEZONE).startOf('day').format();
     const endDay = moment.tz(endDate, TIMEZONE).endOf('day').format();
 
+    const todaySales = await Order.aggregate([
+        {
+            $match: {
+                dealer: new mongoose.Types.ObjectId(id),
+                createdAt: {
+                    $gte: moment().tz(TIMEZONE).startOf('day').format(),
+                    $lte: moment().tz(TIMEZONE).endOf('day').format(),
+                },
+                status: { $in: ['Delivered'] },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalSellAmount: { $sum: '$collectionAmount' },
+            },
+        },
+    ]);
+
     const totalSales = await Order.aggregate([
         {
             $match: {
@@ -268,6 +287,7 @@ const getDealerDashboardDataFromDB = async (
     ]);
 
     return {
+        todaySales: todaySales[0]?.totalSellAmount || 0,
         totalSales: totalSales[0]?.totalSellAmount || 0,
         profit: profit[0]?.totalProfit || 0,
         topSrs: topSrs,
