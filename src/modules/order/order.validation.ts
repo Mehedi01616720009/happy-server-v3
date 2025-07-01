@@ -119,6 +119,17 @@ const deliverOrderValidationSchema = z.object({
     }),
 });
 
+// delete order validation
+const deleteOrderValidationSchema = z.object({
+    body: z.object({
+        id: z.array(
+            z.string({
+                required_error: 'A order is required',
+            })
+        ),
+    }),
+});
+
 export const OrderValidations = {
     createOrderValidationSchema,
     updateOrderProductValidationSchema,
@@ -126,4 +137,5 @@ export const OrderValidations = {
     cancelOrderProductValidationSchema,
     dispatchOrderValidationSchema,
     deliverOrderValidationSchema,
+    deleteOrderValidationSchema,
 };

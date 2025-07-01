@@ -18,6 +18,7 @@ import { TIMEZONE } from '../../constant';
 import { JwtPayload } from 'jsonwebtoken';
 import { Retailer } from '../retailer/retailer.model';
 import { CustomerCareData } from '../customerCare/customerCare.model';
+import { Packingman, PickedProduct } from '../pickupMan/pickupMan.model';
 
 // create order
 const createOrderIntoDB = async (payload: ICreateOrder) => {
@@ -131,13 +132,11 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
                             )
                         ).toFixed(2)
                     ),
+                    srPrice: Number(product?.srPrice?.toFixed(2)),
+                    srTotalAmount: Number(product?.srTotalAmount?.toFixed(2)),
                 };
 
                 if (orderData?.sr) {
-                    orderDetails.srPrice = Number(product?.srPrice?.toFixed(2));
-                    orderDetails.srTotalAmount = Number(
-                        product?.srTotalAmount?.toFixed(2)
-                    );
                     orderDetails.inventory = {
                         out: product.quantity,
                         sale: 0,
@@ -484,6 +483,13 @@ const dispatchOrderIntoDB = async (
         throw new AppError(httpStatus.NOT_FOUND, 'No packingman Found');
     }
 
+    const packingmanData = await Packingman.findOne({
+        packingman: packingman._id,
+    });
+    if (!packingmanData) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No packingman Found');
+    }
+
     const collectionAmount = orderDetails.products.reduce(
         (acc, product) => (acc += Number(product.srTotalAmount)),
         0
@@ -534,6 +540,38 @@ const dispatchOrderIntoDB = async (
             ],
             { session }
         );
+
+        const orderDetailsData = await OrderDetails.findOne({
+            order: order?._id,
+        }).select('products');
+
+        const products = orderDetailsData?.products;
+
+        if (products) {
+            await Promise.all(
+                products.map(async product => {
+                    const productStock = await PickedProduct.find({
+                        warehouse: packingmanData.warehouse,
+                        product: product.product,
+                    })
+                        .sort('-insertedDate')
+                        .limit(1);
+
+                    if (productStock.length === 0) {
+                        throw new AppError(
+                            httpStatus.NOT_FOUND,
+                            'No product stock found'
+                        );
+                    }
+
+                    await PickedProduct.findByIdAndUpdate(
+                        productStock[0]._id,
+                        { $inc: { quantity: -product.quantity } },
+                        { new: true }
+                    );
+                })
+            );
+        }
 
         await session.commitTransaction();
         await session.endSession();
@@ -782,7 +820,6 @@ const updateOrderProductBySrIntoDB = async (
     }
 
     const currentProduct = orderDetails?.products[productIndex as number];
-    const previousQuantity = currentProduct?.quantity;
 
     const session = await mongoose.startSession();
 
@@ -815,10 +852,7 @@ const updateOrderProductBySrIntoDB = async (
                             payload.quantity
                         ).toFixed(2)
                     ),
-                    'products.$[product].isEdited': {
-                        isEdited: true,
-                        previousQuantity,
-                    },
+                    'products.$[product].inventory.out': payload?.quantity,
                 },
             },
             {
@@ -1079,15 +1113,9 @@ const getOrderInventoryFromDB = async (query: Record<string, unknown>) => {
                 },
                 totalInPrice: {
                     $sum: {
-                        $cond: [
-                            { $gt: ['$products.inventory.in', 0] },
-                            {
-                                $multiply: [
-                                    '$products.inventory.in',
-                                    '$srPricePerUnit',
-                                ],
-                            },
-                            0,
+                        $multiply: [
+                            { $ifNull: ['$products.inventory.in', 0] },
+                            '$srPricePerUnit',
                         ],
                     },
                 },
@@ -1234,15 +1262,9 @@ const getOrderInventoryDetailsFromDB = async (
                 },
                 totalInPrice: {
                     $sum: {
-                        $cond: [
-                            { $gt: ['$products.inventory.in', 0] },
-                            {
-                                $multiply: [
-                                    '$products.inventory.in',
-                                    '$srPricePerUnit',
-                                ],
-                            },
-                            0,
+                        $multiply: [
+                            { $ifNull: ['$products.inventory.in', 0] },
+                            '$srPricePerUnit',
                         ],
                     },
                 },
@@ -1462,6 +1484,39 @@ const deleteOrderFromDB = async (id: string) => {
     }
 };
 
+// delete many order
+const deleteManyOrderFromDB = async (payload: Types.ObjectId[]) => {
+    const orders = await Order.find({ id: { $in: payload } }).select('_id');
+    if (!orders) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
+    }
+
+    const orderIDs = orders.map(order => order._id);
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        await Order.deleteMany({ _id: { $in: orderIDs } }, { session });
+        await OrderDetails.deleteMany(
+            { order: { $in: orderIDs } },
+            { session }
+        );
+
+        await session.commitTransaction();
+        await session.endSession();
+        return null;
+    } catch (err) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Mongoose transaction failed',
+            err as string
+        );
+    }
+};
+
 export const OrderServices = {
     createOrderIntoDB,
     getAllOrderFromDB,
@@ -1480,4 +1535,5 @@ export const OrderServices = {
     getOrderHistoryFromDB,
     getOrderCountingFromDB,
     deleteOrderFromDB,
+    deleteManyOrderFromDB,
 };

@@ -179,6 +179,14 @@ router.get(
 
 // delete order route
 router.delete(
+    '/delete-many',
+    auth(USER_ROLES.superAdmin, USER_ROLES.admin),
+    validateRequest(OrderValidations.deleteOrderValidationSchema),
+    OrderController.deleteManyOrder
+);
+
+// delete order route
+router.delete(
     '/:id',
     auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.sr),
     OrderController.deleteOrder

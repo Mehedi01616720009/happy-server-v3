@@ -229,6 +229,17 @@ const deleteOrder = catchAsync(async (req, res) => {
     });
 });
 
+// delete many order controller
+const deleteManyOrder = catchAsync(async (req, res) => {
+    const result = await OrderServices.deleteManyOrderFromDB(req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Order has been deleted successfully',
+        data: result,
+    });
+});
+
 export const OrderController = {
     createOrder,
     getAllOrder,
@@ -247,4 +258,5 @@ export const OrderController = {
     getOrderHistory,
     getOrderCounting,
     deleteOrder,
+    deleteManyOrder,
 };

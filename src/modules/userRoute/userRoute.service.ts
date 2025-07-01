@@ -81,7 +81,7 @@ const getSingleSrRouteDayFromDB = async (id: string, date: string) => {
 // delete user route
 const deleteUserRouteFromDB = async (
     id: string,
-    payload: { day: string; route: Types.ObjectId }
+    payload: { day: string; route: Types.ObjectId[] }
 ) => {
     const user = await User.findOne({ id, status: 'Active', isDeleted: false });
     if (!user) {
@@ -90,7 +90,7 @@ const deleteUserRouteFromDB = async (
 
     const result = await UserRoute.findOneAndUpdate(
         { user: user?._id },
-        { $pull: { [payload.day]: payload.route } },
+        { $pull: { [payload.day]: { $in: payload.route } } },
         { new: true }
     );
     return result;

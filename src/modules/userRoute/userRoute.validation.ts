@@ -29,9 +29,11 @@ const deleteUserRouteValidationSchema = z.object({
         day: z.enum([...DAYS], {
             message: 'Day is invalid',
         }),
-        route: z.string({
-            required_error: 'A route is required',
-        }),
+        route: z.array(
+            z.string({
+                required_error: 'A route is required',
+            })
+        ),
     }),
 });
 
