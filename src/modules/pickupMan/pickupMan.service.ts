@@ -23,7 +23,7 @@ const createPickedProductIntoDB = async (
 
     const warehouse = await Warehouse.findOne({ id: payload?.warehouse });
     if (!warehouse) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No pickupman found');
+        throw new AppError(httpStatus.NOT_FOUND, 'No warehouse found');
     }
 
     const product = await Product.findOne({ id: payload?.product });

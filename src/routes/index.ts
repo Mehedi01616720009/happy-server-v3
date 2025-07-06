@@ -14,12 +14,13 @@ import { UserRouteRoutes } from '../modules/userRoute/userRoute.route';
 import { DsrRoutes } from '../modules/dsr/dsr.route';
 import { ProductRoutes } from '../modules/product/product.route';
 import { OrderRoutes } from '../modules/order/order.route';
-import { PickedProductRoutes } from '../modules/pickupMan/pickupMan.router';
+import { PickedProductRoutes } from '../modules/pickupMan/pickupMan.route';
 import { CustomerCareDataRoutes } from '../modules/customerCare/customerCare.route';
 import { DamageRoutes } from '../modules/damage/damage.route';
 import { MediaRoutes } from '../modules/media/media.route';
 import { TagRoutes } from '../modules/tag/tag.route';
 import { WarehouseRoutes } from '../modules/warehouse/warehouse.route';
+import { InProductRoutes } from '../modules/inproduct/inproduct.route';
 
 // route initialization
 const router = Router();
@@ -62,6 +63,10 @@ const routes = [
     {
         path: '/freelancers',
         route: FreelancerRoutes,
+    },
+    {
+        path: '/in-products',
+        route: InProductRoutes,
     },
     {
         path: '/media',
