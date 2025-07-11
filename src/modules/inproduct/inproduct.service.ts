@@ -54,34 +54,34 @@ const createInProductIntoDB = async (
     inProductData.product = product._id;
     inProductData.warehouse = warehouse._id;
 
+    const productStock = await PickedProduct.find({
+        warehouse: warehouse._id,
+        product: product._id,
+    })
+        .sort('-insertedDate')
+        .limit(1);
+
+    if (productStock.length === 0) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No product stock found');
+    }
+
     const session = await mongoose.startSession();
 
     try {
         session.startTransaction();
 
-        const productStock = await PickedProduct.find({
-            warehouse: warehouse._id,
-            product: product._id,
-        })
-            .sort('-insertedDate')
-            .limit(1);
-
-        if (productStock.length === 0) {
-            throw new AppError(httpStatus.NOT_FOUND, 'No product stock found');
-        }
-
         await PickedProduct.findByIdAndUpdate(
             productStock[0]._id,
             { $inc: { quantity: inProductData.quantity } },
-            { new: true }
+            { session, new: true }
         );
 
-        const result = await InProduct.create(inProductData);
+        const result = await InProduct.create([inProductData], { session });
 
         await session.commitTransaction();
         await session.endSession();
 
-        return result;
+        return result[0];
     } catch (err) {
         await session.abortTransaction();
         await session.endSession();

@@ -55,6 +55,22 @@ const getAllRetailerForDeliveryman = catchAsync(async (req, res) => {
     });
 });
 
+// get invoices retailer for deliveryman controller
+const getInvoicesRetailerForDeliveryman = catchAsync(async (req, res) => {
+    const { date } = req.params;
+    const result =
+        await RetailerServices.getInvoicesRetailerForDeliverymanFromDB(
+            date,
+            req.query
+        );
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'All Retailers have been retrieved successfully',
+        data: result,
+    });
+});
+
 // get Pending retailer for deliveryman controller
 const getPendingRetailerForDeliveryman = catchAsync(async (req, res) => {
     const { date } = req.params;
@@ -128,6 +144,7 @@ export const RetailerControllers = {
     getAllRetailer,
     getAllRetailerByArea,
     getAllRetailerForDeliveryman,
+    getInvoicesRetailerForDeliveryman,
     getPendingRetailerForDeliveryman,
     getBakiRetailerForDeliveryman,
     getAllRetailerForPackingman,

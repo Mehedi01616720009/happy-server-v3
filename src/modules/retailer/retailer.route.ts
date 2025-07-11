@@ -51,6 +51,13 @@ router.get(
 
 // get pending retailer for deliveryman route
 router.get(
+    '/deliveryman/:date/invoices',
+    auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.deliveryMan),
+    RetailerControllers.getInvoicesRetailerForDeliveryman
+);
+
+// get pending retailer for deliveryman route
+router.get(
     '/deliveryman/:date/pending',
     auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.deliveryMan),
     RetailerControllers.getPendingRetailerForDeliveryman

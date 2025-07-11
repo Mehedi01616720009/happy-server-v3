@@ -18,7 +18,12 @@ router.post(
 // get all Warehouse route
 router.get(
     '/',
-    auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.pickupMan),
+    auth(
+        USER_ROLES.superAdmin,
+        USER_ROLES.admin,
+        USER_ROLES.pickupMan,
+        USER_ROLES.deliveryMan
+    ),
     WarehouseControllers.getAllWarehouse
 );
 

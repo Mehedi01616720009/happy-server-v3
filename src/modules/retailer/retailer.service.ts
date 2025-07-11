@@ -371,6 +371,76 @@ const getAllRetailerForDeliverymanFromDB = async (
     return { result, meta };
 };
 
+// get invoices retailer for deliveryman
+const getInvoicesRetailerForDeliverymanFromDB = async (
+    date: string,
+    query: Record<string, unknown>
+) => {
+    const fetchQuery = new QueryBuilder(
+        Area.find().select('id name').sort('name'),
+        query
+    )
+        .filter()
+        .sort()
+        .paginate();
+
+    const areas = await fetchQuery.modelQuery;
+    const meta = await fetchQuery.countTotal();
+    if (areas.length === 0) {
+        return { result: [], meta };
+    }
+
+    const result = await Promise.all(
+        areas.map(async area => {
+            const retailers = await Retailer.find({
+                area: area._id,
+            }).populate('retailer');
+
+            const orders = await Promise.all(
+                retailers.map(async retailer => {
+                    const startDay = moment
+                        .tz(date, TIMEZONE)
+                        .startOf('day')
+                        .format();
+                    const endDay = moment
+                        .tz(date, TIMEZONE)
+                        .endOf('day')
+                        .format();
+
+                    const ordersData = await Order.find({
+                        area: area._id,
+                        retailer: retailer.retailer._id,
+                        status: { $in: ['Baki', 'Cancelled', 'Delivered'] },
+                        updatedAt: {
+                            $gte: startDay,
+                            $lte: endDay,
+                        },
+                    })
+                        .select('id retailer sr dealer collectionAmount')
+                        .populate('sr');
+
+                    return {
+                        ...retailer.toObject(),
+                        orders: ordersData,
+                    };
+                })
+            );
+
+            const filteredRetailers = orders.filter(
+                order => order.orders.length > 0
+            );
+
+            return {
+                ...area.toObject(),
+                retailerCount: filteredRetailers.length,
+                retailers: filteredRetailers,
+            };
+        })
+    );
+
+    return { result, meta };
+};
+
 // get pending retailer for deliveryman
 const getPendingRetailerForDeliverymanFromDB = async (
     date: string,
@@ -685,6 +755,7 @@ export const RetailerServices = {
     getAllRetailerFromDB,
     getAllRetailerByAreaFromDB,
     getAllRetailerForDeliverymanFromDB,
+    getInvoicesRetailerForDeliverymanFromDB,
     getPendingRetailerForDeliverymanFromDB,
     getBakiRetailerForDeliverymanFromDB,
     getAllRetailerForPackingmanFromDB,

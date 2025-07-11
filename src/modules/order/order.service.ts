@@ -1212,6 +1212,8 @@ const getOrderInventoryDetailsFromDB = async (
         {
             $group: {
                 _id: '$productDetails._id',
+                id: { $first: '$productDetails.id' },
+                image: { $first: '$productDetails.image' },
                 product: { $first: '$productDetails.name' },
                 quantityPerPackage: {
                     $first: '$productDetails.quantityPerPackage',
@@ -1273,6 +1275,8 @@ const getOrderInventoryDetailsFromDB = async (
         {
             $project: {
                 _id: 0,
+                id: 1,
+                image: 1,
                 product: 1,
                 quantityPerPackage: 1,
                 oc: 1,
@@ -1289,6 +1293,7 @@ const getOrderInventoryDetailsFromDB = async (
     return result;
 };
 
+// get order summary
 const getOrderSummaryFromDB = async (query: Record<string, unknown>) => {
     const fetchQuery = new QueryBuilder(
         Order.find({ status: { $ne: 'Cancelled' } }).select('_id'),
@@ -1364,6 +1369,7 @@ const getOrderSummaryFromDB = async (query: Record<string, unknown>) => {
     return result;
 };
 
+// get order history
 const getOrderHistoryFromDB = async (query: Record<string, unknown>) => {
     const srId = query?.sr ? new Types.ObjectId(query.sr as string) : null;
     const dealerId = query?.dealer
