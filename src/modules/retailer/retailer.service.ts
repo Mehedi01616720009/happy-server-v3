@@ -416,7 +416,9 @@ const getInvoicesRetailerForDeliverymanFromDB = async (
                             $lte: endDay,
                         },
                     })
-                        .select('id retailer sr dealer collectionAmount')
+                        .select(
+                            'id retailer sr dealer collectionAmount collectedAmount'
+                        )
                         .populate('sr');
 
                     return {
@@ -676,7 +678,9 @@ const getAllRetailerForPackingmanFromDB = async (
                         area: area._id,
                         status: { $in: ['Processing', 'Pending'] },
                     })
-                        .select('id retailer sr dealer collectionAmount')
+                        .select(
+                            'id retailer sr dealer collectionAmount collectedAmount createdAt'
+                        )
                         .populate('sr');
 
                     return {
