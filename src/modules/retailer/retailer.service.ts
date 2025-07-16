@@ -17,6 +17,7 @@ import { Order } from '../order/order.model';
 import { CustomerCareData } from '../customerCare/customerCare.model';
 import { IOrder } from '../order/order.interface';
 import generatePhone from '../../utils/generatePhone';
+import findNearDistanceRetailer from '../../utils/findNearDistanceRetailer';
 
 // create retailer
 const createRetailerIntoDB = async (
@@ -112,6 +113,22 @@ const getAllRetailerFromDB = async (query: Record<string, unknown>) => {
         .populate('createdBy');
     const meta = await fetchQuery.countTotal();
     return { result, meta };
+};
+
+// get retailers near me
+const getRetailersNearMeFromDB = async (query: Record<string, unknown>) => {
+    const retailers = await Retailer.find({ union: { $in: query.union } })
+        .populate('retailer')
+        .populate('union');
+    if (retailers.length === 0) {
+        return [];
+    }
+    const result = await findNearDistanceRetailer(
+        retailers,
+        Number(query.latitude),
+        Number(query.longitude)
+    );
+    return result;
 };
 
 // get all retailer by area
@@ -247,73 +264,6 @@ const getAllRetailerByAreaFromDB = async (
 
     return result;
 };
-
-// const getAllRetailerByAreaFromDB = async (
-//     query: Record<string, unknown>,
-//     userPayload: JwtPayload
-// ) => {
-//     let areas = query?.area;
-
-//     if (areas === undefined) {
-//         throw new AppError(httpStatus.NOT_FOUND, 'Missing area id');
-//     }
-
-//     if (typeof areas === 'string') {
-//         areas = [areas];
-//     }
-
-//     const areaIds = (areas as string[]).map(id => new Types.ObjectId(id));
-
-//     const startOfDay = moment().tz(TIMEZONE).startOf('day').format();
-//     const endOfDay = moment().tz(TIMEZONE).endOf('day').format();
-
-//     const sr = await User.findOne({ id: userPayload.userId }).select('_id');
-//     if (!sr) {
-//         throw new AppError(httpStatus.NOT_FOUND, 'No sr found');
-//     }
-
-//     const allAreas = await Area.find({ _id: { $in: areaIds } }).sort('name');
-
-//     const result = await Promise.all(
-//         allAreas.map(async area => {
-//             const retailers = await Retailer.find({
-//                 area: area._id,
-//             });
-
-//             await Promise.all(
-//                 retailers.map(async retailer => {
-//                     const userData = await User.find({
-//                         retailer: retailer.retailer,
-//                         area: area._id,
-//                     }).select(
-//                         '-password -nid -needPasswordChange -createdAt -updatedAt'
-//                     );
-
-//                     const orderData = await Order.countDocuments({
-//                         retailer: retailer.retailer,
-//                         area: area._id,
-//                         sr: sr._id,
-//                         createdAt: { $gte: startOfDay, $lte: endOfDay },
-//                     });
-
-//                     return {
-//                         ...retailer.toObject(),
-//                         retailerData: userData,
-//                         isOrdered: orderData > 0 ? true : false,
-//                     };
-//                 })
-//             );
-
-//             return {
-//                 ...area.toObject(),
-//                 retailerCount: retailers.length,
-//                 retailers: retailers,
-//             };
-//         })
-//     );
-
-//     return result;
-// };
 
 // get all retailer for deliveryman
 const getAllRetailerForDeliverymanFromDB = async (
@@ -757,6 +707,7 @@ const updateRetailerIntoDB = async (
 export const RetailerServices = {
     createRetailerIntoDB,
     getAllRetailerFromDB,
+    getRetailersNearMeFromDB,
     getAllRetailerByAreaFromDB,
     getAllRetailerForDeliverymanFromDB,
     getInvoicesRetailerForDeliverymanFromDB,

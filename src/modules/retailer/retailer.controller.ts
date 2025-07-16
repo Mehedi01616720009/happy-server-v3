@@ -28,6 +28,17 @@ const getAllRetailer = catchAsync(async (req, res) => {
     });
 });
 
+// get retailers near me controller
+const getRetailersNearMe = catchAsync(async (req, res) => {
+    const result = await RetailerServices.getRetailersNearMeFromDB(req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'All Retailers have been retrieved successfully',
+        data: result,
+    });
+});
+
 // get all retailer by area controller
 const getAllRetailerByArea = catchAsync(async (req, res) => {
     const result = await RetailerServices.getAllRetailerByAreaFromDB(
@@ -142,6 +153,7 @@ const updateRetailer = catchAsync(async (req, res) => {
 export const RetailerControllers = {
     createRetailer,
     getAllRetailer,
+    getRetailersNearMe,
     getAllRetailerByArea,
     getAllRetailerForDeliveryman,
     getInvoicesRetailerForDeliveryman,

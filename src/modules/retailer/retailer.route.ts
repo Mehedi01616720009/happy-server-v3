@@ -28,6 +28,18 @@ router.get(
     RetailerControllers.getAllRetailer
 );
 
+// get retailers near me route
+router.get(
+    '/near-me',
+    auth(
+        USER_ROLES.superAdmin,
+        USER_ROLES.admin,
+        USER_ROLES.sr,
+        USER_ROLES.deliveryMan
+    ),
+    RetailerControllers.getRetailersNearMe
+);
+
 // get all retailer by area route
 router.get(
     '/by-area',
