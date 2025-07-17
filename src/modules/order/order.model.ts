@@ -31,7 +31,7 @@ const orderSchema = new Schema<IOrder>({
     area: {
         type: Schema.Types.ObjectId,
         required: [true, 'Area is required'],
-        ref: 'Area',
+        ref: 'Union',
     },
     dealer: {
         type: Schema.Types.ObjectId,

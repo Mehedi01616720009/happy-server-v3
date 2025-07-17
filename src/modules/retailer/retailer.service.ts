@@ -12,12 +12,12 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import moment from 'moment-timezone';
 import { TIMEZONE } from '../../constant';
 import { JwtPayload } from 'jsonwebtoken';
-import { Area } from '../area/area.model';
 import { Order } from '../order/order.model';
 import { CustomerCareData } from '../customerCare/customerCare.model';
 import { IOrder } from '../order/order.interface';
 import generatePhone from '../../utils/generatePhone';
 import findNearDistanceRetailer from '../../utils/findNearDistanceRetailer';
+import { Union } from '../union/union.model';
 
 // create retailer
 const createRetailerIntoDB = async (
@@ -270,30 +270,30 @@ const getAllRetailerForDeliverymanFromDB = async (
     query: Record<string, unknown>
 ) => {
     const fetchQuery = new QueryBuilder(
-        Area.find().select('id name').sort('name'),
+        Union.find().select('id name').sort('name'),
         query
     )
         .filter()
         .sort()
         .paginate();
 
-    const areas = await fetchQuery.modelQuery;
+    const unions = await fetchQuery.modelQuery;
     const meta = await fetchQuery.countTotal();
-    if (areas.length === 0) {
+    if (unions.length === 0) {
         return { result: [], meta };
     }
 
     const result = await Promise.all(
-        areas.map(async area => {
+        unions.map(async union => {
             const retailers = await Retailer.find({
-                area: area._id,
+                union: union._id,
             }).populate('retailer');
 
             const orders = await Promise.all(
                 retailers.map(async retailer => {
                     const ordersData = await Order.find({
                         retailer: retailer.retailer._id,
-                        area: area._id,
+                        area: union._id,
                         status: 'Dispatched',
                     })
                         .select('id retailer sr dealer collectionAmount')
@@ -311,7 +311,7 @@ const getAllRetailerForDeliverymanFromDB = async (
             );
 
             return {
-                ...area.toObject(),
+                ...union.toObject(),
                 retailerCount: filteredRetailers.length,
                 retailers: filteredRetailers,
             };
@@ -327,23 +327,23 @@ const getInvoicesRetailerForDeliverymanFromDB = async (
     query: Record<string, unknown>
 ) => {
     const fetchQuery = new QueryBuilder(
-        Area.find().select('id name').sort('name'),
+        Union.find().select('id name').sort('name'),
         query
     )
         .filter()
         .sort()
         .paginate();
 
-    const areas = await fetchQuery.modelQuery;
+    const unions = await fetchQuery.modelQuery;
     const meta = await fetchQuery.countTotal();
-    if (areas.length === 0) {
+    if (unions.length === 0) {
         return { result: [], meta };
     }
 
     const result = await Promise.all(
-        areas.map(async area => {
+        unions.map(async union => {
             const retailers = await Retailer.find({
-                area: area._id,
+                union: union._id,
             }).populate('retailer');
 
             const orders = await Promise.all(
@@ -358,7 +358,7 @@ const getInvoicesRetailerForDeliverymanFromDB = async (
                         .format();
 
                     const ordersData = await Order.find({
-                        area: area._id,
+                        area: union._id,
                         retailer: retailer.retailer._id,
                         status: { $in: ['Baki', 'Cancelled', 'Delivered'] },
                         updatedAt: {
@@ -383,7 +383,7 @@ const getInvoicesRetailerForDeliverymanFromDB = async (
             );
 
             return {
-                ...area.toObject(),
+                ...union.toObject(),
                 retailerCount: filteredRetailers.length,
                 retailers: filteredRetailers,
             };
@@ -399,23 +399,23 @@ const getPendingRetailerForDeliverymanFromDB = async (
     query: Record<string, unknown>
 ) => {
     const fetchQuery = new QueryBuilder(
-        Area.find().select('id name').sort('name'),
+        Union.find().select('id name').sort('name'),
         query
     )
         .filter()
         .sort()
         .paginate();
 
-    const areas = await fetchQuery.modelQuery;
+    const unions = await fetchQuery.modelQuery;
     const meta = await fetchQuery.countTotal();
-    if (areas.length === 0) {
+    if (unions.length === 0) {
         return { result: [], meta };
     }
 
     const result = await Promise.all(
-        areas.map(async area => {
+        unions.map(async union => {
             const retailers = await Retailer.find({
-                area: area._id,
+                union: union._id,
             }).populate('retailer');
 
             const orders = await Promise.all(
@@ -430,7 +430,7 @@ const getPendingRetailerForDeliverymanFromDB = async (
                         .format();
 
                     const ordersData = await Order.find({
-                        area: area._id,
+                        area: union._id,
                         retailer: retailer.retailer._id,
                         status: 'Pending',
                     })
@@ -484,7 +484,7 @@ const getPendingRetailerForDeliverymanFromDB = async (
             );
 
             return {
-                ...area.toObject(),
+                ...union.toObject(),
                 retailerCount: filteredRetailers.length,
                 retailers: filteredRetailers,
             };
@@ -500,23 +500,23 @@ const getBakiRetailerForDeliverymanFromDB = async (
     query: Record<string, unknown>
 ) => {
     const fetchQuery = new QueryBuilder(
-        Area.find().select('id name').sort('name'),
+        Union.find().select('id name').sort('name'),
         query
     )
         .filter()
         .sort()
         .paginate();
 
-    const areas = await fetchQuery.modelQuery;
+    const unions = await fetchQuery.modelQuery;
     const meta = await fetchQuery.countTotal();
-    if (areas.length === 0) {
+    if (unions.length === 0) {
         return { result: [], meta };
     }
 
     const result = await Promise.all(
-        areas.map(async area => {
+        unions.map(async union => {
             const retailers = await Retailer.find({
-                area: area._id,
+                union: union._id,
             }).populate('retailer');
 
             const orders = await Promise.all(
@@ -531,7 +531,7 @@ const getBakiRetailerForDeliverymanFromDB = async (
                         .format();
 
                     const ordersData = await Order.find({
-                        area: area._id,
+                        area: union._id,
                         retailer: retailer.retailer._id,
                         status: 'Baki',
                     }).select('id');
@@ -587,7 +587,7 @@ const getBakiRetailerForDeliverymanFromDB = async (
             );
 
             return {
-                ...area.toObject(),
+                ...union.toObject(),
                 retailerCount: filteredRetailers.length,
                 retailers: filteredRetailers,
             };
@@ -602,30 +602,30 @@ const getAllRetailerForPackingmanFromDB = async (
     query: Record<string, unknown>
 ) => {
     const fetchQuery = new QueryBuilder(
-        Area.find().select('id name').sort('name'),
+        Union.find().select('id name').sort('name'),
         query
     )
         .filter()
         .sort()
         .paginate();
 
-    const areas = await fetchQuery.modelQuery;
+    const unions = await fetchQuery.modelQuery;
     const meta = await fetchQuery.countTotal();
-    if (areas.length === 0) {
+    if (unions.length === 0) {
         return { result: [], meta };
     }
 
     const result = await Promise.all(
-        areas.map(async area => {
+        unions.map(async union => {
             const retailers = await Retailer.find({
-                area: area._id,
+                union: union._id,
             }).populate('retailer');
 
             const orders = await Promise.all(
                 retailers.map(async retailer => {
                     const ordersData = await Order.find({
                         retailer: retailer.retailer._id,
-                        area: area._id,
+                        area: union._id,
                         status: { $in: ['Processing', 'Pending'] },
                     })
                         .select(
@@ -645,7 +645,7 @@ const getAllRetailerForPackingmanFromDB = async (
             );
 
             return {
-                ...area.toObject(),
+                ...union.toObject(),
                 retailerCount: filteredRetailers.length,
                 retailers: filteredRetailers,
             };

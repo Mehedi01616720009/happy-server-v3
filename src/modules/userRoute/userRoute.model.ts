@@ -11,31 +11,31 @@ const userRouteSchema = new Schema<IUserRoute>({
     },
     sunday: {
         type: [Schema.Types.ObjectId],
-        ref: 'Area',
+        ref: 'Union',
     },
     monday: {
         type: [Schema.Types.ObjectId],
-        ref: 'Area',
+        ref: 'Union',
     },
     tuesday: {
         type: [Schema.Types.ObjectId],
-        ref: 'Area',
+        ref: 'Union',
     },
     wednesday: {
         type: [Schema.Types.ObjectId],
-        ref: 'Area',
+        ref: 'Union',
     },
     thursday: {
         type: [Schema.Types.ObjectId],
-        ref: 'Area',
+        ref: 'Union',
     },
     friday: {
         type: [Schema.Types.ObjectId],
-        ref: 'Area',
+        ref: 'Union',
     },
     saturday: {
         type: [Schema.Types.ObjectId],
-        ref: 'Area',
+        ref: 'Union',
     },
 });
 
@@ -49,7 +49,7 @@ const srRouteDaySchema = new Schema<ISrRouteDay>({
     routes: {
         type: [Schema.Types.ObjectId],
         required: [true, 'At least one area is required'],
-        ref: 'Area',
+        ref: 'Union',
     },
     taskDate: {
         type: Date,

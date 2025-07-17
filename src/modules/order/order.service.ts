@@ -8,7 +8,6 @@ import {
     IOrderDetailsProduct,
 } from './order.interface';
 import generateOrderId from '../../utils/generateOrderId';
-import { Area } from '../area/area.model';
 import mongoose, { Types } from 'mongoose';
 import { Order, OrderDetails } from './order.model';
 import { Product } from '../product/product.model';
@@ -19,6 +18,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import { Retailer } from '../retailer/retailer.model';
 import { CustomerCareData } from '../customerCare/customerCare.model';
 import { Packingman, PickedProduct } from '../pickupMan/pickupMan.model';
+import { Union } from '../union/union.model';
 
 // create order
 const createOrderIntoDB = async (payload: ICreateOrder) => {
@@ -27,9 +27,9 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
         throw new AppError(httpStatus.NOT_FOUND, 'No Retailer Found');
     }
 
-    const area = await Area.findOne({ id: payload?.area });
-    if (!area) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Area Found');
+    const union = await Union.findOne({ id: payload?.area });
+    if (!union) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No Union Found');
     }
 
     const dealer = await User.findById(payload?.dealer);
@@ -55,7 +55,7 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
 
     const orderData: Partial<IOrder> = {
         retailer: retailer?._id,
-        area: area?._id,
+        area: union?._id,
         dealer: dealer?._id,
         sr: sr?._id,
         dsr: dsr?._id,
@@ -1396,30 +1396,30 @@ const getOrderHistoryFromDB = async (query: Record<string, unknown>) => {
         .format('YYYY-MM-DDTHH:mm:ssZ');
 
     const fetchQuery = new QueryBuilder(
-        Area.find().select('id name').sort('name'),
+        Union.find().select('id name').sort('name'),
         { _id: areaIds, page: query?.page || 1, limit: query?.limit || 10 }
     )
         .filter()
         .sort()
         .paginate();
 
-    const areas = await fetchQuery.modelQuery;
+    const unions = await fetchQuery.modelQuery;
     const meta = await fetchQuery.countTotal();
-    if (areas.length === 0) {
+    if (unions.length === 0) {
         return { result: [], meta };
     }
 
     const result = await Promise.all(
-        areas.map(async area => {
+        unions.map(async union => {
             const retailers = await Retailer.find({
-                area: area._id,
+                union: union._id,
             }).populate('retailer');
 
             const orders = await Promise.all(
                 retailers.map(async retailer => {
                     const ordersData = await Order.find({
                         retailer: retailer.retailer._id,
-                        area: area._id,
+                        area: union._id,
                         createdAt: { $gte: startOfDay, $lte: endOfDay },
                         ...(srId && { sr: srId }),
                         ...(dealerId && { dealer: dealerId }),
@@ -1437,7 +1437,7 @@ const getOrderHistoryFromDB = async (query: Record<string, unknown>) => {
             );
 
             return {
-                ...area.toObject(),
+                ...union.toObject(),
                 retailerCount: filteredRetailers.length,
                 retailers: filteredRetailers,
             };
