@@ -1491,8 +1491,8 @@ const deleteOrderFromDB = async (id: string) => {
 };
 
 // delete many order
-const deleteManyOrderFromDB = async (payload: Types.ObjectId[]) => {
-    const orders = await Order.find({ id: { $in: payload } }).select('_id');
+const deleteManyOrderFromDB = async (payload: { id: string[] }) => {
+    const orders = await Order.find({ id: { $in: payload.id } }).select('_id');
     if (!orders) {
         throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
     }

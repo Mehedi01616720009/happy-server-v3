@@ -157,10 +157,10 @@ const getAllRetailerByAreaFromDB = async (
     }
 
     const result = await Retailer.aggregate([
-        { $match: { area: { $in: areaIds } } },
+        { $match: { union: { $in: areaIds } } },
         {
             $group: {
-                _id: '$area',
+                _id: '$union',
                 retailerCount: { $sum: 1 },
                 retailers: { $push: '$_id' },
             },
@@ -182,7 +182,7 @@ const getAllRetailerByAreaFromDB = async (
                     {
                         $match: {
                             $expr: { $eq: ['$_id', '$$retailerId'] },
-                            isDeleted: false, // Ensuring only active retailers
+                            isDeleted: false,
                         },
                     },
                 ],
@@ -191,7 +191,7 @@ const getAllRetailerByAreaFromDB = async (
         },
         {
             $match: {
-                'retailerDetails.retailerData': { $ne: [] }, // Exclude if no valid retailerData found
+                'retailerDetails.retailerData': { $ne: [] },
             },
         },
         {
@@ -199,7 +199,7 @@ const getAllRetailerByAreaFromDB = async (
                 from: 'orders',
                 let: {
                     retailerId: '$retailerDetails.retailer',
-                    areaId: '$_id',
+                    areaId: '$retailerDetails.union',
                 },
                 pipeline: [
                     {
@@ -245,7 +245,7 @@ const getAllRetailerByAreaFromDB = async (
         },
         {
             $lookup: {
-                from: 'areas',
+                from: 'unions',
                 localField: '_id',
                 foreignField: '_id',
                 as: 'areaDetails',
