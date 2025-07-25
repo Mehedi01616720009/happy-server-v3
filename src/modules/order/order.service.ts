@@ -1295,10 +1295,8 @@ const getOrderInventoryDetailsFromDB = async (
 
 // get order summary
 const getOrderSummaryFromDB = async (query: Record<string, unknown>) => {
-    const fetchQuery = new QueryBuilder(
-        Order.find({ status: { $ne: 'Cancelled' } }).select('_id'),
-        query
-    )
+    // Order.find({ status: { $ne: 'Cancelled' } }).select('_id')
+    const fetchQuery = new QueryBuilder(Order.find().select('_id'), query)
         .filter()
         .sort()
         .fields();

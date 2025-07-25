@@ -190,6 +190,21 @@ const getAllRetailerByAreaFromDB = async (
             },
         },
         {
+            $lookup: {
+                from: 'areas',
+                let: { area_id: '$retailerDetails.area' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ['$_id', '$$area_id'] },
+                            isDeleted: false,
+                        },
+                    },
+                ],
+                as: 'retailerDetails.areaData',
+            },
+        },
+        {
             $match: {
                 'retailerDetails.retailerData': { $ne: [] },
             },
