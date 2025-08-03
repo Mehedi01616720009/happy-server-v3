@@ -119,7 +119,7 @@ const getAllRetailerFromDB = async (query: Record<string, unknown>) => {
 const getRetailersNearMeFromDB = async (query: Record<string, unknown>) => {
     const retailers = await Retailer.find({ union: { $in: query.union } })
         .populate('retailer')
-        .populate('union');
+        .select('shopName location');
     if (retailers.length === 0) {
         return [];
     }
@@ -280,6 +280,58 @@ const getAllRetailerByAreaFromDB = async (
     return result;
 };
 
+// get all retailer by area
+const getAllRetailerByAreaOptimizeFromDB = async (
+    query: Record<string, unknown>,
+    userPayload: JwtPayload
+) => {
+    let areas = query?.area;
+
+    if (areas === undefined) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Missing area id');
+    }
+
+    if (typeof areas === 'string') {
+        areas = [areas];
+    }
+
+    const areaIds = (areas as string[]).map(id => new Types.ObjectId(id));
+
+    const startOfDay = moment().tz(TIMEZONE).startOf('day').format();
+    const endOfDay = moment().tz(TIMEZONE).endOf('day').format();
+
+    const sr = await User.findOne({ id: userPayload.userId }).select('_id');
+    if (!sr) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No sr found');
+    }
+
+    const retailers = await Retailer.find({ area: { $in: areaIds } })
+        .select('shopName location')
+        .populate('retailer');
+
+    const result = await Promise.all(
+        retailers.map(async retailer => {
+            const order = await Order.find({
+                retailer: retailer._id,
+                sr: sr._id,
+                createdAt: {
+                    $gte: startOfDay,
+                    $lte: endOfDay,
+                },
+            }).select('id');
+
+            const isOrdered = order ? true : false;
+
+            return {
+                ...retailer.toObject(),
+                isOrdered,
+            };
+        })
+    );
+
+    return result;
+};
+
 // get all retailer for deliveryman
 const getAllRetailerForDeliverymanFromDB = async (
     query: Record<string, unknown>
@@ -334,6 +386,33 @@ const getAllRetailerForDeliverymanFromDB = async (
     );
 
     return { result, meta };
+};
+
+// get all retailer for deliveryman
+const getAllRetailerForDeliverymanOptimizeFromDB = async (
+    query: Record<string, unknown>
+) => {
+    const retailers = await Retailer.find({ union: { $in: query.union } })
+        .populate('retailer')
+        .select(
+            'shopName location retailer._id retailer.id retailer.profileImg'
+        );
+
+    const result = await Promise.all(
+        retailers.map(async retailer => {
+            const ordersData = await Order.find({
+                retailer: retailer.retailer._id,
+                status: 'Dispatched',
+            }).select('id collectionAmount');
+
+            return {
+                ...retailer.toObject(),
+                orders: ordersData,
+            };
+        })
+    );
+
+    return result;
 };
 
 // get invoices retailer for deliveryman
@@ -724,7 +803,9 @@ export const RetailerServices = {
     getAllRetailerFromDB,
     getRetailersNearMeFromDB,
     getAllRetailerByAreaFromDB,
+    getAllRetailerByAreaOptimizeFromDB,
     getAllRetailerForDeliverymanFromDB,
+    getAllRetailerForDeliverymanOptimizeFromDB,
     getInvoicesRetailerForDeliverymanFromDB,
     getPendingRetailerForDeliverymanFromDB,
     getBakiRetailerForDeliverymanFromDB,

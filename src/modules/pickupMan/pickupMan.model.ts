@@ -25,15 +25,19 @@ const pickedProductSchema = new Schema<IPickedProduct>({
     },
     prevQuantity: {
         type: Number,
-        required: [true, 'Order Quantity is required'],
+        required: [true, 'Prev Quantity is required'],
     },
     newQuantity: {
         type: Number,
-        required: [true, 'Out Quantity is required'],
+        required: [true, 'New Quantity is required'],
     },
     quantity: {
         type: Number,
-        required: [true, 'Out Quantity is required'],
+        required: [true, 'Quantity is required'],
+    },
+    price: {
+        type: Number,
+        required: [true, 'Price is required'],
     },
     createdAt: {
         type: String,

@@ -54,11 +54,32 @@ router.get(
     RetailerControllers.getAllRetailerByArea
 );
 
+// get all retailer by area optimize route
+router.get(
+    '/by-area-optimize',
+    auth(
+        USER_ROLES.superAdmin,
+        USER_ROLES.admin,
+        USER_ROLES.sr,
+        USER_ROLES.freelancer,
+        USER_ROLES.packingMan,
+        USER_ROLES.deliveryMan
+    ),
+    RetailerControllers.getAllRetailerByAreaOptimize
+);
+
 // get all retailer for deliveryman route
 router.get(
     '/deliveryman',
     auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.deliveryMan),
     RetailerControllers.getAllRetailerForDeliveryman
+);
+
+// get all retailer for deliveryman optimize route
+router.get(
+    '/deliveryman-optimize',
+    auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.deliveryMan),
+    RetailerControllers.getAllRetailerForDeliverymanOptimize
 );
 
 // get pending retailer for deliveryman route

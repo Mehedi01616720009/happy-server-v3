@@ -27,6 +27,9 @@ const createPickedProductValidationSchema = z.object({
         quantity: z.number({
             required_error: 'Quantity is required',
         }),
+        price: z.number({
+            required_error: 'Price is required',
+        }),
     }),
 });
 
@@ -44,9 +47,8 @@ const assignWarehouseValidationSchema = z.object({
 // create picked product validation
 const updatePickedProductValidationSchema = z.object({
     body: z.object({
-        quantity: z.number({
-            required_error: 'Quantity is required',
-        }),
+        quantity: z.number().optional(),
+        price: z.number().optional(),
     }),
 });
 

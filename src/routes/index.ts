@@ -21,6 +21,7 @@ import { MediaRoutes } from '../modules/media/media.route';
 import { TagRoutes } from '../modules/tag/tag.route';
 import { WarehouseRoutes } from '../modules/warehouse/warehouse.route';
 import { InProductRoutes } from '../modules/inproduct/inproduct.route';
+import { StockRoutes } from '../modules/stock/stock.route';
 
 // route initialization
 const router = Router();
@@ -91,6 +92,10 @@ const routes = [
     {
         path: '/sr',
         route: SrRoutes,
+    },
+    {
+        path: '/stocks',
+        route: StockRoutes,
     },
     {
         path: '/tags',

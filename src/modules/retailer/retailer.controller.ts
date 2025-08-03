@@ -53,11 +53,39 @@ const getAllRetailerByArea = catchAsync(async (req, res) => {
     });
 });
 
+// get all retailer by area optimize controller
+const getAllRetailerByAreaOptimize = catchAsync(async (req, res) => {
+    const result = await RetailerServices.getAllRetailerByAreaOptimizeFromDB(
+        req.query,
+        req.user
+    );
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'All Retailers have been retrieved successfully',
+        data: result,
+    });
+});
+
 // get all retailer for deliveryman controller
 const getAllRetailerForDeliveryman = catchAsync(async (req, res) => {
     const result = await RetailerServices.getAllRetailerForDeliverymanFromDB(
         req.query
     );
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'All Retailers have been retrieved successfully',
+        data: result,
+    });
+});
+
+// get all retailer for deliveryman controller
+const getAllRetailerForDeliverymanOptimize = catchAsync(async (req, res) => {
+    const result =
+        await RetailerServices.getAllRetailerForDeliverymanOptimizeFromDB(
+            req.query
+        );
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -155,7 +183,9 @@ export const RetailerControllers = {
     getAllRetailer,
     getRetailersNearMe,
     getAllRetailerByArea,
+    getAllRetailerByAreaOptimize,
     getAllRetailerForDeliveryman,
+    getAllRetailerForDeliverymanOptimize,
     getInvoicesRetailerForDeliveryman,
     getPendingRetailerForDeliveryman,
     getBakiRetailerForDeliveryman,

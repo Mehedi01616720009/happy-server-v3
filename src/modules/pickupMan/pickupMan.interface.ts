@@ -8,6 +8,7 @@ export interface IPickedProduct {
     prevQuantity: number;
     newQuantity: number;
     quantity: number;
+    price: number;
     createdAt?: string;
     updatedAt?: string;
     insertedDate?: Date;
