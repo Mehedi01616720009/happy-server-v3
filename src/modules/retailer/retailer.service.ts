@@ -192,12 +192,11 @@ const getAllRetailerByAreaFromDB = async (
         {
             $lookup: {
                 from: 'areas',
-                let: { area_id: '$retailerDetails.area' },
+                let: { areaID: '$retailerDetails.area' },
                 pipeline: [
                     {
                         $match: {
-                            $expr: { $eq: ['$_id', '$$area_id'] },
-                            isDeleted: false,
+                            $expr: { $eq: ['$_id', '$$areaID'] },
                         },
                     },
                 ],
@@ -280,22 +279,23 @@ const getAllRetailerByAreaFromDB = async (
     return result;
 };
 
-// get all retailer by area
 const getAllRetailerByAreaOptimizeFromDB = async (
     query: Record<string, unknown>,
     userPayload: JwtPayload
 ) => {
-    let areas = query?.area;
+    const fetchQuery = new QueryBuilder(
+        Union.find().select('id name').sort('name'),
+        query
+    )
+        .filter()
+        .sort()
+        .paginate();
 
-    if (areas === undefined) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Missing area id');
+    const unions = await fetchQuery.modelQuery;
+    const meta = await fetchQuery.countTotal();
+    if (unions.length === 0) {
+        return { result: [], meta };
     }
-
-    if (typeof areas === 'string') {
-        areas = [areas];
-    }
-
-    const areaIds = (areas as string[]).map(id => new Types.ObjectId(id));
 
     const startOfDay = moment().tz(TIMEZONE).startOf('day').format();
     const endOfDay = moment().tz(TIMEZONE).endOf('day').format();
@@ -305,26 +305,42 @@ const getAllRetailerByAreaOptimizeFromDB = async (
         throw new AppError(httpStatus.NOT_FOUND, 'No sr found');
     }
 
-    const retailers = await Retailer.find({ area: { $in: areaIds } })
-        .select('shopName location')
-        .populate('retailer');
-
     const result = await Promise.all(
-        retailers.map(async retailer => {
-            const order = await Order.find({
-                retailer: retailer._id,
-                sr: sr._id,
-                createdAt: {
-                    $gte: startOfDay,
-                    $lte: endOfDay,
-                },
-            }).select('id');
+        unions.map(async union => {
+            const retailers = await Retailer.find({
+                union: union._id,
+            })
+                .select('retailer shopName location')
+                .populate('area');
 
-            const isOrdered = order ? true : false;
+            const retailersData = await Promise.all(
+                retailers.map(async retailer => {
+                    const user = await User.findById(retailer.retailer).select(
+                        'id name profileImg'
+                    );
+
+                    const isOrdered = await Order.find({
+                        area: union._id,
+                        retailer: retailer.retailer,
+                        status: 'Processing',
+                        createdAt: {
+                            $gte: startOfDay,
+                            $lte: endOfDay,
+                        },
+                    }).select('id');
+
+                    return {
+                        ...retailer.toObject(),
+                        retailerDetails: user,
+                        isOrdered: isOrdered ? true : false,
+                    };
+                })
+            );
 
             return {
-                ...retailer.toObject(),
-                isOrdered,
+                ...union.toObject(),
+                retailerCount: retailers.length,
+                retailers: retailersData,
             };
         })
     );
@@ -394,9 +410,7 @@ const getAllRetailerForDeliverymanOptimizeFromDB = async (
 ) => {
     const retailers = await Retailer.find({ union: { $in: query.union } })
         .populate('retailer')
-        .select(
-            'shopName location retailer._id retailer.id retailer.profileImg'
-        );
+        .select('shopName location');
 
     const result = await Promise.all(
         retailers.map(async retailer => {

@@ -5,7 +5,7 @@
     "scripts": {
         "start": "pm2 restart api.v2.happybd.org --update-env",
         "start:prod": "node ./dist/app/server.js",
-        "start:dev": "ts-node-dev.cmd --respawn --transpile-only src/app/server.ts",
+        "start:dev": "ts-node-dev --respawn --transpile-only src/app/server.ts",
         "build": "tsc",
         "lint": "npx eslint src --ignore-pattern .ts",
         "lint:fix": "npx eslint src --fix",
@@ -32,6 +32,7 @@
         "multer": "^1.4.5-lts.1",
         "nodemailer": "^6.9.15",
         "sharp": "^0.33.5",
+        "ts-node-dev": "^2.0.0",
         "zod": "^3.23.8"
     },
     "devDependencies": {

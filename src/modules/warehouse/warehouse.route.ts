@@ -21,6 +21,7 @@ router.get(
     auth(
         USER_ROLES.superAdmin,
         USER_ROLES.admin,
+        USER_ROLES.dealer,
         USER_ROLES.pickupMan,
         USER_ROLES.deliveryMan
     ),
@@ -30,7 +31,12 @@ router.get(
 // get single Warehouse route
 router.get(
     '/:id',
-    auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.pickupMan),
+    auth(
+        USER_ROLES.superAdmin,
+        USER_ROLES.admin,
+        USER_ROLES.dealer,
+        USER_ROLES.pickupMan
+    ),
     WarehouseControllers.getSingleWarehouse
 );
 

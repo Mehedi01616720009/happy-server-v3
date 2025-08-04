@@ -91,6 +91,85 @@ const getAllProductFromDB = async (query: Record<string, unknown>) => {
     return { result, meta };
 };
 
+// get top selling product
+const getTopSellingProductFromDB = async (query: Record<string, unknown>) => {
+    const last7Days = moment().subtract(7, 'days').startOf('day').toDate();
+
+    const matchDealer = query.dealer
+        ? { 'orderInfo.dealer': new Types.ObjectId(query.dealer as string) }
+        : {};
+
+    const topSellingProducts = await OrderDetails.aggregate([
+        {
+            $match: {
+                insertedDate: { $gte: last7Days },
+            },
+        },
+        {
+            $lookup: {
+                from: 'orders',
+                localField: 'order',
+                foreignField: '_id',
+                as: 'orderInfo',
+            },
+        },
+        {
+            $unwind: '$orderInfo',
+        },
+        {
+            $match: {
+                ...matchDealer,
+            },
+        },
+        {
+            $unwind: '$products',
+        },
+        {
+            $match: {
+                'products.isCancelled.isCancelled': { $ne: true },
+            },
+        },
+        {
+            $group: {
+                _id: '$products.product',
+                totalQuantitySold: { $sum: '$products.quantity' },
+                totalAmount: { $sum: '$products.totalAmount' },
+            },
+        },
+        {
+            $sort: { totalQuantitySold: -1 },
+        },
+        {
+            $limit: 10,
+        },
+        {
+            $lookup: {
+                from: 'products',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'product',
+            },
+        },
+        {
+            $unwind: '$product',
+        },
+        {
+            $project: {
+                _id: '$product._id',
+                id: '$product.id',
+                bnName: '$product.bnName',
+                price: '$product.price',
+                dealerCommission: '$product.dealerCommission',
+                packageType: '$product.packageType',
+                quantityPerPackage: '$product.quantityPerPackage',
+                image: '$product.image',
+            },
+        },
+    ]);
+
+    return topSellingProducts;
+};
+
 // get all product with stock
 const getAllProductWithStockFromDB = async (query: Record<string, unknown>) => {
     const { warehouse, ...restQuery } = query;
@@ -403,6 +482,7 @@ const deleteProductIntoDB = async (id: string) => {
 export const ProductServices = {
     createProductIntoDB,
     getAllProductFromDB,
+    getTopSellingProductFromDB,
     getAllProductWithStockFromDB,
     getProductsGroupedBySRsAndOrderedDateFromDB,
     getSingleProductFromDB,

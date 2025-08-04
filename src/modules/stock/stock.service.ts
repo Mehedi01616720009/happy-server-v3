@@ -16,7 +16,7 @@ const getAllProductStockFromDB = async (
     if (!warehouse) {
         throw new AppError(httpStatus.NOT_FOUND, 'No warehouse found');
     }
-    const fetchQuery = new QueryBuilder(Product.find().select('_id'), query)
+    const fetchQuery = new QueryBuilder(Product.find().limit(200), query)
         .filter()
         .sort()
         .paginate()
@@ -24,7 +24,7 @@ const getAllProductStockFromDB = async (
 
     const products = await fetchQuery.modelQuery;
 
-    const result = await Promise.all(
+    const stocks = await Promise.all(
         products.map(async product => {
             const latestStock = await PickedProduct.find({
                 warehouse: warehouse._id,
@@ -39,10 +39,14 @@ const getAllProductStockFromDB = async (
                     stock: latestStock[0],
                 };
             }
+
+            return null;
         })
     );
-    const meta = await fetchQuery.countTotal();
-    return { result, meta };
+
+    const result = stocks.filter(item => item !== null);
+    console.log({ result, stocks });
+    return result;
 };
 
 // get product stock history

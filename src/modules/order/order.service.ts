@@ -1218,6 +1218,9 @@ const getOrderInventoryDetailsFromDB = async (
                 quantityPerPackage: {
                     $first: '$productDetails.quantityPerPackage',
                 },
+                packageType: {
+                    $first: '$productDetails.packageType',
+                },
                 oc: { $sum: '$oc' },
                 totalOut: {
                     $sum: {
@@ -1279,6 +1282,7 @@ const getOrderInventoryDetailsFromDB = async (
                 image: 1,
                 product: 1,
                 quantityPerPackage: 1,
+                packageType: 1,
                 oc: 1,
                 totalOut: 1,
                 totalOutPrice: { $ceil: '$totalOutPrice' },

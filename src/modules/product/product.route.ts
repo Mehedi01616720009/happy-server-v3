@@ -32,6 +32,18 @@ router.get(
     ProductControllers.getAllProduct
 );
 
+// get top selling product route
+router.get(
+    '/top-selling',
+    auth(
+        USER_ROLES.superAdmin,
+        USER_ROLES.admin,
+        USER_ROLES.dealer,
+        USER_ROLES.sr
+    ),
+    ProductControllers.getTopSellingProduct
+);
+
 // get all product route
 router.get(
     '/with-stock',
