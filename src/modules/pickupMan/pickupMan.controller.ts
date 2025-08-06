@@ -87,10 +87,9 @@ const assignWarehouseToPackingman = catchAsync(async (req, res) => {
 
 // update picked product controller
 const updatePickedProduct = catchAsync(async (req, res) => {
-    const { id, warehouseID } = req.params;
+    const { id } = req.params;
     const result = await PickedProductServices.updatePickedProductIntoDB(
         id,
-        warehouseID,
         req.body
     );
     sendResponse(res, {

@@ -30,7 +30,7 @@ const getAllProduct = catchAsync(async (req, res) => {
 
 // get top selling product controller
 const getTopSellingProduct = catchAsync(async (req, res) => {
-    const result = await ProductServices.getAllProductFromDB(req.query);
+    const result = await ProductServices.getTopSellingProductFromDB(req.query);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

@@ -543,7 +543,9 @@ const dispatchOrderIntoDB = async (
 
         const orderDetailsData = await OrderDetails.findOne({
             order: order?._id,
-        }).select('products');
+        })
+            .select('products')
+            .session(session);
 
         const products = orderDetailsData?.products;
 
@@ -557,18 +559,19 @@ const dispatchOrderIntoDB = async (
                         .sort('-insertedDate')
                         .limit(1);
 
-                    if (productStock.length === 0) {
-                        throw new AppError(
-                            httpStatus.NOT_FOUND,
-                            'No product stock found'
+                    if (productStock.length > 0) {
+                        if (productStock[0].quantity < product.quantity) {
+                            throw new AppError(
+                                httpStatus.NOT_FOUND,
+                                'Stock is too low'
+                            );
+                        }
+                        await PickedProduct.findByIdAndUpdate(
+                            productStock[0]._id,
+                            { $inc: { quantity: -product.quantity } },
+                            { session, new: true }
                         );
                     }
-
-                    await PickedProduct.findByIdAndUpdate(
-                        productStock[0]._id,
-                        { $inc: { quantity: -product.quantity } },
-                        { new: true }
-                    );
                 })
             );
         }

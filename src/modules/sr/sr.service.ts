@@ -221,7 +221,7 @@ const getSrDashboardDataFromDB = async (
         {
             $lookup: {
                 from: 'orders',
-                localField: 'orderId',
+                localField: 'order',
                 foreignField: '_id',
                 as: 'order',
             },
@@ -232,12 +232,22 @@ const getSrDashboardDataFromDB = async (
                 'order.sr': new mongoose.Types.ObjectId(id),
                 'order.createdAt': { $gte: startDay, $lte: endDay },
                 'order.status': 'Delivered',
-                'isCancelled.isCancelled': { $ne: true },
+            },
+        },
+        { $unwind: '$products' },
+        {
+            $match: {
+                'products.isCancelled.isCancelled': { $ne: true },
             },
         },
         {
             $project: {
-                oc: { $subtract: ['$dealerTotalAmount', '$srTotalAmount'] },
+                oc: {
+                    $subtract: [
+                        { $ifNull: ['$products.dealerTotalAmount', 0] },
+                        { $ifNull: ['$products.srTotalAmount', 0] },
+                    ],
+                },
             },
         },
         {
@@ -340,7 +350,7 @@ const getSrHomeDataFromDB = async (
         {
             $lookup: {
                 from: 'orders',
-                localField: 'orderId',
+                localField: 'order',
                 foreignField: '_id',
                 as: 'order',
             },
@@ -350,13 +360,23 @@ const getSrHomeDataFromDB = async (
             $match: {
                 'order.sr': user._id,
                 'order.createdAt': { $gte: startDay, $lte: endDay },
-                'order.status': { $in: ['Delivered'] },
-                'isCancelled.isCancelled': { $ne: true },
+                'order.status': 'Delivered',
+            },
+        },
+        { $unwind: '$products' },
+        {
+            $match: {
+                'products.isCancelled.isCancelled': { $ne: true },
             },
         },
         {
             $project: {
-                oc: { $subtract: ['$dealerTotalAmount', '$srTotalAmount'] },
+                oc: {
+                    $subtract: [
+                        { $ifNull: ['$products.dealerTotalAmount', 0] },
+                        { $ifNull: ['$products.srTotalAmount', 0] },
+                    ],
+                },
             },
         },
         {

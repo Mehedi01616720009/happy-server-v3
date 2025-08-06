@@ -217,7 +217,7 @@ const getDealerDashboardDataFromDB = async (
         {
             $lookup: {
                 from: 'orders',
-                localField: 'orderId',
+                localField: 'order',
                 foreignField: '_id',
                 as: 'order',
             },
@@ -226,17 +226,24 @@ const getDealerDashboardDataFromDB = async (
         {
             $match: {
                 'order.dealer': new mongoose.Types.ObjectId(id),
-                'order.createdAt': {
-                    $gte: startDay,
-                    $lte: endDay,
-                },
-                'order.status': { $in: ['Delivered'] },
-                'isCancelled.isCancelled': { $ne: true },
+                'order.createdAt': { $gte: startDay, $lte: endDay },
+                'order.status': 'Delivered',
+            },
+        },
+        { $unwind: '$products' },
+        {
+            $match: {
+                'products.isCancelled.isCancelled': { $ne: true },
             },
         },
         {
             $project: {
-                profit: { $subtract: ['$dealerTotalAmount', '$totalAmount'] },
+                profit: {
+                    $subtract: [
+                        { $ifNull: ['$products.dealerTotalAmount', 0] },
+                        { $ifNull: ['$products.totalAmount', 0] },
+                    ],
+                },
             },
         },
         {
@@ -294,6 +301,115 @@ const getDealerDashboardDataFromDB = async (
     };
 };
 
+// get dealer stock data
+const getDealerStockDataFromDB = async (id: string) => {
+    const user = await User.findOne({ id, isDeleted: false });
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No Dealer Found');
+    }
+
+    const totalSellValue = await Order.aggregate([
+        {
+            $match: {
+                dealer: user._id,
+                status: { $in: ['Delivered', 'Baki'] },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalSellValue: { $sum: '$collectionAmount' },
+            },
+        },
+    ]);
+
+    const totalProfit = await OrderDetails.aggregate([
+        {
+            $lookup: {
+                from: 'orders',
+                localField: 'order',
+                foreignField: '_id',
+                as: 'order',
+            },
+        },
+        { $unwind: '$order' },
+        {
+            $match: {
+                'order.dealer': user._id,
+                'order.status': { $in: ['Delivered', 'Baki'] },
+            },
+        },
+        { $unwind: '$products' },
+        {
+            $match: {
+                'products.isCancelled.isCancelled': { $ne: true },
+            },
+        },
+        {
+            $project: {
+                profit: {
+                    $subtract: [
+                        { $ifNull: ['$products.dealerTotalAmount', 0] },
+                        { $ifNull: ['$products.totalAmount', 0] },
+                    ],
+                },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalProfit: { $sum: '$profit' },
+            },
+        },
+    ]);
+
+    const totalOverCommission = await OrderDetails.aggregate([
+        {
+            $lookup: {
+                from: 'orders',
+                localField: 'order',
+                foreignField: '_id',
+                as: 'order',
+            },
+        },
+        { $unwind: '$order' },
+        {
+            $match: {
+                'order.dealer': user._id,
+                'order.status': { $in: ['Delivered', 'Baki'] },
+            },
+        },
+        { $unwind: '$products' },
+        {
+            $match: {
+                'products.isCancelled.isCancelled': { $ne: true },
+            },
+        },
+        {
+            $project: {
+                overCommission: {
+                    $subtract: [
+                        { $ifNull: ['$products.dealerTotalAmount', 0] },
+                        { $ifNull: ['$products.srTotalAmount', 0] },
+                    ],
+                },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalOverCommission: { $sum: '$overCommission' },
+            },
+        },
+    ]);
+
+    return {
+        totalSellValue: totalSellValue[0]?.totalSellValue || 0,
+        profit: totalProfit[0]?.totalProfit || 0,
+        totalOverCommission: totalOverCommission[0]?.totalOverCommission || 0,
+    };
+};
+
 export const DealerServices = {
     getAllDealerFromDB,
     getAllDealerByUserFromDB,
@@ -302,4 +418,5 @@ export const DealerServices = {
     getSingleDealerWithSrAndProductFromDB,
     assignCompaniesToDealerIntoDB,
     getDealerDashboardDataFromDB,
+    getDealerStockDataFromDB,
 };

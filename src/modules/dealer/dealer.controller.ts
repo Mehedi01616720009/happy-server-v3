@@ -95,6 +95,18 @@ const getDealerDashboardData = catchAsync(async (req, res) => {
     });
 });
 
+// get dealer stock data controller
+const getDealerStockData = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await DealerServices.getDealerStockDataFromDB(id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Dealer stock data has been retrieved successfully',
+        data: result,
+    });
+});
+
 export const DealerControllers = {
     getAllDealer,
     getAllDealerByUser,
@@ -103,4 +115,5 @@ export const DealerControllers = {
     getSingleDealerWithSrAndProduct,
     assignCompaniesToDealer,
     getDealerDashboardData,
+    getDealerStockData,
 };

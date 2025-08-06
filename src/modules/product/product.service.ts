@@ -93,37 +93,22 @@ const getAllProductFromDB = async (query: Record<string, unknown>) => {
 
 // get top selling product
 const getTopSellingProductFromDB = async (query: Record<string, unknown>) => {
-    const last7Days = moment().subtract(7, 'days').startOf('day').toDate();
+    const last7Days = moment().subtract(7, 'days').startOf('day').format();
 
     const matchDealer = query.dealer
         ? { 'orderInfo.dealer': new Types.ObjectId(query.dealer as string) }
         : {};
+    const orders = await Order.find({
+        dealer: query.dealer,
+        createdAt: {
+            $gte: last7Days,
+        },
+    }).select('_id');
+    const orderIDs = orders.map(item => item._id);
 
     const topSellingProducts = await OrderDetails.aggregate([
-        {
-            $match: {
-                insertedDate: { $gte: last7Days },
-            },
-        },
-        {
-            $lookup: {
-                from: 'orders',
-                localField: 'order',
-                foreignField: '_id',
-                as: 'orderInfo',
-            },
-        },
-        {
-            $unwind: '$orderInfo',
-        },
-        {
-            $match: {
-                ...matchDealer,
-            },
-        },
-        {
-            $unwind: '$products',
-        },
+        { $match: { order: { $in: orderIDs } } },
+        { $unwind: '$products' },
         {
             $match: {
                 'products.isCancelled.isCancelled': { $ne: true },
@@ -133,14 +118,13 @@ const getTopSellingProductFromDB = async (query: Record<string, unknown>) => {
             $group: {
                 _id: '$products.product',
                 totalQuantitySold: { $sum: '$products.quantity' },
-                totalAmount: { $sum: '$products.totalAmount' },
             },
         },
         {
             $sort: { totalQuantitySold: -1 },
         },
         {
-            $limit: 10,
+            $limit: 25,
         },
         {
             $lookup: {
@@ -154,20 +138,41 @@ const getTopSellingProductFromDB = async (query: Record<string, unknown>) => {
             $unwind: '$product',
         },
         {
+            $lookup: {
+                from: 'users',
+                localField: 'product.dealer',
+                foreignField: '_id',
+                as: 'dealer',
+            },
+        },
+        {
+            $unwind: '$dealer',
+        },
+        {
             $project: {
                 _id: '$product._id',
                 id: '$product.id',
                 bnName: '$product.bnName',
                 price: '$product.price',
+                dealer: {
+                    _id: '$dealer._id',
+                    id: '$dealer.id',
+                    name: '$dealer.name',
+                    phone: '$dealer.phone',
+                },
                 dealerCommission: '$product.dealerCommission',
                 packageType: '$product.packageType',
                 quantityPerPackage: '$product.quantityPerPackage',
                 image: '$product.image',
+                totalQuantitySold: 1,
             },
         },
     ]);
 
-    return topSellingProducts;
+    return {
+        result: topSellingProducts,
+        meta: { limit: 10, page: 1, totalPage: 1, totalDoc: 10 },
+    };
 };
 
 // get all product with stock

@@ -59,7 +59,7 @@ router.patch(
 
 // update picked product route
 router.patch(
-    '/:id/update/:warehouseID',
+    '/:id/update',
     auth(USER_ROLES.superAdmin, USER_ROLES.admin),
     validateRequest(PickupManValidations.updatePickedProductValidationSchema),
     PickedProductControllers.updatePickedProduct

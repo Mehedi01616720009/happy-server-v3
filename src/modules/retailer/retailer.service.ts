@@ -119,6 +119,7 @@ const getAllRetailerFromDB = async (query: Record<string, unknown>) => {
 const getRetailersNearMeFromDB = async (query: Record<string, unknown>) => {
     const retailers = await Retailer.find({ union: { $in: query.union } })
         .populate('retailer')
+        .populate('union')
         .select('shopName location');
     if (retailers.length === 0) {
         return [];

@@ -34,7 +34,20 @@ const getProductStockHistory = catchAsync(async (req, res) => {
     });
 });
 
+// update product stock controller
+const updateProductStock = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await StockServices.updateProductStockIntoDB(id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Stock history has been updated successfully',
+        data: result,
+    });
+});
+
 export const StockControllers = {
     getAllProductStock,
     getProductStockHistory,
+    updateProductStock,
 };

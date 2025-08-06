@@ -131,40 +131,11 @@ const assignWarehouseToPackingmanIntoDB = async (
 // update picked product
 const updatePickedProductIntoDB = async (
     id: string,
-    warehouseID: string,
-    quantity: number
+    payload: Partial<IPickedProduct>
 ) => {
-    const product = await Product.findOne({ id, isDeleted: false });
-    if (!product) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No product found');
-    }
-
-    const warehouse = await Warehouse.findOne({
-        id: warehouseID,
-        isDeleted: false,
-    });
-    if (!warehouse) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No warehouse found');
-    }
-
-    const pickedProduct = await PickedProduct.find({
-        warehouse: warehouse._id,
-        product: product._id,
-    })
-        .sort('-insertedDate')
-        .limit(1);
-    if (pickedProduct.length === 0) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No pickedProduct found');
-    }
-
-    const pickedProductData = {
-        quantity,
-        updatedAt: moment().tz(TIMEZONE).format(),
-    };
-
     const result = await PickedProduct.findByIdAndUpdate(
-        pickedProduct[0]._id,
-        pickedProductData,
+        new Types.ObjectId(id),
+        payload,
         { new: true }
     );
     return result;

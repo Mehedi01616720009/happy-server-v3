@@ -4,6 +4,7 @@ import { Product } from '../product/product.model';
 import { PickedProduct } from '../pickupMan/pickupMan.model';
 import { Warehouse } from '../warehouse/warehouse.model';
 import AppError from '../../errors/AppError';
+import { Types } from 'mongoose';
 
 // get all product stock
 const getAllProductStockFromDB = async (
@@ -31,18 +32,22 @@ const getAllProductStockFromDB = async (
                 product: product._id,
             })
                 .sort('-insertedDate')
-                .limit(1);
+                .limit(2);
 
             if (latestStock && latestStock.length > 0) {
                 return {
                     product: product.toObject(),
-                    stock: latestStock[0],
+                    stock: latestStock,
                 };
             }
 
             return null;
         })
     );
+
+    /* 
+    stockValue = ((stock[1].price / product.quantityperbox) * stock[0].previousquantity) + ((stock[0].price / product.quantityperbox) * stock[0].newquantity)
+    */
 
     const result = stocks.filter(item => item !== null);
     console.log({ result, stocks });
@@ -82,7 +87,20 @@ const getProductStockHistoryFromDB = async (
     return { result, meta };
 };
 
+const updateProductStockIntoDB = async (
+    id: string,
+    payload: { quantity: number }
+) => {
+    const result = await PickedProduct.findByIdAndUpdate(
+        new Types.ObjectId(id),
+        payload,
+        { new: true }
+    );
+    return result;
+};
+
 export const StockServices = {
     getAllProductStockFromDB,
     getProductStockHistoryFromDB,
+    updateProductStockIntoDB,
 };

@@ -57,4 +57,11 @@ router.get(
     DealerControllers.getDealerDashboardData
 );
 
+// get dealer stock data route
+router.get(
+    '/:id/stock-data',
+    auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.dealer),
+    DealerControllers.getDealerStockData
+);
+
 export const DealerRoutes = router;
