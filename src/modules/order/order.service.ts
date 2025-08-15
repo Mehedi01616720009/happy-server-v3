@@ -1,15 +1,10 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
-import {
-    ICreateOrder,
-    IOrder,
-    IOrderDetails,
-    IOrderDetailsProduct,
-} from './order.interface';
+import { ICreateOrder, IOrder, IOrderDetailsProduct } from './order.interface';
 import generateOrderId from '../../utils/generateOrderId';
 import mongoose, { Types } from 'mongoose';
-import { Order, OrderDetails } from './order.model';
+import { Order } from './order.model';
 import { Product } from '../product/product.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import moment from 'moment-timezone';
@@ -32,7 +27,7 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
         throw new AppError(httpStatus.NOT_FOUND, 'No Union Found');
     }
 
-    const dealer = await User.findById(payload?.dealer);
+    const dealer = await User.findOne({ id: payload?.dealer });
     if (!dealer) {
         throw new AppError(httpStatus.NOT_FOUND, 'No Dealer Found');
     }
@@ -62,7 +57,6 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
         status: payload?.status || 'Processing',
         paymentStatus: payload?.paymentStatus || 'Unpaid',
         collectionAmount: Math.ceil(payload?.collectionAmount),
-        location: payload?.location,
     };
 
     if (!orderData?.sr) {
@@ -72,16 +66,13 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
         delete orderData?.dsr;
     }
     if (orderData?.dsr) {
-        if (orderData.status === 'Baki' && payload?.requestDate) {
+        if (orderData.status === 'Baki') {
             orderData.collectedAmount = Math.ceil(
                 Number(payload?.collectedAmount)
             );
         } else {
             orderData.collectedAmount = Math.ceil(payload?.collectionAmount);
         }
-    }
-    if (!orderData?.location) {
-        delete orderData?.location;
     }
 
     orderData.id = await generateOrderId([
@@ -90,123 +81,192 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
         String(payload?.sr || payload?.dsr),
     ]);
 
-    const orderDetailsData: Partial<IOrderDetails> = {
-        products: await Promise.all(
-            payload?.products.map(async product => {
-                const singleProduct = await Product.findOne({
-                    id: product.product,
-                });
-                if (!singleProduct) {
-                    throw new AppError(
-                        httpStatus.NOT_FOUND,
-                        'No Product Found'
-                    );
-                }
+    const orderDetailsData: IOrderDetailsProduct[] = await Promise.all(
+        payload?.products.map(async product => {
+            const singleProduct = await Product.findOne({
+                id: product.product,
+            });
+            if (!singleProduct) {
+                throw new AppError(httpStatus.NOT_FOUND, 'No Product Found');
+            }
 
-                const orderDetails: IOrderDetailsProduct = {
-                    product: singleProduct?._id,
-                    quantity: product.quantity,
-                    price: Number(product.price.toFixed(2)),
-                    totalAmount: Number(product.totalAmount.toFixed(2)),
-                    dealerPrice: Number(
-                        (
-                            Number(product.price.toFixed(2)) +
-                            Number(
-                                (
-                                    (singleProduct?.dealerCommission *
-                                        product.price) /
-                                    100
-                                ).toFixed(2)
-                            )
-                        ).toFixed(2)
-                    ),
-                    dealerTotalAmount: Number(
-                        (
-                            Number(product.totalAmount.toFixed(2)) +
-                            Number(
-                                (
-                                    (singleProduct?.dealerCommission *
-                                        product.totalAmount) /
-                                    100
-                                ).toFixed(2)
-                            )
-                        ).toFixed(2)
-                    ),
-                    srPrice: Number(product?.srPrice?.toFixed(2)),
-                    srTotalAmount: Number(product?.srTotalAmount?.toFixed(2)),
+            const orderDetails: IOrderDetailsProduct = {
+                product: singleProduct?._id,
+                quantity: product.quantity,
+                price: Number(product.price.toFixed(2)),
+                totalAmount: Number(product.totalAmount.toFixed(2)),
+                dealerPrice: Number(
+                    (
+                        Number(product.price.toFixed(2)) +
+                        Number(
+                            (
+                                (singleProduct?.dealerCommission *
+                                    product.price) /
+                                100
+                            ).toFixed(2)
+                        )
+                    ).toFixed(2)
+                ),
+                dealerTotalAmount: Number(
+                    (
+                        Number(product.totalAmount.toFixed(2)) +
+                        Number(
+                            (
+                                (singleProduct?.dealerCommission *
+                                    product.totalAmount) /
+                                100
+                            ).toFixed(2)
+                        )
+                    ).toFixed(2)
+                ),
+                srPrice: Number(product?.srPrice?.toFixed(2)),
+                srTotalAmount: Number(product?.srTotalAmount?.toFixed(2)),
+            };
+
+            if (orderData?.sr) {
+                orderDetails.summary = {
+                    orderedQuantity: product.quantity,
+                    soldQuantity: 0,
                 };
+            }
+            if (orderData?.dsr) {
+                orderDetails.summary = {
+                    orderedQuantity: product.quantity,
+                    soldQuantity: product.quantity,
+                };
+            }
 
-                if (orderData?.sr) {
-                    orderDetails.inventory = {
-                        out: product.quantity,
-                        sale: 0,
-                        in: 0,
-                    };
-                }
-                if (orderData?.dsr) {
-                    orderDetails.inventory = {
-                        out: 0,
-                        sale: product.quantity,
-                        in: -product.quantity,
-                    };
-                }
+            return orderDetails;
+        })
+    );
 
-                return orderDetails;
-            })
-        ),
+    orderData.products = orderDetailsData;
+
+    const result = await Order.create(orderData);
+    return result;
+};
+
+// create ready order
+const createReadyOrderIntoDB = async (payload: ICreateOrder) => {
+    const retailer = await User.findOne({ id: payload?.retailer });
+    if (!retailer) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No Retailer Found');
+    }
+
+    const union = await Union.findOne({ id: payload?.area });
+    if (!union) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No Union Found');
+    }
+
+    const dealer = await User.findOne({ id: payload?.dealer });
+    if (!dealer) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No Dealer Found');
+    }
+
+    let sr = null;
+    let dsr = null;
+    if (payload?.sr) {
+        sr = await User.findOne({ id: payload?.sr });
+        if (!sr) {
+            throw new AppError(httpStatus.NOT_FOUND, 'No SR Found');
+        }
+    }
+
+    if (payload?.dsr) {
+        dsr = await User.findOne({ id: payload?.dsr });
+        if (!dsr) {
+            throw new AppError(httpStatus.NOT_FOUND, 'No DSR Found');
+        }
+    }
+
+    const orderData: Partial<IOrder> = {
+        retailer: retailer?._id,
+        area: union?._id,
+        dealer: dealer?._id,
+        sr: sr?._id,
+        dsr: dsr?._id,
+        status: payload?.status || 'Processing',
+        paymentStatus: payload?.paymentStatus || 'Unpaid',
+        collectionAmount: Math.ceil(payload?.collectionAmount),
     };
 
-    const session = await mongoose.startSession();
-
-    try {
-        session.startTransaction();
-
-        const createdOrder = await Order.create([orderData], { session });
-        orderDetailsData.order = createdOrder[0]?._id;
-
-        await OrderDetails.findOneAndUpdate(
-            { order: createdOrder[0]?._id },
-            orderDetailsData,
-            { session, upsert: true, new: true }
-        );
-
-        if (orderData.status === 'Baki') {
-            await CustomerCareData.findOneAndUpdate(
-                { order: createdOrder[0]?._id },
-                {
-                    order: createdOrder[0]?._id,
-                    retailer: orderData.retailer,
-                    dsr: orderData.dsr,
-                    requestType: 'Baki',
-                    status: 'Interest',
-                    requestDate: moment
-                        .tz(payload?.requestDate, TIMEZONE)
-                        .startOf('day')
-                        .format(),
-                },
-                { session, upsert: true, new: true }
-            );
-        }
-
-        await session.commitTransaction();
-        await session.endSession();
-
-        const result = OrderDetails.findOne({
-            order: createdOrder[0]?._id,
-        })
-            .populate('order')
-            .populate('products.product');
-
-        return result;
-    } catch (err) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'Mongoose transaction failed',
-            err as string
-        );
+    if (!orderData?.sr) {
+        delete orderData?.sr;
     }
+    if (!orderData?.dsr) {
+        delete orderData?.dsr;
+    }
+    if (orderData?.dsr) {
+        if (orderData.status === 'Baki') {
+            orderData.collectedAmount = Math.ceil(
+                Number(payload?.collectedAmount)
+            );
+        } else {
+            orderData.collectedAmount = Math.ceil(payload?.collectionAmount);
+        }
+    }
+
+    orderData.id = await generateOrderId([
+        String(payload?.retailer),
+        String(dealer.id),
+        'admin-ready-sell',
+    ]);
+
+    const orderDetailsData: IOrderDetailsProduct[] = await Promise.all(
+        payload?.products.map(async product => {
+            const singleProduct = await Product.findOne({
+                id: product.product,
+            });
+            if (!singleProduct) {
+                throw new AppError(httpStatus.NOT_FOUND, 'No Product Found');
+            }
+
+            const orderDetails: IOrderDetailsProduct = {
+                product: singleProduct?._id,
+                quantity: product.quantity,
+                price: Number(product.price.toFixed(2)),
+                totalAmount: Number(product.totalAmount.toFixed(2)),
+                dealerPrice: Number(
+                    (
+                        Number(product.price.toFixed(2)) +
+                        Number(
+                            (
+                                (singleProduct?.dealerCommission *
+                                    product.price) /
+                                100
+                            ).toFixed(2)
+                        )
+                    ).toFixed(2)
+                ),
+                dealerTotalAmount: Number(
+                    (
+                        Number(product.totalAmount.toFixed(2)) +
+                        Number(
+                            (
+                                (singleProduct?.dealerCommission *
+                                    product.totalAmount) /
+                                100
+                            ).toFixed(2)
+                        )
+                    ).toFixed(2)
+                ),
+                srPrice: Number(product?.srPrice?.toFixed(2)),
+                srTotalAmount: Number(product?.srTotalAmount?.toFixed(2)),
+            };
+
+            orderDetails.summary = {
+                orderedQuantity: product.quantity,
+                soldQuantity: product.quantity,
+            };
+
+            return orderDetails;
+        })
+    );
+
+    orderData.products = orderDetailsData;
+
+    const result = await Order.create(orderData);
+    return result;
 };
 
 // get all order
@@ -218,26 +278,11 @@ const getAllOrderFromDB = async (query: Record<string, unknown>) => {
             .populate('dealer')
             .populate('dsr')
             .populate('packingman')
-            .populate('sr'),
+            .populate('sr')
+            .populate('products.product'),
         query
     )
-        .search(['id'])
-        .filter()
-        .sort()
-        .paginate()
-        .fields();
-
-    const result = await fetchQuery.modelQuery;
-    const meta = await fetchQuery.countTotal();
-    return { result, meta };
-};
-
-// get all order details
-const getAllOrderDetailsFromDB = async (query: Record<string, unknown>) => {
-    const fetchQuery = new QueryBuilder(
-        OrderDetails.find().populate('order').populate('products.product'),
-        query
-    )
+        .search(['id', 'retailer.name', 'retailer.phone'])
         .filter()
         .sort()
         .paginate()
@@ -250,20 +295,15 @@ const getAllOrderDetailsFromDB = async (query: Record<string, unknown>) => {
 
 // get single order
 const getSingleOrderFromDB = async (id: string) => {
-    const order = await Order.findOne({ id })
+    const result = await Order.findOne({ id })
         .populate('retailer')
         .populate('area')
         .populate('dealer')
         .populate('dsr')
         .populate('packingman')
-        .populate('sr');
-    if (!order) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
-    const result = await OrderDetails.findOne({ order: order._id }).populate(
-        'products.product'
-    );
-    return { order, products: result?.products };
+        .populate('sr')
+        .populate('products.product');
+    return result;
 };
 
 // update order product
@@ -283,319 +323,183 @@ const updateOrderProductIntoDB = async (
     }
     const product_id = product._id;
 
-    const orderDetails = await OrderDetails.findOne({ order: order._id });
-    if (!orderDetails) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No order details found');
-    }
-
-    const productIndex = orderDetails?.products.findIndex(
+    const productIndex = order?.products.findIndex(
         product => product.product.toString() === product_id.toString()
     );
     if (productIndex === -1) {
         throw new AppError(httpStatus.NOT_FOUND, 'Product not found in order');
     }
 
-    const currentProduct = orderDetails?.products[productIndex as number];
-    const previousQuantity = currentProduct?.quantity;
+    const currentProduct = order?.products[productIndex as number];
+    // const previousQuantity = currentProduct?.quantity;
 
-    const session = await mongoose.startSession();
-
-    try {
-        session.startTransaction();
-
-        await OrderDetails.findOneAndUpdate(
-            { order: order?._id },
-            {
-                $set: {
-                    'products.$[product].quantity': payload?.quantity,
-                    'products.$[product].totalAmount': Number(
-                        (
-                            (currentProduct.price /
-                                product.quantityPerPackage) *
-                            payload.quantity
-                        ).toFixed(2)
-                    ),
-                    'products.$[product].dealerTotalAmount': Number(
-                        (
-                            (Number(currentProduct.dealerPrice) /
-                                product.quantityPerPackage) *
-                            payload.quantity
-                        ).toFixed(2)
-                    ),
-                    'products.$[product].srTotalAmount': Number(
-                        (
-                            (Number(currentProduct.srPrice) /
-                                product.quantityPerPackage) *
-                            payload.quantity
-                        ).toFixed(2)
-                    ),
-                    'products.$[product].isEdited': {
-                        isEdited: true,
-                        previousQuantity,
-                    },
-                },
+    await Order.findByIdAndUpdate(
+        order?._id,
+        {
+            $set: {
+                'products.$[product].quantity': payload?.quantity,
+                'products.$[product].totalAmount': Number(
+                    (
+                        (currentProduct.price / product.quantityPerPackage) *
+                        payload.quantity
+                    ).toFixed(2)
+                ),
+                'products.$[product].dealerTotalAmount': Number(
+                    (
+                        (Number(currentProduct.dealerPrice) /
+                            product.quantityPerPackage) *
+                        payload.quantity
+                    ).toFixed(2)
+                ),
+                'products.$[product].srTotalAmount': Number(
+                    (
+                        (Number(currentProduct.srPrice) /
+                            product.quantityPerPackage) *
+                        payload.quantity
+                    ).toFixed(2)
+                ),
             },
-            {
-                session,
-                arrayFilters: [{ 'product.product': product._id }],
-            }
-        );
-
-        await session.commitTransaction();
-        await session.endSession();
-
-        const result = OrderDetails.findOne({
-            order: order?._id,
-        })
-            .populate('order')
-            .populate('products.product');
-
-        return result;
-    } catch (err) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'Mongoose transaction failed',
-            err as string
-        );
-    }
-};
-
-// cancel order product
-const cancelOrderProductIntoDB = async (
-    id: string,
-    productId: string,
-    payload: { cancelledReason: string }
-) => {
-    const order = await Order.findOne({ id });
-    if (!order) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
-
-    const product = await Product.findOne({ id: productId });
-    if (!product) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No product Found');
-    }
-    const product_id = product._id;
-
-    const orderDetails = await OrderDetails.findOne({ order: order._id });
-    if (!orderDetails) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No order details found');
-    }
-
-    const productIndex = orderDetails?.products.findIndex(
-        product => product.product.toString() === product_id.toString()
+        },
+        { arrayFilters: [{ 'product.product': product._id }] }
     );
-    if (productIndex === -1) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Product not found in order');
-    }
 
-    const differencePieces =
-        orderDetails?.products[productIndex as number].quantity;
+    const result = Order.findById(order?._id).populate('products.product');
 
-    const session = await mongoose.startSession();
-
-    try {
-        session.startTransaction();
-
-        await OrderDetails.findOneAndUpdate(
-            { order: order?._id },
-            {
-                $set: {
-                    'products.$[product].isCancelled': {
-                        isCancelled: true,
-                        cancelledTime: moment().tz(TIMEZONE).format(),
-                        cancelledReason: payload.cancelledReason,
-                    },
-                    'products.$[product].totalAmount': 0,
-                    'products.$[product].dealerTotalAmount': 0,
-                    'products.$[product].srTotalAmount': 0,
-                    'products.$[product].inventory.in': differencePieces,
-                    'products.$[product].inventory.sale': 0,
-                },
-            },
-            {
-                session,
-                arrayFilters: [{ 'product.product': product._id }],
-            }
-        );
-
-        const orderDetailsForPrices = await OrderDetails.findOne({
-            order: order?._id,
-        }).session(session);
-
-        const collectionAmount = (
-            orderDetailsForPrices as IOrderDetails
-        ).products.reduce(
-            (acc, product) => (acc += Number(product.srTotalAmount)),
-            0
-        );
-
-        await Order.findByIdAndUpdate(
-            order?._id,
-            {
-                collectionAmount: Math.ceil(collectionAmount),
-                updatedAt: moment().tz(TIMEZONE).format(),
-            },
-            { session }
-        );
-
-        await session.commitTransaction();
-        await session.endSession();
-
-        const result = OrderDetails.findOne({
-            order: order?._id,
-        })
-            .populate('order')
-            .populate('products.product');
-
-        return result;
-    } catch (err) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'Mongoose transaction failed',
-            err as string
-        );
-    }
+    return result;
 };
 
 // dispatch order
-const dispatchOrderIntoDB = async (
-    id: string,
-    payload: { basket: string },
-    userPayload: JwtPayload
-) => {
-    const order = await Order.findOne({ id });
-    if (!order) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
+// const dispatchOrderIntoDB = async (
+//     id: string,
+//     payload: {
+//         basket: string;
+//         products: { product: string; quantity: number }[];
+//     },
+//     userPayload: JwtPayload
+// ) => {
+//     const order = await Order.findOne({ id });
+//     if (!order) {
+//         throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
+//     }
 
-    const orderDetails = await OrderDetails.findOne({ order: order._id });
-    if (!orderDetails) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
+//     const packingman = await User.findOne({ id: userPayload.userId });
+//     if (!packingman) {
+//         throw new AppError(httpStatus.NOT_FOUND, 'No packingman Found');
+//     }
 
-    const packingman = await User.findOne({ id: userPayload.userId });
-    if (!packingman) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No packingman Found');
-    }
+//     const packingmanData = await Packingman.findOne({
+//         packingman: packingman._id,
+//     });
+//     if (!packingmanData) {
+//         throw new AppError(httpStatus.NOT_FOUND, 'No packingman Found');
+//     }
 
-    const packingmanData = await Packingman.findOne({
-        packingman: packingman._id,
-    });
-    if (!packingmanData) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No packingman Found');
-    }
+//     const collectionAmount = order.products.reduce(
+//         (acc, product) => (acc += Number(product.srTotalAmount)),
+//         0
+//     );
 
-    const collectionAmount = orderDetails.products.reduce(
-        (acc, product) => (acc += Number(product.srTotalAmount)),
-        0
-    );
+//     const session = await mongoose.startSession();
 
-    const session = await mongoose.startSession();
+//     try {
+//         session.startTransaction();
 
-    try {
-        session.startTransaction();
+//         await Order.findByIdAndUpdate(
+//             order?._id,
+//             {
+//                 packingman: packingman._id,
+//                 basket: payload.basket,
+//                 collectionAmount: Math.ceil(collectionAmount),
+//                 status: 'Dispatched',
+//                 updatedAt: moment().tz(TIMEZONE).format(),
+//             },
+//             { session }
+//         );
 
-        await Order.findByIdAndUpdate(
-            order?._id,
-            {
-                packingman: packingman._id,
-                basket: payload.basket,
-                collectionAmount: Math.ceil(collectionAmount),
-                status: 'Dispatched',
-                updatedAt: moment().tz(TIMEZONE).format(),
-            },
-            { session }
-        );
+//         await OrderDetails.findOneAndUpdate(
+//             { order: order?._id },
+//             [
+//                 {
+//                     $set: {
+//                         products: {
+//                             $map: {
+//                                 input: '$products',
+//                                 as: 'product',
+//                                 in: {
+//                                     $mergeObjects: [
+//                                         '$$product',
+//                                         {
+//                                             inventory: {
+//                                                 out: '$$product.quantity',
+//                                                 sale: 0,
+//                                                 in: 0,
+//                                             },
+//                                         },
+//                                     ],
+//                                 },
+//                             },
+//                         },
+//                     },
+//                 },
+//             ],
+//             { session }
+//         );
 
-        await OrderDetails.findOneAndUpdate(
-            { order: order?._id },
-            [
-                {
-                    $set: {
-                        products: {
-                            $map: {
-                                input: '$products',
-                                as: 'product',
-                                in: {
-                                    $mergeObjects: [
-                                        '$$product',
-                                        {
-                                            inventory: {
-                                                out: '$$product.quantity',
-                                                sale: 0,
-                                                in: 0,
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    },
-                },
-            ],
-            { session }
-        );
+//         const orderDetailsData = await OrderDetails.findOne({
+//             order: order?._id,
+//         })
+//             .select('products')
+//             .session(session);
 
-        const orderDetailsData = await OrderDetails.findOne({
-            order: order?._id,
-        })
-            .select('products')
-            .session(session);
+//         const products = orderDetailsData?.products;
 
-        const products = orderDetailsData?.products;
+//         if (products) {
+//             await Promise.all(
+//                 products.map(async product => {
+//                     const productStock = await PickedProduct.find({
+//                         warehouse: packingmanData.warehouse,
+//                         product: product.product,
+//                     })
+//                         .sort('-insertedDate')
+//                         .limit(1);
 
-        if (products) {
-            await Promise.all(
-                products.map(async product => {
-                    const productStock = await PickedProduct.find({
-                        warehouse: packingmanData.warehouse,
-                        product: product.product,
-                    })
-                        .sort('-insertedDate')
-                        .limit(1);
+//                     if (productStock.length > 0) {
+//                         if (productStock[0].quantity < product.quantity) {
+//                             throw new AppError(
+//                                 httpStatus.NOT_FOUND,
+//                                 'Stock is too low'
+//                             );
+//                         }
+//                         await PickedProduct.findByIdAndUpdate(
+//                             productStock[0]._id,
+//                             { $inc: { quantity: -product.quantity } },
+//                             { session, new: true }
+//                         );
+//                     }
+//                 })
+//             );
+//         }
 
-                    if (productStock.length > 0) {
-                        if (productStock[0].quantity < product.quantity) {
-                            throw new AppError(
-                                httpStatus.NOT_FOUND,
-                                'Stock is too low'
-                            );
-                        }
-                        await PickedProduct.findByIdAndUpdate(
-                            productStock[0]._id,
-                            { $inc: { quantity: -product.quantity } },
-                            { session, new: true }
-                        );
-                    }
-                })
-            );
-        }
+//         await session.commitTransaction();
+//         await session.endSession();
 
-        await session.commitTransaction();
-        await session.endSession();
+//         const result = OrderDetails.findOne({
+//             order: order?._id,
+//         })
+//             .populate('order')
+//             .populate('products.product');
 
-        const result = OrderDetails.findOne({
-            order: order?._id,
-        })
-            .populate('order')
-            .populate('products.product');
-
-        return result;
-    } catch (err) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'Mongoose transaction failed',
-            err as string
-        );
-    }
-};
+//         return result;
+//     } catch (err) {
+//         await session.abortTransaction();
+//         await session.endSession();
+//         throw new AppError(
+//             httpStatus.BAD_REQUEST,
+//             'Mongoose transaction failed',
+//             err as string
+//         );
+//     }
+// };
 
 // cancel order
 const cancelOrderIntoDB = async (
@@ -611,11 +515,6 @@ const cancelOrderIntoDB = async (
     const user = await User.findOne({ id: userPayload.userId });
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, 'No Dsr Found');
-    }
-
-    const orderDetails = await OrderDetails.findOne({ order: order._id });
-    if (!orderDetails) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No order details found');
     }
 
     const session = await mongoose.startSession();
@@ -635,7 +534,7 @@ const cancelOrderIntoDB = async (
             { session, new: true }
         );
 
-        for (const productDetails of orderDetails.products) {
+        for (const productDetails of order.products) {
             const productId = productDetails.product;
 
             // Clone inventory.out to inventory.in
@@ -663,123 +562,6 @@ const cancelOrderIntoDB = async (
 
         await session.commitTransaction();
         await session.endSession();
-
-        return result;
-    } catch (err) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'Mongoose transaction failed',
-            err as string
-        );
-    }
-};
-
-// update order product by deliveryman
-const updateOrderProductByDeliverymanIntoDB = async (
-    id: string,
-    productId: string,
-    payload: { quantity: number }
-) => {
-    const order = await Order.findOne({ id });
-    if (!order) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
-
-    const product = await Product.findOne({ id: productId });
-    if (!product) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No product Found');
-    }
-    const product_id = product._id;
-
-    const orderDetails = await OrderDetails.findOne({ order: order._id });
-    if (!orderDetails) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No order details found');
-    }
-
-    const productIndex = orderDetails?.products.findIndex(
-        product => product.product.toString() === product_id.toString()
-    );
-    if (productIndex === -1) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Product not found in order');
-    }
-
-    const currentProduct = orderDetails?.products[productIndex as number];
-    const previousQuantity = currentProduct?.quantity;
-
-    const session = await mongoose.startSession();
-
-    try {
-        session.startTransaction();
-
-        await OrderDetails.findOneAndUpdate(
-            { order: order?._id },
-            {
-                $set: {
-                    'products.$[product].quantity': payload?.quantity,
-                    'products.$[product].inventory.sale': payload?.quantity,
-                    'products.$[product].totalAmount': Number(
-                        (
-                            (currentProduct.price /
-                                product.quantityPerPackage) *
-                            payload.quantity
-                        ).toFixed(2)
-                    ),
-                    'products.$[product].dealerTotalAmount': Number(
-                        (
-                            (Number(currentProduct.dealerPrice) /
-                                product.quantityPerPackage) *
-                            payload.quantity
-                        ).toFixed(2)
-                    ),
-                    'products.$[product].srTotalAmount': Number(
-                        (
-                            (Number(currentProduct.srPrice) /
-                                product.quantityPerPackage) *
-                            payload.quantity
-                        ).toFixed(2)
-                    ),
-                },
-                $inc: {
-                    'products.$[product].inventory.in':
-                        previousQuantity - payload?.quantity,
-                },
-            },
-            {
-                session,
-                arrayFilters: [{ 'product.product': product._id }],
-            }
-        );
-
-        const orderDetailsForPrices = await OrderDetails.findOne({
-            order: order?._id,
-        }).session(session);
-
-        const collectionAmount = (
-            orderDetailsForPrices as IOrderDetails
-        ).products.reduce(
-            (acc, product) => (acc += Number(product.srTotalAmount)),
-            0
-        );
-
-        await Order.findByIdAndUpdate(
-            order?._id,
-            {
-                collectionAmount: Math.ceil(collectionAmount),
-                updatedAt: moment().tz(TIMEZONE).format(),
-            },
-            { session }
-        );
-
-        await session.commitTransaction();
-        await session.endSession();
-
-        const result = OrderDetails.findOne({
-            order: order?._id,
-        })
-            .populate('order')
-            .populate('products.product');
 
         return result;
     } catch (err) {
@@ -941,6 +723,7 @@ const deliverOrderIntoDB = async (
                 dsr: user._id,
                 status: payload.status,
                 $inc: { collectedAmount: payload.collectedAmount },
+                updatedAt: moment().tz(TIMEZONE).format(),
             },
             { session, new: true }
         );
@@ -1530,14 +1313,12 @@ const deleteManyOrderFromDB = async (payload: { id: string[] }) => {
 
 export const OrderServices = {
     createOrderIntoDB,
+    createReadyOrderIntoDB,
     getAllOrderFromDB,
-    getAllOrderDetailsFromDB,
     getSingleOrderFromDB,
     updateOrderProductIntoDB,
-    cancelOrderProductIntoDB,
-    dispatchOrderIntoDB,
+    // dispatchOrderIntoDB,
     cancelOrderIntoDB,
-    updateOrderProductByDeliverymanIntoDB,
     updateOrderProductBySrIntoDB,
     deliverOrderIntoDB,
     getOrderInventoryFromDB,

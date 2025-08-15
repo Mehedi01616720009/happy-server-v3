@@ -9,6 +9,7 @@ import { Product } from '../product/product.model';
 import { Order, OrderDetails } from '../order/order.model';
 import moment from 'moment-timezone';
 import { TIMEZONE } from '../../constant';
+import { Damage } from '../damage/damage.model';
 
 // get all dealer
 const getAllDealerFromDB = async (query: Record<string, unknown>) => {
@@ -308,6 +309,20 @@ const getDealerStockDataFromDB = async (id: string) => {
         throw new AppError(httpStatus.NOT_FOUND, 'No Dealer Found');
     }
 
+    const totalDamage = await Damage.aggregate([
+        {
+            $match: {
+                dealer: user._id,
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalDamage: { $sum: '$amount' },
+            },
+        },
+    ]);
+
     const totalSellValue = await Order.aggregate([
         {
             $match: {
@@ -389,8 +404,8 @@ const getDealerStockDataFromDB = async (id: string) => {
             $project: {
                 overCommission: {
                     $subtract: [
-                        { $ifNull: ['$products.dealerTotalAmount', 0] },
                         { $ifNull: ['$products.srTotalAmount', 0] },
+                        { $ifNull: ['$products.dealerTotalAmount', 0] },
                     ],
                 },
             },
@@ -407,6 +422,7 @@ const getDealerStockDataFromDB = async (id: string) => {
         totalSellValue: totalSellValue[0]?.totalSellValue || 0,
         profit: totalProfit[0]?.totalProfit || 0,
         totalOverCommission: totalOverCommission[0]?.totalOverCommission || 0,
+        totalDamage: totalDamage[0]?.totalDamage || 0,
     };
 };
 

@@ -14,20 +14,20 @@ const createOrder = catchAsync(async (req, res) => {
     });
 });
 
-// get all order controller
-const getAllOrder = catchAsync(async (req, res) => {
-    const result = await OrderServices.getAllOrderFromDB(req.query);
+// create ready order controller
+const createReadyOrder = catchAsync(async (req, res) => {
+    const result = await OrderServices.createReadyOrderIntoDB(req.body);
     sendResponse(res, {
-        statusCode: httpStatus.OK,
+        statusCode: httpStatus.CREATED,
         success: true,
-        message: 'All Order have been retrieved successfully',
+        message: 'Order has been created successfully',
         data: result,
     });
 });
 
-// get all order details controller
-const getAllOrderDetails = catchAsync(async (req, res) => {
-    const result = await OrderServices.getAllOrderDetailsFromDB(req.query);
+// get all order controller
+const getAllOrder = catchAsync(async (req, res) => {
+    const result = await OrderServices.getAllOrderFromDB(req.query);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -64,53 +64,21 @@ const updateOrderProduct = catchAsync(async (req, res) => {
     });
 });
 
-// cancel order product controller
-const cancelOrderProduct = catchAsync(async (req, res) => {
-    const { id, productId } = req.params;
-    const result = await OrderServices.cancelOrderProductIntoDB(
-        id,
-        productId,
-        req.body
-    );
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Order Product has been cancelled successfully',
-        data: result,
-    });
-});
-
 // dispatch order controller
-const dispatchOrder = catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const result = await OrderServices.dispatchOrderIntoDB(
-        id,
-        req.body,
-        req.user
-    );
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Order has been dispatched successfully',
-        data: result,
-    });
-});
-
-// update order product by deliveryman controller
-const updateOrderProductByDeliveryman = catchAsync(async (req, res) => {
-    const { id, productId } = req.params;
-    const result = await OrderServices.updateOrderProductByDeliverymanIntoDB(
-        id,
-        productId,
-        req.body
-    );
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Order Product has been updated successfully',
-        data: result,
-    });
-});
+// const dispatchOrder = catchAsync(async (req, res) => {
+//     const { id } = req.params;
+//     const result = await OrderServices.dispatchOrderIntoDB(
+//         id,
+//         req.body,
+//         req.user
+//     );
+//     sendResponse(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message: 'Order has been dispatched successfully',
+//         data: result,
+//     });
+// });
 
 // update order product by sr controller
 const updateOrderProductBySr = catchAsync(async (req, res) => {
@@ -242,14 +210,12 @@ const deleteManyOrder = catchAsync(async (req, res) => {
 
 export const OrderController = {
     createOrder,
+    createReadyOrder,
     getAllOrder,
-    getAllOrderDetails,
     getSingleOrder,
     updateOrderProduct,
-    cancelOrderProduct,
-    dispatchOrder,
+    // dispatchOrder,
     cancelOrder,
-    updateOrderProductByDeliveryman,
     updateOrderProductBySr,
     deliverOrder,
     getOrderInventory,

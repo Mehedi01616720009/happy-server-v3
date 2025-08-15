@@ -1,0 +1,97 @@
+# API Documentation
+
+This document provides documentation for the available API endpoints.
+
+## Product API
+
+### Get Products Grouped by SR and Status Dispatched
+
+-   **URL:** `/products/group-by-sr-status-dispatched`
+-   **Method:** `GET`
+-   **Description:** Retrieves products grouped by SR and ordered date, filtered by dispatched status.
+-   **Authentication:** Required. User must have the `packingMan` role.
+-   **Headers:**
+    -   `Authorization`: `Bearer <token>`
+-   **Success Response:**
+    -   **Code:** 200 OK
+    -   **Content:**
+        ```json
+        {
+            "success": true,
+            "message": "Products retrieved successfully",
+            "data": [
+                {
+                    "_id": "60d5f2b4a6d2f1a2b8c0e1a2",
+                    "name": "Product Name",
+                    "orderedQuantity": 10,
+                    "packedQuantity": 8,
+                    "soldQuantity": 5,
+                    "stock": 100
+                }
+                // more...
+            ]
+        }
+        ```
+-   **Error Response:**
+    -   **Code:** 401 Unauthorized
+    -   **Content:**
+        ```json
+        {
+            "success": false,
+            "message": "You are not authorized!"
+        }
+        ```
+
+## DSR API
+
+### Assign Data to DSR
+
+-   **URL:** `/dsr/:id/assign-data`
+-   **Method:** `PUT`
+-   **Description:** Assigns data to a specific DSR.
+-   **Authentication:** Required. User must have `superAdmin` or `admin` role.
+-   **Headers:**
+    -   `Authorization`: `Bearer <token>`
+-   **URL Params:**
+    -   `id=[string]` (DSR ID)
+-   **Request Body:**
+    ```json
+    {
+        "upazilas": ["60d5f2b4a6d2f1a2b8c0e1a3", "60d5f2b4a6d2f1a2b8c0e1a4"], // optional
+        "sr": ["60d5f2b4a6d2f1a2b8c0e1a5"] // optional
+    }
+    ```
+-   **Success Response:**
+    -   **Code:** 200 OK
+    -   **Content:**
+        ```json
+        {
+            "success": true,
+            "message": "Data assigned to DSR successfully",
+            "data": {
+                "dsr": "60d5f2b4a6d2f1a2b8c0e1a1",
+                "upazilas": [
+                    "60d5f2b4a6d2f1a2b8c0e1a3",
+                    "60d5f2b4a6d2f1a2b8c0e1a4"
+                ],
+                "sr": ["60d5f2b4a6d2f1a2b8c0e1a5"]
+            }
+        }
+        ```
+-   **Error Response:**
+    -   **Code:** 401 Unauthorized
+    -   **Content:**
+        ```json
+        {
+            "success": false,
+            "message": "You are not authorized!"
+        }
+        ```
+    -   **Code:** 404 Not Found
+    -   **Content:**
+        ```json
+        {
+            "success": false,
+            "message": "DSR not found"
+        }
+        ```

@@ -68,6 +68,23 @@ const getProductsGroupedBySRsAndOrderedDate = catchAsync(async (req, res) => {
     });
 });
 
+// get products group by sr and status dispatched controller
+const getProductsGroupedBySRsAndStatusDispatched = catchAsync(
+    async (req, res) => {
+        const result =
+            await ProductServices.getProductsGroupedBySRsAndStatusDispatchedFromDB(
+                req.query,
+                req.user
+            );
+        sendResponse(res, {
+            statusCode: httpStatus.OK,
+            success: true,
+            message: 'All Products have been retrieved successfully',
+            data: result,
+        });
+    }
+);
+
 // get single product controller
 const getSingleProduct = catchAsync(async (req, res) => {
     const { id } = req.params;
@@ -125,6 +142,7 @@ export const ProductControllers = {
     getTopSellingProduct,
     getAllProductWithStock,
     getProductsGroupedBySRsAndOrderedDate,
+    getProductsGroupedBySRsAndStatusDispatched,
     getSingleProduct,
     updateProduct,
     updateProductImage,

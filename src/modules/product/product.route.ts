@@ -66,6 +66,13 @@ router.get(
     ProductControllers.getProductsGroupedBySRsAndOrderedDate
 );
 
+// get products group by sr and status dispatched route
+router.get(
+    '/group-by-sr-status-dispatched',
+    auth(USER_ROLES.packingMan),
+    ProductControllers.getProductsGroupedBySRsAndOrderedDate
+);
+
 // get single product route
 router.get(
     '/:id',

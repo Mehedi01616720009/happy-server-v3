@@ -13,7 +13,7 @@ import { CustomerCareData } from '../customerCare/customerCare.model';
 // get all dsr
 const getAllDsrFromDB = async (query: Record<string, unknown>) => {
     const fetchQuery = new QueryBuilder(
-        Dsr.find().populate('dsr').populate('upazilas'),
+        Dsr.find().populate('dsr').populate('upazilas').populate('sr'),
         query
     )
         .filter()
@@ -35,24 +35,22 @@ const getSingleDsrFromDB = async (id: string) => {
 
     const result = Dsr.findOne({ dsr: user._id })
         .populate('dsr')
-        .populate('upazilas');
+        .populate('upazilas')
+        .populate('sr');
     return result;
 };
 
-// assign upazilas to dsr
-const assignUpazilasToDsrIntoDB = async (
+// assign data to dsr
+const assignDataToDsrIntoDB = async (
     id: string,
-    payload: { upazilas: Types.ObjectId[] }
+    payload: { upazilas?: Types.ObjectId[]; sr?: Types.ObjectId[] }
 ) => {
     const user = await User.findOne({ id, status: 'Active', isDeleted: false });
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, 'No Freelancer Found');
     }
 
-    const dsrInfoData: {
-        dsr: Types.ObjectId;
-        upazilas: Types.ObjectId[];
-    } = {
+    const dsrInfoData = {
         dsr: user._id,
         ...payload,
     };
@@ -161,6 +159,6 @@ const getDsrWidgetDataFromDB = async (id: string, area: string | string[]) => {
 export const DsrServices = {
     getAllDsrFromDB,
     getSingleDsrFromDB,
-    assignUpazilasToDsrIntoDB,
+    assignDataToDsrIntoDB,
     getDsrWidgetDataFromDB,
 };

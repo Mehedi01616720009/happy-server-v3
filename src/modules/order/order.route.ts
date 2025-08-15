@@ -15,6 +15,19 @@ router.post(
     OrderController.createOrder
 );
 
+// create ready order route
+router.post(
+    '/ready-sell',
+    auth(
+        USER_ROLES.superAdmin,
+        USER_ROLES.admin,
+        USER_ROLES.sr,
+        USER_ROLES.deliveryMan
+    ),
+    validateRequest(OrderValidations.createOrderValidationSchema),
+    OrderController.createOrder
+);
+
 // get all order route
 router.get(
     '/',
@@ -27,20 +40,6 @@ router.get(
         USER_ROLES.deliveryMan
     ),
     OrderController.getAllOrder
-);
-
-// get all order details route
-router.get(
-    '/details',
-    auth(
-        USER_ROLES.superAdmin,
-        USER_ROLES.admin,
-        USER_ROLES.dealer,
-        USER_ROLES.sr,
-        USER_ROLES.packingMan,
-        USER_ROLES.deliveryMan
-    ),
-    OrderController.getAllOrderDetails
 );
 
 // get single order route
@@ -65,21 +64,13 @@ router.patch(
     OrderController.updateOrderProduct
 );
 
-// cancel order product route
-router.patch(
-    '/:id/product/:productId/cancel-product',
-    auth(USER_ROLES.deliveryMan),
-    validateRequest(OrderValidations.cancelOrderProductValidationSchema),
-    OrderController.cancelOrderProduct
-);
-
 // dispatch order route
-router.patch(
-    '/:id/dispatch-order',
-    auth(USER_ROLES.packingMan),
-    validateRequest(OrderValidations.dispatchOrderValidationSchema),
-    OrderController.dispatchOrder
-);
+// router.patch(
+//     '/:id/dispatch-order',
+//     auth(USER_ROLES.packingMan),
+//     validateRequest(OrderValidations.dispatchOrderValidationSchema),
+//     OrderController.dispatchOrder
+// );
 
 // cancel order route
 router.patch(
@@ -87,14 +78,6 @@ router.patch(
     auth(USER_ROLES.sr, USER_ROLES.deliveryMan),
     validateRequest(OrderValidations.cancelOrderValidationSchema),
     OrderController.cancelOrder
-);
-
-// update order product route
-router.patch(
-    '/:id/product/:productId/update-product-by-deliveryman',
-    auth(USER_ROLES.deliveryMan),
-    validateRequest(OrderValidations.updateOrderProductValidationSchema),
-    OrderController.updateOrderProductByDeliveryman
 );
 
 // update order product route

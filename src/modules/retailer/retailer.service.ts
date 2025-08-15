@@ -707,61 +707,119 @@ const getBakiRetailerForDeliverymanFromDB = async (
 };
 
 // get all retailer for packingman
+// const getAllRetailerForPackingmanFromDB = async (
+//     query: Record<string, unknown>
+// ) => {
+//     const fetchQuery = new QueryBuilder(
+//         Union.find().select('id name').sort('name'),
+//         query
+//     )
+//         .filter()
+//         .sort()
+//         .paginate();
+
+//     const unions = await fetchQuery.modelQuery;
+//     const meta = await fetchQuery.countTotal();
+//     if (unions.length === 0) {
+//         return { result: [], meta };
+//     }
+
+//     const result = await Promise.all(
+//         unions.map(async union => {
+//             const retailers = await Retailer.find({
+//                 union: union._id,
+//             }).populate('retailer');
+
+//             const orders = await Promise.all(
+//                 retailers.map(async retailer => {
+//                     const ordersData = await Order.find({
+//                         retailer: retailer.retailer._id,
+//                         area: union._id,
+//                         status: { $in: ['Processing', 'Pending'] },
+//                     })
+//                         .select(
+//                             'id retailer sr dealer collectionAmount collectedAmount createdAt'
+//                         )
+//                         .populate('sr');
+
+//                     return {
+//                         ...retailer.toObject(),
+//                         orders: ordersData,
+//                     };
+//                 })
+//             );
+
+//             const filteredRetailers = orders.filter(
+//                 order => order.orders.length > 0
+//             );
+
+//             return {
+//                 ...union.toObject(),
+//                 retailerCount: filteredRetailers.length,
+//                 retailers: filteredRetailers,
+//             };
+//         })
+//     );
+
+//     return { result, meta };
+// };
+
 const getAllRetailerForPackingmanFromDB = async (
     query: Record<string, unknown>
 ) => {
-    const fetchQuery = new QueryBuilder(
-        Union.find().select('id name').sort('name'),
-        query
-    )
-        .filter()
-        .sort()
-        .paginate();
+    const sr = query?.sr;
+    const createdAt = query?.createdAt;
+    const union = query?.union;
 
-    const unions = await fetchQuery.modelQuery;
-    const meta = await fetchQuery.countTotal();
-    if (unions.length === 0) {
-        return { result: [], meta };
+    const matchStage: Record<string, unknown> = {};
+    if (sr) {
+        matchStage.sr = new Types.ObjectId(sr as string);
+    }
+    if (union) {
+        matchStage.union = new Types.ObjectId(union as string);
+    }
+    if (createdAt) {
+        matchStage.createdAt = {
+            $gte: moment.tz(createdAt, TIMEZONE).startOf('day').format(),
+            $lte: moment.tz(createdAt, TIMEZONE).endOf('day').format(),
+        };
     }
 
-    const result = await Promise.all(
-        unions.map(async union => {
-            const retailers = await Retailer.find({
-                union: union._id,
-            }).populate('retailer');
+    const result = await Order.aggregate([
+        { $match: matchStage },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'sr',
+                foreignField: '_id',
+                as: 'sr',
+            },
+        },
+        { $unwind: '$sr' },
+        {
+            $lookup: {
+                from: 'retailers',
+                localField: 'retailer',
+                foreignField: '_id',
+                as: 'retailer',
+            },
+        },
+        { $unwind: '$retailer' },
+        {
+            $project: {
+                _id: 1,
+                id: 1,
+                retailer: 1,
+                sr: 1,
+                dealer: 1,
+                collectionAmount: 1,
+                collectedAmount: 1,
+                createdAt: 1,
+            },
+        },
+    ]);
 
-            const orders = await Promise.all(
-                retailers.map(async retailer => {
-                    const ordersData = await Order.find({
-                        retailer: retailer.retailer._id,
-                        area: union._id,
-                        status: { $in: ['Processing', 'Pending'] },
-                    })
-                        .select(
-                            'id retailer sr dealer collectionAmount collectedAmount createdAt'
-                        )
-                        .populate('sr');
-
-                    return {
-                        ...retailer.toObject(),
-                        orders: ordersData,
-                    };
-                })
-            );
-
-            const filteredRetailers = orders.filter(
-                order => order.orders.length > 0
-            );
-
-            return {
-                ...union.toObject(),
-                retailerCount: filteredRetailers.length,
-                retailers: filteredRetailers,
-            };
-        })
-    );
-
-    return { result, meta };
+    return result;
 };
 
 // get single retailer

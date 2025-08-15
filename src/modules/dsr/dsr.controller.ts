@@ -26,10 +26,10 @@ const getSingleDsr = catchAsync(async (req, res) => {
     });
 });
 
-// assign upazilas to dsr controller
-const assignUpazilasToDsr = catchAsync(async (req, res) => {
+// assign data to dsr controller
+const assignDataToDsr = catchAsync(async (req, res) => {
     const { id } = req.params;
-    const result = await DsrServices.assignUpazilasToDsrIntoDB(id, req.body);
+    const result = await DsrServices.assignDataToDsrIntoDB(id, req.body);
     sendResponse(res, {
         statusCode: httpStatus.CREATED,
         success: true,
@@ -57,6 +57,6 @@ const getDsrWidgetData = catchAsync(async (req, res) => {
 export const DsrControllers = {
     getAllDsr,
     getSingleDsr,
-    assignUpazilasToDsr,
+    assignDataToDsr,
     getDsrWidgetData,
 };

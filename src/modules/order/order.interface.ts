@@ -1,14 +1,34 @@
 import { Types } from 'mongoose';
-import { ILocation } from '../retailer/retailer.interface';
 
 type TOrderStatus =
     | 'Pending'
     | 'Baki'
-    | 'Customer Care'
     | 'Processing'
     | 'Dispatched'
     | 'Delivered'
     | 'Cancelled';
+
+// order details product interface
+export interface IOrderDetailsProduct {
+    product: Types.ObjectId;
+    quantity: number;
+    price: number;
+    totalAmount: number;
+    dealerPrice?: number;
+    dealerTotalAmount?: number;
+    srPrice?: number;
+    srTotalAmount?: number;
+    summary?: {
+        orderedQuantity?: number;
+        packedQuantity?: number;
+        soldQuantity?: number;
+    };
+    isCancelled?: {
+        isCancelled?: boolean;
+        cancelledTime?: string;
+        cancelledReason?: string;
+    };
+}
 
 // order interface
 export interface IOrder {
@@ -24,45 +44,13 @@ export interface IOrder {
     paymentStatus: 'Paid' | 'Unpaid' | 'Partial Paid';
     collectionAmount: number;
     collectedAmount: number;
-    location?: ILocation;
+    products: IOrderDetailsProduct[];
     createdAt: string;
     updatedAt: string;
     insertedDate: Date;
     deliveredTime?: string;
     cancelledTime?: string;
     cancelledReason?: string;
-}
-
-// order details product interface
-export interface IOrderDetailsProduct {
-    product: Types.ObjectId;
-    quantity: number;
-    price: number;
-    totalAmount: number;
-    dealerPrice?: number;
-    dealerTotalAmount?: number;
-    srPrice?: number;
-    srTotalAmount?: number;
-    inventory?: {
-        out?: number;
-        sale?: number;
-        in?: number;
-    };
-    isEdited?: {
-        isEdited?: boolean;
-        previousQuantity?: number;
-    };
-    isCancelled?: {
-        isCancelled?: boolean;
-        cancelledTime?: string;
-        cancelledReason?: string;
-    };
-}
-
-// order details interface
-export interface IOrderDetails {
-    order: Types.ObjectId;
-    products: IOrderDetailsProduct[];
 }
 
 // create order interface
@@ -77,8 +65,6 @@ export interface ICreateOrder {
     paymentStatus?: 'Paid' | 'Unpaid' | 'Partial Paid';
     collectionAmount: number;
     collectedAmount?: number;
-    requestDate?: string;
-    location?: ILocation;
     products: Array<
         Pick<
             IOrderDetailsProduct,
@@ -88,6 +74,6 @@ export interface ICreateOrder {
             | 'totalAmount'
             | 'srPrice'
             | 'srTotalAmount'
-        > & { quantityPerPackage: number }
+        >
     >;
 }

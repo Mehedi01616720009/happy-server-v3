@@ -14,6 +14,10 @@ const dsrSchema = new Schema<IDsr>({
         required: [true, 'Upazilas is required'],
         ref: 'Upazila',
     },
+    sr: {
+        type: [Schema.Types.ObjectId],
+        ref: 'User',
+    },
 });
 
 // dsr model

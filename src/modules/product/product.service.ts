@@ -11,8 +11,8 @@ import { Company } from '../company/company.model';
 import moment from 'moment-timezone';
 import { TIMEZONE } from '../../constant';
 import { Types } from 'mongoose';
-import { Order, OrderDetails } from '../order/order.model';
-import { PickedProduct } from '../pickupMan/pickupMan.model';
+import { Order } from '../order/order.model';
+import { Packingman, PickedProduct } from '../pickupMan/pickupMan.model';
 import { User } from '../user/user.model';
 import { JwtPayload } from 'jsonwebtoken';
 import { Tag } from '../tag/tag.model';
@@ -106,7 +106,7 @@ const getTopSellingProductFromDB = async (query: Record<string, unknown>) => {
     }).select('_id');
     const orderIDs = orders.map(item => item._id);
 
-    const topSellingProducts = await OrderDetails.aggregate([
+    const topSellingProducts = await Order.aggregate([
         { $match: { order: { $in: orderIDs } } },
         { $unwind: '$products' },
         {
@@ -267,7 +267,7 @@ const getProductsGroupedBySRsAndOrderedDateFromDB = async (
         throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
     }
 
-    const orderDetailsAggregation = await OrderDetails.aggregate([
+    const orderDetailsAggregation = await Order.aggregate([
         {
             $match: {
                 order: { $in: orderIds },
@@ -367,6 +367,115 @@ const getProductsGroupedBySRsAndOrderedDateFromDB = async (
             totalDoc: orderDetailsAggregation.length,
         },
     };
+};
+
+const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
+    query: Record<string, unknown>,
+    userPayload: JwtPayload
+) => {
+    const sr = query.sr;
+    const createdAt = query.createdAt;
+    const matchStages: Record<string, unknown> = { status: 'Dispatched' };
+
+    if (sr) {
+        matchStages.sr = { $in: sr };
+    }
+    if (createdAt) {
+        matchStages.createdAt = {
+            $gte: moment.tz(createdAt, TIMEZONE).startOf('day').format(),
+            $lte: moment.tz(createdAt, TIMEZONE).endOf('day').format(),
+        };
+    }
+
+    const packingManUser = await User.findOne({ id: userPayload.userId });
+    if (!packingManUser) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No user found');
+    }
+    const packingMan = await Packingman.findOne({
+        packingman: packingManUser._id,
+    });
+    if (!packingMan) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No packingMan found');
+    }
+    if (!packingMan.warehouse) {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Packingman has no warehouse assigned'
+        );
+    }
+
+    const warehouseId = packingMan.warehouse;
+
+    const summary = await Order.aggregate([
+        { $match: matchStages },
+        { $unwind: '$products' },
+        {
+            $group: {
+                _id: '$products.product',
+                orderedQuantity: {
+                    $sum: { $ifNull: ['$products.summary.orderedQuantity', 0] },
+                },
+                packedQuantity: {
+                    $sum: { $ifNull: ['$products.summary.packedQuantity', 0] },
+                },
+                soldQuantity: {
+                    $sum: { $ifNull: ['$products.summary.soldQuantity', 0] },
+                },
+            },
+        },
+        {
+            $lookup: {
+                from: 'products',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'product',
+            },
+        },
+        { $unwind: '$product' },
+        {
+            $lookup: {
+                from: 'pickedproducts',
+                let: { productId: '$_id' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ['$product', '$$productId'] },
+                                    { $eq: ['$warehouse', warehouseId] },
+                                ],
+                            },
+                        },
+                    },
+                    { $sort: { createdAt: -1 } },
+                    { $limit: 1 },
+                ],
+                as: 'pickedStock',
+            },
+        },
+        {
+            $addFields: {
+                stock: {
+                    $ifNull: [
+                        { $arrayElemAt: ['$pickedStock.quantity', 0] },
+                        0,
+                    ],
+                },
+            },
+        },
+        {
+            $project: {
+                _id: '$_id',
+                name: '$product.name',
+                orderedQuantity: 1,
+                packedQuantity: 1,
+                soldQuantity: 1,
+                stock: 1,
+            },
+        },
+    ]);
+
+    return summary;
 };
 
 // get single product
@@ -490,6 +599,7 @@ export const ProductServices = {
     getTopSellingProductFromDB,
     getAllProductWithStockFromDB,
     getProductsGroupedBySRsAndOrderedDateFromDB,
+    getProductsGroupedBySRsAndStatusDispatchedFromDB,
     getSingleProductFromDB,
     updateProductIntoDB,
     updateProductImageIntoDB,

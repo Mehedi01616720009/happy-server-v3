@@ -1,15 +1,5 @@
 import { z } from 'zod';
 
-// location validation
-const locationValidationSchema = z.object({
-    latitude: z.number({
-        required_error: 'Latitude is required',
-    }),
-    longitude: z.number({
-        required_error: 'Longitude is required',
-    }),
-});
-
 // create order details validation
 const createOrderDetailsValidationSchema = z.object({
     product: z
@@ -28,7 +18,6 @@ const createOrderDetailsValidationSchema = z.object({
     }),
     srPrice: z.number().optional(),
     srTotalAmount: z.number().optional(),
-    location: locationValidationSchema.optional(),
 });
 
 // create order validation
@@ -55,7 +44,6 @@ const createOrderValidationSchema = z.object({
             required_error: 'Collection Amount is required',
         }),
         collectedAmount: z.number().optional(),
-        requestDate: z.string().date().optional(),
         status: z
             .enum(['Baki', 'Delivered'], {
                 message: 'Status is invalid',
@@ -97,19 +85,31 @@ const cancelOrderProductValidationSchema = z.object({
     }),
 });
 
+// dispatch order details validation
+const dispatchOrderDetailsValidationSchema = z.object({
+    product: z
+        .string({
+            required_error: 'Product ID is required',
+        })
+        .min(1, { message: 'Product ID be empty' }),
+    quantity: z.number({
+        required_error: 'Quantity is required',
+    }),
+});
+
 // dispatch order validation
 const dispatchOrderValidationSchema = z.object({
     body: z.object({
         basket: z.string({
             required_error: 'Collected amount is required',
         }),
+        products: z.array(dispatchOrderDetailsValidationSchema),
     }),
 });
 
 // deliver order validation
 const deliverOrderValidationSchema = z.object({
     body: z.object({
-        requestDate: z.string().date().optional(),
         status: z.enum(['Baki', 'Delivered'], {
             message: 'Status is invalid',
         }),

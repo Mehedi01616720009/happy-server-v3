@@ -21,12 +21,12 @@ router.get(
     DsrControllers.getSingleDsr
 );
 
-// assign upazilas to dsr route
+// assign data to dsr route
 router.put(
-    '/:id/assign-upazilas',
+    '/:id/assign-data',
     auth(USER_ROLES.superAdmin, USER_ROLES.admin),
-    validateRequest(DsrValidations.assignUpazilasToDsrValidationSchema),
-    DsrControllers.assignUpazilasToDsr
+    validateRequest(DsrValidations.assignDataToDsrValidationSchema),
+    DsrControllers.assignDataToDsr
 );
 
 // get dsr widget data route

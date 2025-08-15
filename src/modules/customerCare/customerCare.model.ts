@@ -18,7 +18,6 @@ const customerCareDataSchema = new Schema<ICustomerCareData>({
     },
     dsr: {
         type: Schema.Types.ObjectId,
-        required: [true, 'Dsr ID is required'],
         ref: 'User',
     },
     requestType: {
