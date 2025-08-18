@@ -1,65 +1,92 @@
 [
     {
-        "id": "134",
-        "district_id": "15",
-        "name": "Paba",
-        "bn_name": "পবা",
-        "url": "paba.rajshahi.gov.bd"
+        "_id": {
+            "$oid": "67696bd1d05a741a6e55c016"
+        },
+        "id": "Bagha",
+        "__v": 0,
+        "bnName": "বাঘা",
+        "district": "Rajshahi",
+        "name": "Bagha"
     },
     {
-        "id": "135",
-        "district_id": "15",
-        "name": "Durgapur",
-        "bn_name": "দুর্গাপুর",
-        "url": "durgapur.rajshahi.gov.bd"
+        "_id": {
+            "$oid": "67696bd1d05a741a6e55c011"
+        },
+        "id": "Paba",
+        "__v": 0,
+        "bnName": "পবা",
+        "district": "Rajshahi",
+        "name": "Paba"
     },
     {
-        "id": "136",
-        "district_id": "15",
-        "name": "Mohonpur",
-        "bn_name": "মোহনপুর",
-        "url": "mohonpur.rajshahi.gov.bd"
+        "_id": {
+            "$oid": "67696bd1d05a741a6e55c014"
+        },
+        "id": "Charghat",
+        "__v": 0,
+        "bnName": "চারঘাট",
+        "district": "Rajshahi",
+        "name": "Charghat"
     },
     {
-        "id": "137",
-        "district_id": "15",
-        "name": "Charghat",
-        "bn_name": "চারঘাট",
-        "url": "charghat.rajshahi.gov.bd"
+        "_id": {
+            "$oid": "67696bd1d05a741a6e55c015"
+        },
+        "id": "Puthia",
+        "__v": 0,
+        "bnName": "পুঠিয়া",
+        "district": "Rajshahi",
+        "name": "Puthia"
     },
     {
-        "id": "138",
-        "district_id": "15",
-        "name": "Puthia",
-        "bn_name": "পুঠিয়া",
-        "url": "puthia.rajshahi.gov.bd"
+        "_id": {
+            "$oid": "67696bd1d05a741a6e55c019"
+        },
+        "id": "Bagmara",
+        "__v": 0,
+        "bnName": "বাগমারা",
+        "district": "Rajshahi",
+        "name": "Bagmara"
     },
     {
-        "id": "139",
-        "district_id": "15",
-        "name": "Bagha",
-        "bn_name": "বাঘা",
-        "url": "bagha.rajshahi.gov.bd"
+        "_id": {
+            "$oid": "67696bd1d05a741a6e55c012"
+        },
+        "id": "Durgapur",
+        "__v": 0,
+        "bnName": "দুর্গাপুর",
+        "district": "Rajshahi",
+        "name": "Durgapur"
     },
     {
-        "id": "140",
-        "district_id": "15",
-        "name": "Godagari",
-        "bn_name": "গোদাগাড়ী",
-        "url": "godagari.rajshahi.gov.bd"
+        "_id": {
+            "$oid": "67696bd1d05a741a6e55c018"
+        },
+        "id": "Tanore",
+        "__v": 0,
+        "bnName": "তানোর",
+        "district": "Rajshahi",
+        "name": "Tanore"
     },
     {
-        "id": "141",
-        "district_id": "15",
-        "name": "Tanore",
-        "bn_name": "তানোর",
-        "url": "tanore.rajshahi.gov.bd"
+        "_id": {
+            "$oid": "67696bd1d05a741a6e55c013"
+        },
+        "id": "Mohonpur",
+        "__v": 0,
+        "bnName": "মোহনপুর",
+        "district": "Rajshahi",
+        "name": "Mohonpur"
     },
     {
-        "id": "142",
-        "district_id": "15",
-        "name": "Bagmara",
-        "bn_name": "বাগমারা",
-        "url": "bagmara.rajshahi.gov.bd"
+        "_id": {
+            "$oid": "67696bd1d05a741a6e55c017"
+        },
+        "id": "Godagari",
+        "__v": 0,
+        "bnName": "গোদাগাড়ী",
+        "district": "Rajshahi",
+        "name": "Godagari"
     }
 ]

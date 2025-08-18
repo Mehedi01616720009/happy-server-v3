@@ -17,7 +17,7 @@ router.post(
 
 // create inventory route
 router.post(
-    '/',
+    '/alt',
     auth(USER_ROLES.packingMan),
     validateRequest(InventoryValidations.inventoryValidationSchema),
     InventoryControllers.createAltInventory

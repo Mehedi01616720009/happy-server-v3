@@ -1,0 +1,2354 @@
+[
+    {
+        "_id": {
+            "$oid": "676acd762c726915e2c035ab"
+        },
+        "id": "bathan-bazar-7918",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Bathan Bazar",
+        "bnName": "বাথান বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676acdbf2c726915e2c035be"
+        },
+        "id": "borboria-bazar-701",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Borboria Bazar",
+        "bnName": "বড়বড়িয়া বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d403c97b9e9c8c9af18ea"
+        },
+        "id": "dakra-bazar1016",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Dakra bazar",
+        "bnName": "ডাকরা বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676f9c619d116e87ee358d4b"
+        },
+        "id": "jhikra-bazar9090",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Jhikra bazar",
+        "bnName": "ঝিকরা বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676f9dcb9d116e87ee358d63"
+        },
+        "id": "khorgobindo-pur-bazar1491",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Khorgobindo pur bazar",
+        "bnName": "খোর্দ্দগোবিন্দপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676fd43d9d116e87ee358db3"
+        },
+        "id": "potiakandi-bazar6269",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Potiakandi bazar",
+        "bnName": "পটিয়া কান্দি বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6770ff8d9d116e87ee3595ea"
+        },
+        "id": "yousuf-pur-bazar-3089",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Yousuf pur bazar ",
+        "bnName": "ইউসুফপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6770ffb19d116e87ee3595fa"
+        },
+        "id": "jaipur-hat6327",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Jaipur hat",
+        "bnName": "জয়পুর হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677108d99d116e87ee359778"
+        },
+        "id": "taltola-bazar3346",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c030"
+        },
+        "name": "Taltola Bazar",
+        "bnName": "তালতলা বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677109e09d116e87ee3597a8"
+        },
+        "id": "shisatola-bazar2319",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c030"
+        },
+        "name": "Shisatola bazar",
+        "bnName": "শীশাতলা বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677114bc9d116e87ee359925"
+        },
+        "id": "zafarpur1114",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c030"
+        },
+        "name": "Zafarpur",
+        "bnName": "জাফরপুর সালুয়া",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6772ecf19d116e87ee359e95"
+        },
+        "id": "bonggobondur-mor444",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Bonggobondur mor",
+        "bnName": "বঙ্গবন্ধুর মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774cdbd9d116e87ee35a457"
+        },
+        "id": "jotkartik-hat5160",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "jotkartik hat",
+        "bnName": "জোতকাত্তিক হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d2769d116e87ee35a57c"
+        },
+        "id": "vejali-haat992",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "vejali haat",
+        "bnName": "ভ্যাজালি হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d2b09d116e87ee35a5be"
+        },
+        "id": "musar-idgha4286",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "musar idgha",
+        "bnName": "মুসার ঈদগাহ",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d2e99d116e87ee35a609"
+        },
+        "id": "bolihar-hat9017",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "bolihar hat",
+        "bnName": "বলিহার হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d37e9d116e87ee35a6a5"
+        },
+        "id": "habaspur-mor8368",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "habaspur mor",
+        "bnName": "হাবাসপুর মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677614509d116e87ee35b335"
+        },
+        "id": "pakuria-bazar9700",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "pakuria bazar",
+        "bnName": "পাকুড়িয়া বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a08549d116e87ee35cf92"
+        },
+        "id": "jhina-hat3442",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "jhina hat",
+        "bnName": "ঝিনা হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a0ea59d116e87ee35d16e"
+        },
+        "id": "digha-hat5768",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03f"
+        },
+        "name": "digha hat",
+        "bnName": "দিঘা হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a0ec79d116e87ee35d186"
+        },
+        "id": "tetulia-hat9370",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03f"
+        },
+        "name": "tetulia hat",
+        "bnName": "তেঁথুলিয়া হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677b8735e84cdd194c0dd720"
+        },
+        "id": "naraun-pur-hat8198",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03b"
+        },
+        "name": "naraun pur hat",
+        "bnName": "নারায়ণপুর হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67fff208dc2b7c9330c34e45"
+        },
+        "id": "নিমপাড়া-বাজার-২8691",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "নিমপাড়া বাজার ২",
+        "bnName": "নিমপাড়া বাজার ২",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680458f33fa8611f064fdcff"
+        },
+        "id": "মমিনপুর-বাজার8161",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "মমিনপুর বাজার",
+        "bnName": "মমিনপুর মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68065060685e15e8c261a9bd"
+        },
+        "id": "গোপালপুর-গোরস্থান2820",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "গোপালপুর গোরস্থান",
+        "bnName": "গোপালপুর গোরস্থান",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676991ea32b7e908c43c5ab6"
+        },
+        "id": "charghat-bazar9019",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Charghat Bazar",
+        "bnName": "চারঘাট বাজার ",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676ac8cb2c726915e2c034bf"
+        },
+        "id": "technical-mor6195",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Technical mor",
+        "bnName": "টেকনিক্যাল মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676ac9392c726915e2c034d7"
+        },
+        "id": "ghosher-mor8233",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Ghosher mor",
+        "bnName": "ঘোষের মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676ac9792c726915e2c034e7"
+        },
+        "id": "kakramari-bazar-1142",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Kakramari Bazar",
+        "bnName": "কাকরামারি বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d3f4c97b9e9c8c9af18bf"
+        },
+        "id": "bakra-hat3197",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Bakra hat",
+        "bnName": "বাঁকড়া হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d3fe897b9e9c8c9af18ca"
+        },
+        "id": "raipur-hat5625",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Raipur hat",
+        "bnName": "রায়পুর হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d428b97b9e9c8c9af1948"
+        },
+        "id": "batikamari-bazar1961",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Batikamari bazar",
+        "bnName": "বাটিকামারি বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d643097b9e9c8c9af1a97"
+        },
+        "id": "mongli-high-school-1669",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Mongli high school ",
+        "bnName": " অনুপমপুর হাই স্কুল মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676f9c439d116e87ee358d3b"
+        },
+        "id": "jhikra-idgah-mor7996",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Jhikra idgah mor",
+        "bnName": "ঝিকরা ঈদগাহ মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676fd6049d116e87ee358e1f"
+        },
+        "id": "shimolia-brig8638",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Shimolia brig",
+        "bnName": "শিমুলিয়া ব্রিজ মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676fd9509d116e87ee358ed6"
+        },
+        "id": "muktarpur-bazar6785",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Muktarpur bazar",
+        "bnName": "মুক্তারপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6770d6a79d116e87ee359276"
+        },
+        "id": "chara-bottola4973",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Chara bottola",
+        "bnName": "চারা বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6770ffd89d116e87ee35960a"
+        },
+        "id": "govindapur-bazar3789",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Govindapur Bazar",
+        "bnName": "গোবিন্দপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6771001e9d116e87ee359622"
+        },
+        "id": "chowmohoni-bazar-5268",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Chowmohoni Bazar ",
+        "bnName": "চৌমুহনী বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6771003c9d116e87ee359632"
+        },
+        "id": "belgoria-hat9203",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Belgoria hat",
+        "bnName": "বেলঘড়িয়া হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677100af9d116e87ee35965a"
+        },
+        "id": "tangon-balurghat9181",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Tangon balurghat",
+        "bnName": "টাঙ্গন বালুরঘাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677102b49d116e87ee359712"
+        },
+        "id": "kandipara-bazar8330",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "kandipara bazar",
+        "bnName": "কান্দিপাড়া বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677108559d116e87ee35975a"
+        },
+        "id": "khudir-bottola6680",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c030"
+        },
+        "name": "Khudir bottola",
+        "bnName": "খুদির বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6771097c9d116e87ee359798"
+        },
+        "id": "holidagasi-station-vetore8032",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c030"
+        },
+        "name": "Holidagasi station vetore",
+        "bnName": "হোলিদাগাছি স্টেশনের ভেতরে",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67710b4f9d116e87ee35981e"
+        },
+        "id": "fatehpur-bazar7295",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c030"
+        },
+        "name": "Fatehpur Bazar",
+        "bnName": "ফতেপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67710db69d116e87ee359869"
+        },
+        "id": "shalua-bazar808",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c030"
+        },
+        "name": "Shalua Bazar",
+        "bnName": "সালুয়া বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67710f2b9d116e87ee3598a4"
+        },
+        "id": "chamta-6423",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Chamta ",
+        "bnName": "চামটা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677115949d116e87ee359969"
+        },
+        "id": "bhatpara-bazar7174",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "Bhatpara bazar",
+        "bnName": "ভাটপাড়া বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677116509d116e87ee3599a1"
+        },
+        "id": "zagirpara-hat4993",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "Zagirpara hat",
+        "bnName": "জাগিরপাড়া বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6771634d9d116e87ee359a40"
+        },
+        "id": "malekar-mor4864",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "MALEKAR MOR",
+        "bnName": "মালেকার মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6772ecd59d116e87ee359e85"
+        },
+        "id": "mongli-chara-bottola-6241",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Mongli Chara bottola ",
+        "bnName": "মুংলি চারা বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6772efe39d116e87ee359f2e"
+        },
+        "id": "yusufpur-zero-points-449",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Yusufpur zero points ",
+        "bnName": "ইউসুফপুর জিরো পয়েন্ট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774cdd99d116e87ee35a46f"
+        },
+        "id": "kaluhati9364",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "kaluhati",
+        "bnName": "কালুহাটি বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d24c9d116e87ee35a561"
+        },
+        "id": "mirgong1695",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "mirgong",
+        "bnName": "মীরগজ্ঞ হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d35a9d116e87ee35a67e"
+        },
+        "id": "hilalpur652",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "hilalpur",
+        "bnName": "হিলালপুর ",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d66d9d116e87ee35a74d"
+        },
+        "id": "vejalir-mor9313",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "vejalir mor",
+        "bnName": "ভেজালির মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67760dab9d116e87ee35b1a0"
+        },
+        "id": "alipur-gabtotipara-hat9528",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "alipur gabtotipara hat",
+        "bnName": "আলাইপুর গাবতলী পাড়া হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67760e0e9d116e87ee35b1e5"
+        },
+        "id": "charghat-powroshova6447",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Charghat powroshova",
+        "bnName": "চারঘাট পৌরসভা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67760ed49d116e87ee35b259"
+        },
+        "id": "alaipur-mahajon-para-hat9856",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "Alaipur mahajon para hat",
+        "bnName": "আলাইপুর মহাজন পাড়া হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67760f0d9d116e87ee35b295"
+        },
+        "id": "chowmodia-hat7496",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "chowmodia hat",
+        "bnName": "চৌমাদিয়া হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677614969d116e87ee35b365"
+        },
+        "id": "hazamparar-mor6317",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "hazamparar mor",
+        "bnName": "হাজামপাড়া মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a0a099d116e87ee35d062"
+        },
+        "id": "berer-bari-kotar-mor4609",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "berer bari kotar mor",
+        "bnName": "বেড়ের বাড়ি কটার মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a0de79d116e87ee35d0d4"
+        },
+        "id": "bistho-mondoler-hat5596",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03f"
+        },
+        "name": "bistho mondoler hat",
+        "bnName": "বিস্ট মন্ডলের হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a0e519d116e87ee35d122"
+        },
+        "id": "bawsha-bazar849",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03f"
+        },
+        "name": "bawsha bazar",
+        "bnName": "বাউসা বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677b8752e84cdd194c0dd738"
+        },
+        "id": "khoyer-hat4485",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03b"
+        },
+        "name": "khoyer hat",
+        "bnName": "খয়ের হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677b8793e84cdd194c0dd777"
+        },
+        "id": "chondipur-hat3824",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03b"
+        },
+        "name": "chondipur hat",
+        "bnName": "চন্ডিপুর হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67952ba838c8c47cd6bf6ed0"
+        },
+        "id": "xyz285",
+        "union": {
+            "$oid": "67400e76b4b03baf207769c5"
+        },
+        "name": "xyz",
+        "bnName": "xyz",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67c05de53c9be1c62fb7112b"
+        },
+        "id": "চারঘাট-ব্রিজ8254",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "চারঘাট ব্রিজ",
+        "bnName": "চারঘাট ব্রিজ",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67e1a1364bbaf0c5cbf911d2"
+        },
+        "id": "ছাতারির-মোড়478",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "ছাতারির মোড়",
+        "bnName": "ছাতারির মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6803bcae3fa8611f064fbfd7"
+        },
+        "id": "মনিগ্রাম-পল্লী-বিদ্যুৎ-মোর8858",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "মনিগ্রাম পল্লী বিদ্যুৎ মোর",
+        "bnName": "মনিগ্রাম পল্লী বিদ্যুৎ মোর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676ac7f02c726915e2c0348f"
+        },
+        "id": "charghat-bazar89",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Charghat Bazar",
+        "bnName": "চারঘাট মেডিকেল মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676ac83b2c726915e2c0349f"
+        },
+        "id": "fokir-military-mor5892",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Fokir military mor",
+        "bnName": "ফকির মিলিটারি মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676ac8802c726915e2c034af"
+        },
+        "id": "cinema-hall-mor6657",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Cinema hall mor",
+        "bnName": "সিনেমা হল মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676ac9f62c726915e2c03507"
+        },
+        "id": "chadpur-atimkhana628",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Chadpur atimkhana",
+        "bnName": "চাঁদপুর এতিমখানা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676acab62c726915e2c03535"
+        },
+        "id": "nurur-bottola-661",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Nurur bottola ",
+        "bnName": "নুরুর বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676acb762c726915e2c0355b"
+        },
+        "id": "ghospara-kakramari-7544",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Ghospara kakramari",
+        "bnName": "ঘোষপাড়া কাকরামারি",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676acde92c726915e2c035c9"
+        },
+        "id": "bakra-hat8310",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Bakra hat",
+        "bnName": "বাঁকড়া হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d401897b9e9c8c9af18da"
+        },
+        "id": "kajlir-hat1032",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Kajlir hat",
+        "bnName": "কাজলির হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d40d197b9e9c8c9af1902"
+        },
+        "id": "khomotar-mor6545",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Khomotar mor",
+        "bnName": "ক্ষমতার মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d63c897b9e9c8c9af1a7f"
+        },
+        "id": "togir-mor6263",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Togir mor",
+        "bnName": "তোজির মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d647197b9e9c8c9af1aa7"
+        },
+        "id": "mungli-bazar716",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Mungli bazar",
+        "bnName": "মুংলি বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676f9b2e9d116e87ee358cf5"
+        },
+        "id": "pollibiddut-mor1711",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Pollibiddut mor",
+        "bnName": "পল্লী বিদ্যুৎ মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676f9bde9d116e87ee358d23"
+        },
+        "id": "jhikra-bottola2454",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Jhikra bottola",
+        "bnName": "ঝিকরা বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6770fd419d116e87ee3595c8"
+        },
+        "id": "cadet-more5905",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "cadet more",
+        "bnName": "ক্যাডেট মোড় সারদা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677101b59d116e87ee3596d2"
+        },
+        "id": "govindpur-bazar2463",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Govindpur Bazar",
+        "bnName": "গোবিন্দপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677109349d116e87ee359788"
+        },
+        "id": "holidagasi-station-bazar2208",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c030"
+        },
+        "name": "Holidagasi station Bazar",
+        "bnName": "হোলিদাগাছি রেলগেট বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67710a8a9d116e87ee3597ee"
+        },
+        "id": "bamondighi-bazar1143",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c030"
+        },
+        "name": "Bamondighi bazar",
+        "bnName": "বামনদিঘী বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6771160f9d116e87ee359991"
+        },
+        "id": "baludiar-bazar-800",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "Baludiar Bazar ",
+        "bnName": "বালুদিয়া বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6772ea3a9d116e87ee359e44"
+        },
+        "id": "sipaipara1606",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Sipaipara",
+        "bnName": "সিপাই পাড়া",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d31a9d116e87ee35a639"
+        },
+        "id": "binodpur-hat4319",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "binodpur hat",
+        "bnName": "বিনোদপুর হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d3329d116e87ee35a660"
+        },
+        "id": "moniggram-hat7056",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "moniggram hat",
+        "bnName": "মনিগ্রাম হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d39f9d116e87ee35a6c7"
+        },
+        "id": "mirgong-bottola5375",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "mirgong bottola",
+        "bnName": "মীরগঞ্জ বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67760d669d116e87ee35b16d"
+        },
+        "id": "kishobpur-hat8272",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "kishobpur hat",
+        "bnName": "কিশোরপুর হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a0e149d116e87ee35d0f2"
+        },
+        "id": "bawsha-mazpara-bazar3802",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03f"
+        },
+        "name": "bawsha mazpara bazar",
+        "bnName": "বাউসা মাজপাড়া বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a38da9d116e87ee35d609"
+        },
+        "id": "rustumpur-bazar5352",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "rustumpur bazar",
+        "bnName": "রুস্তমপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677b8775e84cdd194c0dd751"
+        },
+        "id": "jotragob-bazar8318",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03b"
+        },
+        "name": "jotragob bazar",
+        "bnName": "জোত-রাঘব বাজার ",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67be906c3c9be1c62fb6e087"
+        },
+        "id": "ফরিদপুর-বাজার5291",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "ফরিদপুর বাজার",
+        "bnName": "ফরিদপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67c09e633c9be1c62fb7193d"
+        },
+        "id": "পাগলপাড়া-মোর8700",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "পাগলপাড়া মোর",
+        "bnName": "পাগলপাড়া মোর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6806490a685e15e8c261a784"
+        },
+        "id": "নতুন-পাড়া4176",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "বাদলের মোড়",
+        "bnName": "বাদলের মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6806490b685e15e8c261a786"
+        },
+        "id": "নতুন-পাড়া1273",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "নতুন পাড়া",
+        "bnName": "নতুন পাড়া",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6806490b685e15e8c261a788"
+        },
+        "id": "নতুন-পাড়া3927",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "নতুন পাড়া",
+        "bnName": "নতুন পাড়া",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68064ffe685e15e8c261a975"
+        },
+        "id": "চারঘাট-থানা3319",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "চারঘাট থানা",
+        "bnName": "চারঘাট থানা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68065113685e15e8c261aa17"
+        },
+        "id": "মেরামত-পুর-ভেতরে8559",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "মেরামত পুর ভেতরে",
+        "bnName": "মেরামত পুর ভেতরে",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676aca1d2c726915e2c03517"
+        },
+        "id": "hajir-dhalan-bazar1325",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Hajir dhalan bazar",
+        "bnName": "হাজির ঢালান বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676acc1e2c726915e2c0357a"
+        },
+        "id": "poranpur-bazar5883",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Poranpur bazar",
+        "bnName": "পরানপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676acd482c726915e2c035a0"
+        },
+        "id": "beltoli-bazar-3259",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Beltoli Bazar ",
+        "bnName": "বেলতলী বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d3f1497b9e9c8c9af18b4"
+        },
+        "id": "budhir-hat6421",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Budhir hat",
+        "bnName": "বুধির হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d425497b9e9c8c9af1938"
+        },
+        "id": "bonkishor-bazar2349",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Bonkishor bazar",
+        "bnName": "বনকিশোর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d433e97b9e9c8c9af1979"
+        },
+        "id": "beltoli-bazar-7600",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Beltoli Bazar ",
+        "bnName": "বেলতলী বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d58ea97b9e9c8c9af1a2e"
+        },
+        "id": "koitar-mor9795",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Koitar mor",
+        "bnName": "কটার মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676d652397b9e9c8c9af1ac7"
+        },
+        "id": "mungli-mintur-more7511",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Mungli mintur more",
+        "bnName": "মুংলি মিন্টুর মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676f9b5b9d116e87ee358d05"
+        },
+        "id": "thana-para5577",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Thana para",
+        "bnName": "থানাপাড়া",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676fd6999d116e87ee358e53"
+        },
+        "id": "puthimari-bazar9035",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "Puthimari bazar",
+        "bnName": "পুটিমারী বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676fd7a89d116e87ee358e76"
+        },
+        "id": "shardah-bazar-4928",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Shardah Bazar ",
+        "bnName": "সারদা বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "676fd9699d116e87ee358ee6"
+        },
+        "id": "traffic-mor6146",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "Traffic mor",
+        "bnName": "সারদা ট্রাফিক মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6770d8a59d116e87ee359324"
+        },
+        "id": "chara-bottola5986",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "chok muktarpur",
+        "bnName": "চক মুক্তারপুর  বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6770da429d116e87ee3593a6"
+        },
+        "id": "chara-bottola-2789",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "police academi hat",
+        "bnName": "পুলিশ একাডেমি হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6770daa89d116e87ee3593f6"
+        },
+        "id": "chara-bottola9955",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "shadipur bazar",
+        "bnName": "সাদীপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6771008f9d116e87ee35964a"
+        },
+        "id": "tangon-hat9642",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Tangon hat",
+        "bnName": "টাঙ্গন হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67710e219d116e87ee35988c"
+        },
+        "id": "fotehpur-bazar1857",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c030"
+        },
+        "name": "Fotehpur bazar",
+        "bnName": "ফতেপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6771153c9d116e87ee359949"
+        },
+        "id": "nondangasi-bazar4712",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "Nondangasi bazar",
+        "bnName": "নন্দনগাছী বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6771156f9d116e87ee359959"
+        },
+        "id": "nimbara-bazar8102",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "Nimpara Bazar",
+        "bnName": "নিমপাড়া বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677115be9d116e87ee359979"
+        },
+        "id": "kharerbari21",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "Kharerbari",
+        "bnName": "খরেরবাড়ি বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6771167d9d116e87ee3599b1"
+        },
+        "id": "grammen-mor1128",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "Grammen mor",
+        "bnName": "নন্দনগাছী গ্রামীন মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677147659d116e87ee359a18"
+        },
+        "id": "fokir-er-mor1240",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "fokir er mor",
+        "bnName": "ফকিরের মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6772eca19d116e87ee359e75"
+        },
+        "id": "kherur-mor8319",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Kherur mor",
+        "bnName": "খেরুর মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6772ed629d116e87ee359eca"
+        },
+        "id": "faridpir-bazar8691",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "Faridpir bazar",
+        "bnName": "ফরিদপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6772ef869d116e87ee359f0e"
+        },
+        "id": "lalur-mor6545",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Lalur mor",
+        "bnName": "লালুর মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6772efa79d116e87ee359f1e"
+        },
+        "id": "zamira4866",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Zamira",
+        "bnName": "জামিরা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6772f06c9d116e87ee359f62"
+        },
+        "id": "kandipara-bottola-5975",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "Kandipara bottola ",
+        "bnName": "কান্দিপাড়া বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d2cb9d116e87ee35a5dc"
+        },
+        "id": "horiram-pur-bazar7136",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "horiram pur bazar",
+        "bnName": "হরিরামপুর হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d3009d116e87ee35a621"
+        },
+        "id": "mokamtola-hat4369",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "mokamtola hat",
+        "bnName": "মোকামতলা হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6774d3bd9d116e87ee35a6e2"
+        },
+        "id": "atparar-hat884",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "atparar hat",
+        "bnName": "আটপাড়ার হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67760cea9d116e87ee35b0f0"
+        },
+        "id": "pakuria-hat4561",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "pakuria hat",
+        "bnName": "পাকুড়িয়া হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67760d1b9d116e87ee35b114"
+        },
+        "id": "pani-kamra-hat3273",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "pani kamra hat",
+        "bnName": "পানি কামড়া হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67760d439d116e87ee35b147"
+        },
+        "id": "keshobpur-hat5231",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "keshobpur hat",
+        "bnName": "কেশবপুর হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677614799d116e87ee35b34d"
+        },
+        "id": "napitparar-mor9983",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "napitparar mor",
+        "bnName": "নাপিত পাড়ার মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a07e09d116e87ee35cf66"
+        },
+        "id": "haripur-bazar2272",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "haripur bazar",
+        "bnName": "হরিপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a08199d116e87ee35cf7c"
+        },
+        "id": "pirgasa-bazar4319",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "pirgasa bazar",
+        "bnName": "পীরগাছা বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a088e9d116e87ee35cfcd"
+        },
+        "id": "horina-hat2953",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "horina hat",
+        "bnName": "হরিণা হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a08ac9d116e87ee35cfe5"
+        },
+        "id": "arani-hat6506",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "arani hat",
+        "bnName": "আড়ানী হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a08d99d116e87ee35cffd"
+        },
+        "id": "arani-station-hat9745",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "arani station hat",
+        "bnName": "আড়ানী স্টেশন হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a09029d116e87ee35d01e"
+        },
+        "id": "sonadaho-bazar988",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "sonadaho bazar",
+        "bnName": "সোনাদহ বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677a0e809d116e87ee35d156"
+        },
+        "id": "fotepur-bazar7972",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03f"
+        },
+        "name": "fotepur bazar",
+        "bnName": "ফতেপুর হাট",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "677b86e1e84cdd194c0dd6f6"
+        },
+        "id": "bagha-bazar6896",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03b"
+        },
+        "name": "bagha bazar",
+        "bnName": "বাঘা বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67be051e3c9be1c62fb6dc4f"
+        },
+        "id": "নিতাই-সাহার-মোড়13",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "নিতাই সাহার মোড়",
+        "bnName": "নিতাই সাহার মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67d537b075d3d5745ac1e0ec"
+        },
+        "id": "পাঁচবাড়িয়া-তালবাড়ীয়া5225",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "পাঁচবাড়িয়া-তালবাড়ীয়া",
+        "bnName": "পাঁচবাড়িয়া-তালবাড়ীয়া",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67e190254bbaf0c5cbf90c31"
+        },
+        "id": "মনিগ্রাম-মাদ্রাসার-মোড়9696",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "মনিগ্রাম মাদ্রাসার মোড়",
+        "bnName": "মনিগ্রাম মাদ্রাসার মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6803b47e3fa8611f064fb554"
+        },
+        "id": "সাজির-বটতলা5702",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "সাজির বটতলা",
+        "bnName": "সাজির বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680458b83fa8611f064fdccb"
+        },
+        "id": "চৌমুহনী-বাজার1890",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "চৌমুহনী বাজার",
+        "bnName": "চৌমুহনী বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680dbcf8b8c7c37415999a18"
+        },
+        "id": "test5901",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c02f"
+        },
+        "name": "test",
+        "bnName": "test",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680dcfa0e807051c68527a7e"
+        },
+        "id": "এসের-এর-বটতলা8864",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "এসের এর বটতলা",
+        "bnName": "এসের এর বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680dd03de807051c68527a99"
+        },
+        "id": "এতিমখানা-মোড়7432",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "এতিমখানা মোড়",
+        "bnName": "এতিমখানা মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680de015e807051c68527d92"
+        },
+        "id": "কাউস-এর-মেল1082",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "কাউস এর মেল",
+        "bnName": "কাউস এর মেল",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680dff0ee807051c685286ee"
+        },
+        "id": "থানা-রোড1579",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "থানা রোড",
+        "bnName": "থানা রোড",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680e00cbe807051c68528771"
+        },
+        "id": "বাবু-পাড়া7215",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "বাবু পাড়া",
+        "bnName": "বাবু পাড়া",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680e0241e807051c685287a6"
+        },
+        "id": "গোপালপুর6417",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "গোপালপুর",
+        "bnName": "গোপালপুর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680ef6ade807051c68528d40"
+        },
+        "id": "মুংলি-রোড1716",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "মুংলি রোড",
+        "bnName": "মুংলি রোড",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680f0915e807051c68529248"
+        },
+        "id": "ফরিদপুর-বাজার2789",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "ফরিদপুর বাজার",
+        "bnName": "ফরিদপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680f1051e807051c6852949e"
+        },
+        "id": "রুস্তমপুর-বাজার5127",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "রুস্তমপুর বাজার",
+        "bnName": "রুস্তমপুর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680f1390e807051c68529752"
+        },
+        "id": "মোমেরপুর-মোড়4674",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "মোমেরপুর মোড়",
+        "bnName": "মোমেরপুর মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680f1497e807051c685297f5"
+        },
+        "id": "আড়ানি-রোড7680",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "আড়ানি রোড",
+        "bnName": "আড়ানি রোড",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680f152ae807051c68529829"
+        },
+        "id": "আরানী-রোড6332",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "আরানী রোড",
+        "bnName": "আরানী রোড",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680f16eae807051c685298ee"
+        },
+        "id": "আড়ানী-বাজার5305",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "আড়ানী বাজার",
+        "bnName": "আড়ানী বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680f1788e807051c68529959"
+        },
+        "id": "আড়ানী-বাজার-3225",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "আড়ানী বাজার ",
+        "bnName": "আড়ানী বাজার ",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680f24cae807051c6852a099"
+        },
+        "id": "আড়ানী-স্টেশন3795",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "আড়ানী স্টেশন",
+        "bnName": "আড়ানী স্টেশন",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680f2d3ee807051c6852a2a6"
+        },
+        "id": "বাঁকড়া-বাজার7563",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "বাঁকড়া বাজার",
+        "bnName": "বাঁকড়া বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "680fd403e807051c6852b42f"
+        },
+        "id": "বানেশ্বর-বাজার600",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c037"
+        },
+        "name": "বানেশ্বর বাজার",
+        "bnName": "বানেশ্বর বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6810c849e807051c6852cff1"
+        },
+        "id": "পল্লী-বিদ্যুৎ-মোড়7285",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "পিরোজপুর",
+        "bnName": "পিরোজপুর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6810ce40e807051c6852d0e6"
+        },
+        "id": "থানাপাড়া-ঈদগা-মোড়1445",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "থানাপাড়া ঈদগা মোড়",
+        "bnName": "থানাপাড়া ঈদগা মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6810d053e807051c6852d161"
+        },
+        "id": "হেমন্তর-মোড়9096",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "হেমন্তর মোড়",
+        "bnName": "হেমন্তর মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68118cede807051c6852d9f3"
+        },
+        "id": "বান্দার-বটতলা6789",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "বান্দার বটতলা",
+        "bnName": "বান্দার বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68119884e807051c6852dcfa"
+        },
+        "id": "আটঘরিয়া-মোড়2657",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "আটঘরিয়া মোড়",
+        "bnName": "আটঘরিয়া মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6811d410e807051c6852f9ea"
+        },
+        "id": "সরকঘাট-মোড়9850",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "সরকঘাট মোড়",
+        "bnName": "সরকঘাট মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6811e41ee807051c6852fe54"
+        },
+        "id": "আলাইপুর3460",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "আলাইপুর",
+        "bnName": "আলাইপুর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6811ed95e807051c68530283"
+        },
+        "id": "মাহাজন-পাড়া4409",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "মাহাজন পাড়া",
+        "bnName": "মাহাজন পাড়া",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6811f7f5e807051c6853069a"
+        },
+        "id": "নুরুর-বটতলা7031",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03e"
+        },
+        "name": "নুরুর বটতলা",
+        "bnName": "নুরুর বটতলা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68143bcdc52b97b0c00ade54"
+        },
+        "id": "সারদা-ট্রাফিক-মোড়1634",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "সারদা ট্রাফিক মোড়",
+        "bnName": "সারদা ট্রাফিক মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68143ff9c52b97b0c00ae254"
+        },
+        "id": "মুক্তারপুর5043",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c031"
+        },
+        "name": "মুক্তারপুর",
+        "bnName": "মুক্তারপুর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68144bc2c52b97b0c00ae7e2"
+        },
+        "id": "বাদলের-মোর4441",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "বাদলের মোর",
+        "bnName": "বাদলের মোর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "681457d5c52b97b0c00aec28"
+        },
+        "id": "হলিদা-গাছি-বাজার1498",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "হলিদা গাছি বাজার",
+        "bnName": "হলিদা গাছি বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68186f24c52b97b0c00b0f38"
+        },
+        "id": "বড়বাড়িয়া8628",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "বড়বাড়িয়া",
+        "bnName": "বড়বাড়িয়া",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68284cf293f75cddcbdfc9ec"
+        },
+        "id": "ছাতারী878",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03b"
+        },
+        "name": "ছাতারী",
+        "bnName": "ছাতারী",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "682eb71862348137c20030a4"
+        },
+        "id": "খোরদো-গোবিন্দপুর359",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "খোরদো গোবিন্দপুর",
+        "bnName": "খোরদো গোবিন্দপুর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "682ebd7762348137c20033a5"
+        },
+        "id": "নিতাই-সারমোর4359",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "নিতাই সারমোর",
+        "bnName": "নিতাই সারমোর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "682eda60bc96c5417e1f35d6"
+        },
+        "id": "হাবিবপুর3865",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "হাবিবপুর",
+        "bnName": "হাবিবপুর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "682ee880bc96c5417e1f41cb"
+        },
+        "id": "লক্ষ্মীপুর5051",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c033"
+        },
+        "name": "লক্ষ্মীপুর",
+        "bnName": "লক্ষ্মীপুর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "682f0183bc96c5417e1f4b91"
+        },
+        "id": "কালাবিপারা-বাজার8518",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "কালাবিপারা বাজার",
+        "bnName": "কালাবিপারা বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68301babbc96c5417e208b50"
+        },
+        "id": "দীঘা2325",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "দীঘা",
+        "bnName": "দীঘা",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6833338ebca75d4d00d30b6d"
+        },
+        "id": "কালুহাটি-বাজার7971",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "কালুহাটি বাজার",
+        "bnName": "কালুহাটি বাজার",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68333fd4bca75d4d00d31cc4"
+        },
+        "id": "খেরুরমোর7628",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "খেরুরমোর",
+        "bnName": "খেরুরমোর",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6835da0513464894292f1b37"
+        },
+        "id": "মালিনদহ7606",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03d"
+        },
+        "name": "মালিনদহ",
+        "bnName": "মালিনদহ",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "686382974252c20b56306f86"
+        },
+        "id": "babusa-bazar-8706",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c03f"
+        },
+        "name": "babusa Bazar ",
+        "bnName": "babusa Bazar ",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6865444672f3e1c1c9c6bd58"
+        },
+        "id": "কাশেমের-মোড়3251",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c034"
+        },
+        "name": "কাশেমের মোড়",
+        "bnName": "কাশেমের মোড়",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "6865543072f3e1c1c9c6dcc5"
+        },
+        "id": "কালাবি-পাড়া3923",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c032"
+        },
+        "name": "কালাবি পাড়া",
+        "bnName": "কালাবি পাড়া",
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "68a1e3321ecb1761181782ec"
+        },
+        "id": "রামচন্দ্রপুর1761",
+        "union": {
+            "$oid": "67696bd1d05a741a6e55c040"
+        },
+        "name": "রামচন্দ্রপুর",
+        "bnName": "রামচন্দ্রপুর",
+        "__v": 0
+    }
+]

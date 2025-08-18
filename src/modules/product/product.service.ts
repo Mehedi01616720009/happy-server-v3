@@ -375,7 +375,7 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
 ) => {
     const sr = query.sr;
     const createdAt = query.createdAt;
-    const matchStages: Record<string, unknown> = { status: 'Dispatched' };
+    const matchStages: Record<string, unknown> = { status: 'Processing' };
 
     if (sr) {
         matchStages.sr = { $in: sr };
@@ -467,6 +467,10 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
             $project: {
                 _id: '$_id',
                 name: '$product.name',
+                bnName: '$product.bnName',
+                packageType: '$product.packageType',
+                quantityPerPackage: '$product.quantityPerPackage',
+                image: '$product.image',
                 orderedQuantity: 1,
                 packedQuantity: 1,
                 soldQuantity: 1,

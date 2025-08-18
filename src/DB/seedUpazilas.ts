@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { Upazila } from '../modules/upazila/upazila.model';
+import { Types } from 'mongoose';
 
 export const seedUpazilas = async () => {
     try {
@@ -10,27 +11,24 @@ export const seedUpazilas = async () => {
 
         const totalUpazilas = await Upazila.countDocuments();
         if (totalUpazilas === 0) {
-            await Upazila.insertMany(upazilas);
+            const transformObjectId = (obj: any) => {
+                for (const key in obj) {
+                    if (typeof obj[key] === 'object' && obj[key]?.$oid) {
+                        obj[key] = obj[key].$oid;
+                    } else if (typeof obj[key] === 'object') {
+                        transformObjectId(obj[key]);
+                    }
+                }
+                return obj;
+            };
+
+            const cleanedData = upazilas.map((doc: any) =>
+                transformObjectId(doc)
+            );
+
+            // Insert the upazilas
+            await Upazila.insertMany(cleanedData);
         }
-
-        // Map and insert upazilas
-        // for (const upazila of upazilas) {
-        //     const districtName = 'Rajshahi';
-
-        //     const upazilaData = {
-        //         id: upazila.name,
-        //         district: districtName,
-        //         name: upazila.name,
-        //         bnName: upazila.bn_name,
-        //     };
-
-        //     // Upsert the upazila
-        //     await Upazila.updateOne(
-        //         { id: upazilaData.id },
-        //         { $set: upazilaData },
-        //         { upsert: true }
-        //     );
-        // }
     } catch (error) {
         console.log({ message: `Error seeding upazila data: ${error}` });
     }
