@@ -4,7 +4,7 @@ import { User } from '../user/user.model';
 import { ISr } from './sr.interface';
 import { Sr } from './sr.model';
 import QueryBuilder from '../../builder/QueryBuilder';
-import { Order, OrderDetails } from '../order/order.model';
+import { Order } from '../order/order.model';
 import mongoose, { Types } from 'mongoose';
 import moment from 'moment-timezone';
 import { TIMEZONE } from '../../constant';
@@ -71,7 +71,7 @@ const getSrOverviewFromDB = async (
 
     const orderIDs = orders.map(order => new Types.ObjectId(order._id));
 
-    const orderDetailsResult = await OrderDetails.aggregate([
+    const orderDetailsResult = await Order.aggregate([
         { $match: { order: { $in: orderIDs } } },
         { $unwind: '$products' },
         {
@@ -217,7 +217,7 @@ const getSrDashboardDataFromDB = async (
         },
     ]);
 
-    const oc = await OrderDetails.aggregate([
+    const oc = await Order.aggregate([
         {
             $lookup: {
                 from: 'orders',
@@ -346,7 +346,7 @@ const getSrHomeDataFromDB = async (
         },
     ]);
 
-    const oc = await OrderDetails.aggregate([
+    const oc = await Order.aggregate([
         {
             $lookup: {
                 from: 'orders',

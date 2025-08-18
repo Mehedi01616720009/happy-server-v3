@@ -507,72 +507,62 @@ const cancelOrderIntoDB = async (
     payload: { cancelledReason: string },
     userPayload: JwtPayload
 ) => {
-    const order = await Order.findOne({ id });
-    if (!order) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
-
-    const user = await User.findOne({ id: userPayload.userId });
-    if (!user) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Dsr Found');
-    }
-
-    const session = await mongoose.startSession();
-
-    try {
-        session.startTransaction();
-
-        const result = await Order.findByIdAndUpdate(
-            order?._id,
-            {
-                dsr: user._id,
-                status: 'Cancelled',
-                cancelledReason: payload?.cancelledReason,
-                cancelledTime: moment().tz(TIMEZONE).format(),
-                updatedAt: moment().tz(TIMEZONE).format(),
-            },
-            { session, new: true }
-        );
-
-        for (const productDetails of order.products) {
-            const productId = productDetails.product;
-
-            // Clone inventory.out to inventory.in
-            productDetails.inventory = productDetails.inventory || {};
-            productDetails.inventory.in = productDetails.inventory.out || 0;
-            productDetails.inventory.sale = 0;
-
-            // Fetch the product from the collection and update stock
-            const product = await Product.findById(productId).session(session);
-            if (!product) {
-                throw new Error(`Product not found: ${productId}`);
-            }
-
-            if (productDetails.inventory.out) {
-                await Product.findByIdAndUpdate(
-                    productId,
-                    {
-                        $inc: { stock: productDetails.inventory.out || 0 },
-                    },
-                    { session }
-                );
-            }
-        }
-        await orderDetails.save({ session });
-
-        await session.commitTransaction();
-        await session.endSession();
-
-        return result;
-    } catch (err) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'Mongoose transaction failed',
-            err as string
-        );
-    }
+    // const order = await Order.findOne({ id });
+    // if (!order) {
+    //     throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
+    // }
+    // const user = await User.findOne({ id: userPayload.userId });
+    // if (!user) {
+    //     throw new AppError(httpStatus.NOT_FOUND, 'No Dsr Found');
+    // }
+    // const session = await mongoose.startSession();
+    // try {
+    //     session.startTransaction();
+    //     const result = await Order.findByIdAndUpdate(
+    //         order?._id,
+    //         {
+    //             dsr: user._id,
+    //             status: 'Cancelled',
+    //             cancelledReason: payload?.cancelledReason,
+    //             cancelledTime: moment().tz(TIMEZONE).format(),
+    //             updatedAt: moment().tz(TIMEZONE).format(),
+    //         },
+    //         { session, new: true }
+    //     );
+    //     for (const productDetails of order.products) {
+    //         const productId = productDetails.product;
+    //         // Clone inventory.out to inventory.in
+    //         productDetails.inventory = productDetails.inventory || {};
+    //         productDetails.inventory.in = productDetails.inventory.out || 0;
+    //         productDetails.inventory.sale = 0;
+    //         // Fetch the product from the collection and update stock
+    //         const product = await Product.findById(productId).session(session);
+    //         if (!product) {
+    //             throw new Error(`Product not found: ${productId}`);
+    //         }
+    //         if (productDetails.inventory.out) {
+    //             await Product.findByIdAndUpdate(
+    //                 productId,
+    //                 {
+    //                     $inc: { stock: productDetails.inventory.out || 0 },
+    //                 },
+    //                 { session }
+    //             );
+    //         }
+    //     }
+    //     await orderDetails.save({ session });
+    //     await session.commitTransaction();
+    //     await session.endSession();
+    //     return result;
+    // } catch (err) {
+    //     await session.abortTransaction();
+    //     await session.endSession();
+    //     throw new AppError(
+    //         httpStatus.BAD_REQUEST,
+    //         'Mongoose transaction failed',
+    //         err as string
+    //     );
+    // }
 };
 
 // update order product by sr
@@ -581,110 +571,93 @@ const updateOrderProductBySrIntoDB = async (
     productId: string,
     payload: { quantity: number }
 ) => {
-    const order = await Order.findOne({ id });
-    if (!order) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
-
-    const product = await Product.findOne({ id: productId });
-    if (!product) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No product Found');
-    }
-    const product_id = product._id;
-
-    const orderDetails = await OrderDetails.findOne({ order: order._id });
-    if (!orderDetails) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No order details found');
-    }
-
-    const productIndex = orderDetails?.products.findIndex(
-        product => product.product.toString() === product_id.toString()
-    );
-    if (productIndex === -1) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Product not found in order');
-    }
-
-    const currentProduct = orderDetails?.products[productIndex as number];
-
-    const session = await mongoose.startSession();
-
-    try {
-        session.startTransaction();
-
-        await OrderDetails.findOneAndUpdate(
-            { order: order?._id },
-            {
-                $set: {
-                    'products.$[product].quantity': payload?.quantity,
-                    'products.$[product].totalAmount': Number(
-                        (
-                            (currentProduct.price /
-                                product.quantityPerPackage) *
-                            payload.quantity
-                        ).toFixed(2)
-                    ),
-                    'products.$[product].dealerTotalAmount': Number(
-                        (
-                            (Number(currentProduct.dealerPrice) /
-                                product.quantityPerPackage) *
-                            payload.quantity
-                        ).toFixed(2)
-                    ),
-                    'products.$[product].srTotalAmount': Number(
-                        (
-                            (Number(currentProduct.srPrice) /
-                                product.quantityPerPackage) *
-                            payload.quantity
-                        ).toFixed(2)
-                    ),
-                    'products.$[product].inventory.out': payload?.quantity,
-                },
-            },
-            {
-                session,
-                arrayFilters: [{ 'product.product': product._id }],
-            }
-        );
-
-        const orderDetailsForPrices = await OrderDetails.findOne({
-            order: order?._id,
-        }).session(session);
-
-        const collectionAmount = (
-            orderDetailsForPrices as IOrderDetails
-        ).products.reduce(
-            (acc, product) => (acc += Number(product.srTotalAmount)),
-            0
-        );
-
-        await Order.findByIdAndUpdate(
-            order?._id,
-            {
-                collectionAmount: Math.ceil(collectionAmount),
-                updatedAt: moment().tz(TIMEZONE).format(),
-            },
-            { session }
-        );
-
-        await session.commitTransaction();
-        await session.endSession();
-
-        const result = OrderDetails.findOne({
-            order: order?._id,
-        })
-            .populate('order')
-            .populate('products.product');
-
-        return result;
-    } catch (err) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'Mongoose transaction failed',
-            err as string
-        );
-    }
+    // const order = await Order.findOne({ id });
+    // if (!order) {
+    //     throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
+    // }
+    // const product = await Product.findOne({ id: productId });
+    // if (!product) {
+    //     throw new AppError(httpStatus.NOT_FOUND, 'No product Found');
+    // }
+    // const product_id = product._id;
+    // const productIndex = order?.products.findIndex(
+    //     product => product.product.toString() === product_id.toString()
+    // );
+    // if (productIndex === -1) {
+    //     throw new AppError(httpStatus.NOT_FOUND, 'Product not found in order');
+    // }
+    // const currentProduct = order?.products[productIndex as number];
+    // const session = await mongoose.startSession();
+    // try {
+    //     session.startTransaction();
+    //     await Order.findByIdAndUpdate(
+    //         order?._id,
+    //         {
+    //             $set: {
+    //                 'products.$[product].quantity': payload?.quantity,
+    //                 'products.$[product].totalAmount': Number(
+    //                     (
+    //                         (currentProduct.price /
+    //                             product.quantityPerPackage) *
+    //                         payload.quantity
+    //                     ).toFixed(2)
+    //                 ),
+    //                 'products.$[product].dealerTotalAmount': Number(
+    //                     (
+    //                         (Number(currentProduct.dealerPrice) /
+    //                             product.quantityPerPackage) *
+    //                         payload.quantity
+    //                     ).toFixed(2)
+    //                 ),
+    //                 'products.$[product].srTotalAmount': Number(
+    //                     (
+    //                         (Number(currentProduct.srPrice) /
+    //                             product.quantityPerPackage) *
+    //                         payload.quantity
+    //                     ).toFixed(2)
+    //                 ),
+    //                 'products.$[product].inventory.out': payload?.quantity,
+    //             },
+    //         },
+    //         {
+    //             session,
+    //             arrayFilters: [{ 'product.product': product._id }],
+    //         }
+    //     );
+    //     const orderDetailsForPrices = await OrderDetails.findOne({
+    //         order: order?._id,
+    //     }).session(session);
+    //     const collectionAmount = (
+    //         orderDetailsForPrices as IOrderDetails
+    //     ).products.reduce(
+    //         (acc, product) => (acc += Number(product.srTotalAmount)),
+    //         0
+    //     );
+    //     await Order.findByIdAndUpdate(
+    //         order?._id,
+    //         {
+    //             collectionAmount: Math.ceil(collectionAmount),
+    //             updatedAt: moment().tz(TIMEZONE).format(),
+    //         },
+    //         { session }
+    //     );
+    //     await session.commitTransaction();
+    //     await session.endSession();
+    //     const result = OrderDetails.findOne({
+    //         order: order?._id,
+    //     })
+    //         .populate('order')
+    //         .populate('products.product');
+    //     return result;
+    // } catch (err) {
+    //     await session.abortTransaction();
+    //     await session.endSession();
+    //     throw new AppError(
+    //         httpStatus.BAD_REQUEST,
+    //         'Mongoose transaction failed',
+    //         err as string
+    //     );
+    // }
 };
 
 // deliver order
@@ -700,11 +673,6 @@ const deliverOrderIntoDB = async (
     const order = await Order.findOne({ id });
     if (!order) {
         throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
-
-    const orderDetails = await OrderDetails.findOne({ order: order._id });
-    if (!orderDetails) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order details Found');
     }
 
     const user = await User.findOne({ id: userPayload.userId });
@@ -755,11 +723,8 @@ const deliverOrderIntoDB = async (
         }
 
         if (payload.status === 'Delivered') {
-            for (const productDetails of orderDetails.products) {
+            for (const productDetails of order.products) {
                 const productId = productDetails.product;
-
-                // Clone inventory.out to inventory.in
-                productDetails.inventory = productDetails.inventory || {};
 
                 // Fetch the product from the collection and update stock
                 const product = await Product.findById(productId).session(
@@ -767,16 +732,6 @@ const deliverOrderIntoDB = async (
                 );
                 if (!product) {
                     throw new Error(`Product not found: ${productId}`);
-                }
-
-                if (productDetails.inventory.in) {
-                    await Product.findByIdAndUpdate(
-                        productId,
-                        {
-                            $inc: { stock: productDetails.inventory.in || 0 },
-                        },
-                        { session }
-                    );
                 }
             }
         }
@@ -798,363 +753,351 @@ const deliverOrderIntoDB = async (
 
 // get order inventory
 const getOrderInventoryFromDB = async (query: Record<string, unknown>) => {
-    const fetchQuery = new QueryBuilder(
-        Order.find({
-            status: {
-                $in: [
-                    'Dispatched',
-                    'Delivered',
-                    'Cancelled',
-                    'Pending',
-                    'Baki',
-                ],
-            },
-        }).select('_id'),
-        query
-    )
-        .filter()
-        .sort()
-        .fields();
-
-    const orders = await fetchQuery.modelQuery;
-    if (!orders) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
-
-    const orderIDs = orders.map(order => new Types.ObjectId(order._id));
-
-    const result = await OrderDetails.aggregate([
-        { $match: { order: { $in: orderIDs } } },
-        { $unwind: '$products' },
-        {
-            $lookup: {
-                from: 'products',
-                localField: 'products.product',
-                foreignField: '_id',
-                as: 'productDetails',
-            },
-        },
-        { $unwind: '$productDetails' },
-        {
-            $addFields: {
-                srPricePerUnit: {
-                    $cond: [
-                        { $gt: ['$products.srPrice', 0] },
-                        {
-                            $divide: [
-                                '$products.srPrice',
-                                '$productDetails.quantityPerPackage',
-                            ],
-                        },
-                        0,
-                    ],
-                },
-            },
-        },
-        {
-            $group: {
-                _id: null,
-                totalOut: {
-                    $sum: {
-                        $ifNull: ['$products.inventory.out', 0],
-                    },
-                },
-                totalOutPrice: {
-                    $sum: {
-                        $cond: [
-                            { $gt: ['$products.inventory.out', 0] },
-                            {
-                                $multiply: [
-                                    '$products.inventory.out',
-                                    '$srPricePerUnit',
-                                ],
-                            },
-                            0,
-                        ],
-                    },
-                },
-                totalSale: {
-                    $sum: {
-                        $ifNull: ['$products.inventory.sale', 0],
-                    },
-                },
-                totalSalePrice: {
-                    $sum: {
-                        $cond: [
-                            { $gt: ['$products.inventory.sale', 0] },
-                            {
-                                $multiply: [
-                                    '$products.inventory.sale',
-                                    '$srPricePerUnit',
-                                ],
-                            },
-                            0,
-                        ],
-                    },
-                },
-                totalIn: {
-                    $sum: {
-                        $ifNull: ['$products.inventory.in', 0],
-                    },
-                },
-                totalInPrice: {
-                    $sum: {
-                        $multiply: [
-                            { $ifNull: ['$products.inventory.in', 0] },
-                            '$srPricePerUnit',
-                        ],
-                    },
-                },
-            },
-        },
-        {
-            $project: {
-                _id: 0,
-                totalOut: 1,
-                totalOutPrice: { $round: ['$totalOutPrice', 2] },
-                totalSale: 1,
-                totalSalePrice: { $round: ['$totalSalePrice', 2] },
-                totalIn: 1,
-                totalInPrice: { $round: ['$totalInPrice', 2] },
-            },
-        },
-    ]);
-
-    return (
-        result[0] || {
-            totalOut: 0,
-            totalOutPrice: 0,
-            totalSale: 0,
-            totalSalePrice: 0,
-            totalIn: 0,
-            totalInPrice: 0,
-        }
-    );
+    // const fetchQuery = new QueryBuilder(
+    //     Order.find({
+    //         status: {
+    //             $in: [
+    //                 'Dispatched',
+    //                 'Delivered',
+    //                 'Cancelled',
+    //                 'Pending',
+    //                 'Baki',
+    //             ],
+    //         },
+    //     }).select('_id'),
+    //     query
+    // )
+    //     .filter()
+    //     .sort()
+    //     .fields();
+    // const orders = await fetchQuery.modelQuery;
+    // if (!orders) {
+    //     throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
+    // }
+    // const orderIDs = orders.map(order => new Types.ObjectId(order._id));
+    // const result = await OrderDetails.aggregate([
+    //     { $match: { order: { $in: orderIDs } } },
+    //     { $unwind: '$products' },
+    //     {
+    //         $lookup: {
+    //             from: 'products',
+    //             localField: 'products.product',
+    //             foreignField: '_id',
+    //             as: 'productDetails',
+    //         },
+    //     },
+    //     { $unwind: '$productDetails' },
+    //     {
+    //         $addFields: {
+    //             srPricePerUnit: {
+    //                 $cond: [
+    //                     { $gt: ['$products.srPrice', 0] },
+    //                     {
+    //                         $divide: [
+    //                             '$products.srPrice',
+    //                             '$productDetails.quantityPerPackage',
+    //                         ],
+    //                     },
+    //                     0,
+    //                 ],
+    //             },
+    //         },
+    //     },
+    //     {
+    //         $group: {
+    //             _id: null,
+    //             totalOut: {
+    //                 $sum: {
+    //                     $ifNull: ['$products.inventory.out', 0],
+    //                 },
+    //             },
+    //             totalOutPrice: {
+    //                 $sum: {
+    //                     $cond: [
+    //                         { $gt: ['$products.inventory.out', 0] },
+    //                         {
+    //                             $multiply: [
+    //                                 '$products.inventory.out',
+    //                                 '$srPricePerUnit',
+    //                             ],
+    //                         },
+    //                         0,
+    //                     ],
+    //                 },
+    //             },
+    //             totalSale: {
+    //                 $sum: {
+    //                     $ifNull: ['$products.inventory.sale', 0],
+    //                 },
+    //             },
+    //             totalSalePrice: {
+    //                 $sum: {
+    //                     $cond: [
+    //                         { $gt: ['$products.inventory.sale', 0] },
+    //                         {
+    //                             $multiply: [
+    //                                 '$products.inventory.sale',
+    //                                 '$srPricePerUnit',
+    //                             ],
+    //                         },
+    //                         0,
+    //                     ],
+    //                 },
+    //             },
+    //             totalIn: {
+    //                 $sum: {
+    //                     $ifNull: ['$products.inventory.in', 0],
+    //                 },
+    //             },
+    //             totalInPrice: {
+    //                 $sum: {
+    //                     $multiply: [
+    //                         { $ifNull: ['$products.inventory.in', 0] },
+    //                         '$srPricePerUnit',
+    //                     ],
+    //                 },
+    //             },
+    //         },
+    //     },
+    //     {
+    //         $project: {
+    //             _id: 0,
+    //             totalOut: 1,
+    //             totalOutPrice: { $round: ['$totalOutPrice', 2] },
+    //             totalSale: 1,
+    //             totalSalePrice: { $round: ['$totalSalePrice', 2] },
+    //             totalIn: 1,
+    //             totalInPrice: { $round: ['$totalInPrice', 2] },
+    //         },
+    //     },
+    // ]);
+    // return (
+    //     result[0] || {
+    //         totalOut: 0,
+    //         totalOutPrice: 0,
+    //         totalSale: 0,
+    //         totalSalePrice: 0,
+    //         totalIn: 0,
+    //         totalInPrice: 0,
+    //     }
+    // );
 };
 
 // get order inventory details
 const getOrderInventoryDetailsFromDB = async (
     query: Record<string, unknown>
 ) => {
-    const fetchQuery = new QueryBuilder(
-        Order.find({
-            status: {
-                $in: [
-                    'Dispatched',
-                    'Delivered',
-                    'Cancelled',
-                    'Pending',
-                    'Baki',
-                ],
-            },
-        }).select('_id'),
-        query
-    )
-        .filter()
-        .sort()
-        .fields();
-
-    const orders = await fetchQuery.modelQuery;
-    if (!orders) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
-
-    const orderIDs = orders.map(order => new Types.ObjectId(order._id));
-
-    const result = await OrderDetails.aggregate([
-        { $match: { order: { $in: orderIDs } } },
-        { $unwind: '$products' },
-        {
-            $lookup: {
-                from: 'products',
-                localField: 'products.product',
-                foreignField: '_id',
-                as: 'productDetails',
-            },
-        },
-        { $unwind: '$productDetails' },
-        {
-            $addFields: {
-                srPricePerUnit: {
-                    $cond: [
-                        { $gt: ['$products.srPrice', 0] },
-                        {
-                            $divide: [
-                                '$products.srPrice',
-                                '$productDetails.quantityPerPackage',
-                            ],
-                        },
-                        0,
-                    ],
-                },
-                oc: {
-                    $subtract: [
-                        '$products.srTotalAmount',
-                        { $ifNull: ['$products.dealerTotalAmount', 0] },
-                    ],
-                },
-            },
-        },
-        {
-            $group: {
-                _id: '$productDetails._id',
-                id: { $first: '$productDetails.id' },
-                image: { $first: '$productDetails.image' },
-                product: { $first: '$productDetails.name' },
-                quantityPerPackage: {
-                    $first: '$productDetails.quantityPerPackage',
-                },
-                packageType: {
-                    $first: '$productDetails.packageType',
-                },
-                oc: { $sum: '$oc' },
-                totalOut: {
-                    $sum: {
-                        $ifNull: ['$products.inventory.out', 0],
-                    },
-                },
-                totalOutPrice: {
-                    $sum: {
-                        $cond: [
-                            { $gt: ['$products.inventory.out', 0] },
-                            {
-                                $multiply: [
-                                    '$products.inventory.out',
-                                    '$srPricePerUnit',
-                                ],
-                            },
-                            0,
-                        ],
-                    },
-                },
-                totalSale: {
-                    $sum: {
-                        $ifNull: ['$products.inventory.sale', 0],
-                    },
-                },
-                totalSalePrice: {
-                    $sum: {
-                        $cond: [
-                            { $gt: ['$products.inventory.sale', 0] },
-                            {
-                                $multiply: [
-                                    '$products.inventory.sale',
-                                    '$srPricePerUnit',
-                                ],
-                            },
-                            0,
-                        ],
-                    },
-                },
-                totalIn: {
-                    $sum: {
-                        $ifNull: ['$products.inventory.in', 0],
-                    },
-                },
-                totalInPrice: {
-                    $sum: {
-                        $multiply: [
-                            { $ifNull: ['$products.inventory.in', 0] },
-                            '$srPricePerUnit',
-                        ],
-                    },
-                },
-            },
-        },
-        {
-            $project: {
-                _id: 0,
-                id: 1,
-                image: 1,
-                product: 1,
-                quantityPerPackage: 1,
-                packageType: 1,
-                oc: 1,
-                totalOut: 1,
-                totalOutPrice: { $ceil: '$totalOutPrice' },
-                totalSale: 1,
-                totalSalePrice: { $ceil: '$totalSalePrice' },
-                totalIn: 1,
-                totalInPrice: { $ceil: '$totalInPrice' },
-            },
-        },
-    ]);
-
-    return result;
+    // const fetchQuery = new QueryBuilder(
+    //     Order.find({
+    //         status: {
+    //             $in: [
+    //                 'Dispatched',
+    //                 'Delivered',
+    //                 'Cancelled',
+    //                 'Pending',
+    //                 'Baki',
+    //             ],
+    //         },
+    //     }).select('_id'),
+    //     query
+    // )
+    //     .filter()
+    //     .sort()
+    //     .fields();
+    // const orders = await fetchQuery.modelQuery;
+    // if (!orders) {
+    //     throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
+    // }
+    // const orderIDs = orders.map(order => new Types.ObjectId(order._id));
+    // const result = await OrderDetails.aggregate([
+    //     { $match: { order: { $in: orderIDs } } },
+    //     { $unwind: '$products' },
+    //     {
+    //         $lookup: {
+    //             from: 'products',
+    //             localField: 'products.product',
+    //             foreignField: '_id',
+    //             as: 'productDetails',
+    //         },
+    //     },
+    //     { $unwind: '$productDetails' },
+    //     {
+    //         $addFields: {
+    //             srPricePerUnit: {
+    //                 $cond: [
+    //                     { $gt: ['$products.srPrice', 0] },
+    //                     {
+    //                         $divide: [
+    //                             '$products.srPrice',
+    //                             '$productDetails.quantityPerPackage',
+    //                         ],
+    //                     },
+    //                     0,
+    //                 ],
+    //             },
+    //             oc: {
+    //                 $subtract: [
+    //                     '$products.srTotalAmount',
+    //                     { $ifNull: ['$products.dealerTotalAmount', 0] },
+    //                 ],
+    //             },
+    //         },
+    //     },
+    //     {
+    //         $group: {
+    //             _id: '$productDetails._id',
+    //             id: { $first: '$productDetails.id' },
+    //             image: { $first: '$productDetails.image' },
+    //             product: { $first: '$productDetails.name' },
+    //             quantityPerPackage: {
+    //                 $first: '$productDetails.quantityPerPackage',
+    //             },
+    //             packageType: {
+    //                 $first: '$productDetails.packageType',
+    //             },
+    //             oc: { $sum: '$oc' },
+    //             totalOut: {
+    //                 $sum: {
+    //                     $ifNull: ['$products.inventory.out', 0],
+    //                 },
+    //             },
+    //             totalOutPrice: {
+    //                 $sum: {
+    //                     $cond: [
+    //                         { $gt: ['$products.inventory.out', 0] },
+    //                         {
+    //                             $multiply: [
+    //                                 '$products.inventory.out',
+    //                                 '$srPricePerUnit',
+    //                             ],
+    //                         },
+    //                         0,
+    //                     ],
+    //                 },
+    //             },
+    //             totalSale: {
+    //                 $sum: {
+    //                     $ifNull: ['$products.inventory.sale', 0],
+    //                 },
+    //             },
+    //             totalSalePrice: {
+    //                 $sum: {
+    //                     $cond: [
+    //                         { $gt: ['$products.inventory.sale', 0] },
+    //                         {
+    //                             $multiply: [
+    //                                 '$products.inventory.sale',
+    //                                 '$srPricePerUnit',
+    //                             ],
+    //                         },
+    //                         0,
+    //                     ],
+    //                 },
+    //             },
+    //             totalIn: {
+    //                 $sum: {
+    //                     $ifNull: ['$products.inventory.in', 0],
+    //                 },
+    //             },
+    //             totalInPrice: {
+    //                 $sum: {
+    //                     $multiply: [
+    //                         { $ifNull: ['$products.inventory.in', 0] },
+    //                         '$srPricePerUnit',
+    //                     ],
+    //                 },
+    //             },
+    //         },
+    //     },
+    //     {
+    //         $project: {
+    //             _id: 0,
+    //             id: 1,
+    //             image: 1,
+    //             product: 1,
+    //             quantityPerPackage: 1,
+    //             packageType: 1,
+    //             oc: 1,
+    //             totalOut: 1,
+    //             totalOutPrice: { $ceil: '$totalOutPrice' },
+    //             totalSale: 1,
+    //             totalSalePrice: { $ceil: '$totalSalePrice' },
+    //             totalIn: 1,
+    //             totalInPrice: { $ceil: '$totalInPrice' },
+    //         },
+    //     },
+    // ]);
+    // return result;
 };
 
 // get order summary
 const getOrderSummaryFromDB = async (query: Record<string, unknown>) => {
     // Order.find({ status: { $ne: 'Cancelled' } }).select('_id')
-    const fetchQuery = new QueryBuilder(Order.find().select('_id'), query)
-        .filter()
-        .sort()
-        .fields();
-
-    const orders = await fetchQuery.modelQuery;
-    if (!orders) {
-        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    }
-
-    const orderIDs = orders.map(order => new Types.ObjectId(order._id));
-
-    const result = await OrderDetails.aggregate([
-        { $match: { order: { $in: orderIDs } } },
-        { $unwind: '$products' },
-        {
-            $lookup: {
-                from: 'products',
-                localField: 'products.product',
-                foreignField: '_id',
-                as: 'productDetails',
-            },
-        },
-        {
-            $unwind: '$productDetails',
-        },
-        {
-            $addFields: {
-                oc: {
-                    $subtract: [
-                        '$products.srTotalAmount',
-                        { $ifNull: ['$products.dealerTotalAmount', 0] },
-                    ],
-                },
-            },
-        },
-        {
-            $group: {
-                _id: '$products.product',
-                productName: { $first: '$productDetails.name' },
-                quantityPerPackage: {
-                    $first: '$productDetails.quantityPerPackage',
-                },
-                packageType: { $first: '$productDetails.packageType' },
-                image: { $first: '$productDetails.image' },
-                totalQuantity: { $sum: '$products.inventory.out' },
-                totalSaleQuantity: { $sum: '$products.inventory.sale' },
-                totalOrder: { $sum: 1 },
-                totalOc: { $sum: '$oc' },
-                totalPrice: { $sum: '$products.srTotalAmount' },
-            },
-        },
-        {
-            $project: {
-                _id: 0,
-                productName: 1,
-                packageType: 1,
-                image: 1,
-                quantityPerPackage: 1,
-                totalQuantity: 1,
-                totalSaleQuantity: 1,
-                totalOrder: 1,
-                totalOc: 1,
-                totalPrice: 1,
-            },
-        },
-    ]);
-
-    return result;
+    // const fetchQuery = new QueryBuilder(Order.find().select('_id'), query)
+    //     .filter()
+    //     .sort()
+    //     .fields();
+    // const orders = await fetchQuery.modelQuery;
+    // if (!orders) {
+    //     throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
+    // }
+    // const orderIDs = orders.map(order => new Types.ObjectId(order._id));
+    // const result = await OrderDetails.aggregate([
+    //     { $match: { order: { $in: orderIDs } } },
+    //     { $unwind: '$products' },
+    //     {
+    //         $lookup: {
+    //             from: 'products',
+    //             localField: 'products.product',
+    //             foreignField: '_id',
+    //             as: 'productDetails',
+    //         },
+    //     },
+    //     {
+    //         $unwind: '$productDetails',
+    //     },
+    //     {
+    //         $addFields: {
+    //             oc: {
+    //                 $subtract: [
+    //                     '$products.srTotalAmount',
+    //                     { $ifNull: ['$products.dealerTotalAmount', 0] },
+    //                 ],
+    //             },
+    //         },
+    //     },
+    //     {
+    //         $group: {
+    //             _id: '$products.product',
+    //             productName: { $first: '$productDetails.name' },
+    //             quantityPerPackage: {
+    //                 $first: '$productDetails.quantityPerPackage',
+    //             },
+    //             packageType: { $first: '$productDetails.packageType' },
+    //             image: { $first: '$productDetails.image' },
+    //             totalQuantity: { $sum: '$products.inventory.out' },
+    //             totalSaleQuantity: { $sum: '$products.inventory.sale' },
+    //             totalOrder: { $sum: 1 },
+    //             totalOc: { $sum: '$oc' },
+    //             totalPrice: { $sum: '$products.srTotalAmount' },
+    //         },
+    //     },
+    //     {
+    //         $project: {
+    //             _id: 0,
+    //             productName: 1,
+    //             packageType: 1,
+    //             image: 1,
+    //             quantityPerPackage: 1,
+    //             totalQuantity: 1,
+    //             totalSaleQuantity: 1,
+    //             totalOrder: 1,
+    //             totalOc: 1,
+    //             totalPrice: 1,
+    //         },
+    //     },
+    // ]);
+    // return result;
 };
 
 // get order history
@@ -1256,26 +1199,8 @@ const deleteOrderFromDB = async (id: string) => {
     if (!order) {
         throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
     }
-    const session = await mongoose.startSession();
 
-    try {
-        session.startTransaction();
-
-        const result = await Order.findByIdAndDelete(order._id, { session });
-        await OrderDetails.findOneAndDelete({ order: order._id }, { session });
-
-        await session.commitTransaction();
-        await session.endSession();
-        return result;
-    } catch (err) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'Mongoose transaction failed',
-            err as string
-        );
-    }
+    const result = await Order.findByIdAndDelete(order._id);
 };
 
 // delete many order
@@ -1286,29 +1211,8 @@ const deleteManyOrderFromDB = async (payload: { id: string[] }) => {
     }
 
     const orderIDs = orders.map(order => order._id);
-    const session = await mongoose.startSession();
 
-    try {
-        session.startTransaction();
-
-        await Order.deleteMany({ _id: { $in: orderIDs } }, { session });
-        await OrderDetails.deleteMany(
-            { order: { $in: orderIDs } },
-            { session }
-        );
-
-        await session.commitTransaction();
-        await session.endSession();
-        return null;
-    } catch (err) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'Mongoose transaction failed',
-            err as string
-        );
-    }
+    await Order.deleteMany({ _id: { $in: orderIDs } });
 };
 
 export const OrderServices = {

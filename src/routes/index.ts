@@ -22,6 +22,7 @@ import { TagRoutes } from '../modules/tag/tag.route';
 import { WarehouseRoutes } from '../modules/warehouse/warehouse.route';
 import { InProductRoutes } from '../modules/inproduct/inproduct.route';
 import { StockRoutes } from '../modules/stock/stock.route';
+import { InventoryRoutes } from '../modules/inventory/inventory.route';
 
 // route initialization
 const router = Router();
@@ -68,6 +69,10 @@ const routes = [
     {
         path: '/in-products',
         route: InProductRoutes,
+    },
+    {
+        path: '/inventories',
+        route: InventoryRoutes,
     },
     {
         path: '/media',

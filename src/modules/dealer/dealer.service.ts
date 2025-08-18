@@ -6,7 +6,7 @@ import mongoose, { Types } from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { Sr } from '../sr/sr.model';
 import { Product } from '../product/product.model';
-import { Order, OrderDetails } from '../order/order.model';
+import { Order } from '../order/order.model';
 import moment from 'moment-timezone';
 import { TIMEZONE } from '../../constant';
 import { Damage } from '../damage/damage.model';
@@ -214,7 +214,7 @@ const getDealerDashboardDataFromDB = async (
         },
     ]);
 
-    const profit = await OrderDetails.aggregate([
+    const profit = await Order.aggregate([
         {
             $lookup: {
                 from: 'orders',
@@ -338,7 +338,7 @@ const getDealerStockDataFromDB = async (id: string) => {
         },
     ]);
 
-    const totalProfit = await OrderDetails.aggregate([
+    const totalProfit = await Order.aggregate([
         {
             $lookup: {
                 from: 'orders',
@@ -378,7 +378,7 @@ const getDealerStockDataFromDB = async (id: string) => {
         },
     ]);
 
-    const totalOverCommission = await OrderDetails.aggregate([
+    const totalOverCommission = await Order.aggregate([
         {
             $lookup: {
                 from: 'orders',
