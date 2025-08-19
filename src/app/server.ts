@@ -5,6 +5,7 @@ import app from './app';
 import seedSuperAdmin from '../DB';
 import { seedUpazilas } from '../DB/seedUpazilas';
 import { seedUnions } from '../DB/seedUnions';
+import { seedAreas } from '../DB/seedAreas';
 
 // server initialization
 let server: Server;
@@ -22,6 +23,9 @@ async function main() {
 
         // seed unions
         await seedUnions();
+
+        // seed areas
+        await seedAreas();
 
         // server initial port listener
         server = app.listen(config.port, () => {

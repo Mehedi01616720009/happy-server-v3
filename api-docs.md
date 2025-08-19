@@ -2,6 +2,98 @@
 
 This document provides documentation for the available API endpoints.
 
+## Inventory API
+
+### Create Inventory
+
+-   **URL:** `/inventories`
+-   **Method:** `POST`
+-   **Description:** Create a new inventory record.
+-   **Authentication:** Required. User must have the `packingMan` role.
+-   **Headers:**
+    -   `Authorization`: `Bearer <token>`
+-   **Request Body:**
+    ```json
+    {
+        "packingman": "string",
+        "dsr": "string",
+        "warehouse": "string",
+        "product": "string",
+        "outQuantity": "number"
+    }
+    ```
+-   **Success Response:**
+    -   **Code:** 200 OK
+    -   **Content:**
+        ```json
+        {
+            "success": true,
+            "message": "Inventory created successfully",
+            "data": {
+                "_id": "60d5f2b4a6d2f1a2b8c0e1a6",
+                "packingman": "60d5f2b4a6d2f1a2b8c0e1a1",
+                "dsr": "60d5f2b4a6d2f1a2b8c0e1a2",
+                "warehouse": "60d5f2b4a6d2f1a2b8c0e1a3",
+                "product": "60d5f2b4a6d2f1a2b8c0e1a4",
+                "outQuantity": 10
+            }
+        }
+        ```
+-   **Error Response:**
+    -   **Code:** 401 Unauthorized
+    -   **Content:**
+        ```json
+        {
+            "success": false,
+            "message": "You are not authorized!"
+        }
+        ```
+
+### Create Alt Inventory
+
+-   **URL:** `/inventories/alt`
+-   **Method:** `POST`
+-   **Description:** Create a new alternative inventory record.
+-   **Authentication:** Required. User must have the `packingMan` role.
+-   **Headers:**
+    -   `Authorization`: `Bearer <token>`
+-   **Request Body:**
+    ```json
+    {
+        "packingman": "string",
+        "dsr": "string",
+        "warehouse": "string",
+        "product": "string",
+        "outQuantity": "number"
+    }
+    ```
+-   **Success Response:**
+    -   **Code:** 200 OK
+    -   **Content:**
+        ```json
+        {
+            "success": true,
+            "message": "Alt Inventory created successfully",
+            "data": {
+                "_id": "60d5f2b4a6d2f1a2b8c0e1a7",
+                "packingman": "60d5f2b4a6d2f1a2b8c0e1a1",
+                "dsr": "60d5f2b4a6d2f1a2b8c0e1a2",
+                "warehouse": "60d5f2b4a6d2f1a2b8c0e1a3",
+                "product": "60d5f2b4a6d2f1a2b8c0e1a4",
+                "outQuantity": 20
+            }
+        }
+        ```
+-   **Error Response:**
+    -   **Code:** 401 Unauthorized
+    -   **Content:**
+        ```json
+        {
+            "success": false,
+            "message": "You are not authorized!"
+        }
+        ```
+
 ## Product API
 
 ### Get Products Grouped by SR and Status Dispatched
@@ -23,6 +115,10 @@ This document provides documentation for the available API endpoints.
                 {
                     "_id": "60d5f2b4a6d2f1a2b8c0e1a2",
                     "name": "Product Name",
+                    "bnName": "Product Bangla Name",
+                    "packageType": "Box",
+                    "quantityPerPackage": 24,
+                    "image": "https://example.com/image/image.jpg",
                     "orderedQuantity": 10,
                     "packedQuantity": 8,
                     "soldQuantity": 5,

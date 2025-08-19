@@ -14,6 +14,7 @@ import { Retailer } from '../retailer/retailer.model';
 import { CustomerCareData } from '../customerCare/customerCare.model';
 import { Packingman, PickedProduct } from '../pickupMan/pickupMan.model';
 import { Union } from '../union/union.model';
+import { Warehouse } from '../warehouse/warehouse.model';
 
 // create order
 const createOrderIntoDB = async (payload: ICreateOrder) => {
@@ -147,7 +148,9 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
 };
 
 // create ready order
-const createReadyOrderIntoDB = async (payload: ICreateOrder) => {
+const createReadyOrderIntoDB = async (
+    payload: ICreateOrder & { warehouse: string }
+) => {
     const retailer = await User.findOne({ id: payload?.retailer });
     if (!retailer) {
         throw new AppError(httpStatus.NOT_FOUND, 'No Retailer Found');
@@ -161,6 +164,11 @@ const createReadyOrderIntoDB = async (payload: ICreateOrder) => {
     const dealer = await User.findOne({ id: payload?.dealer });
     if (!dealer) {
         throw new AppError(httpStatus.NOT_FOUND, 'No Dealer Found');
+    }
+
+    const warehouse = await Warehouse.findOne({ id: payload?.warehouse });
+    if (!warehouse) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No warehouse Found');
     }
 
     let sr = null;
@@ -262,11 +270,63 @@ const createReadyOrderIntoDB = async (payload: ICreateOrder) => {
             return orderDetails;
         })
     );
-
     orderData.products = orderDetailsData;
 
-    const result = await Order.create(orderData);
-    return result;
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const result = await Order.create([orderData], { session });
+
+        const products = orderData.products;
+
+        if (products) {
+            await Promise.all(
+                products.map(async product => {
+                    const productStock = await PickedProduct.find({
+                        warehouse: warehouse._id,
+                        product: product.product,
+                    })
+                        .session(session)
+                        .sort('-insertedDate')
+                        .limit(1);
+
+                    if (productStock.length > 0) {
+                        if (productStock[0].quantity < product.quantity) {
+                            throw new AppError(
+                                httpStatus.NOT_FOUND,
+                                'Stock is too low'
+                            );
+                        }
+                        await PickedProduct.findByIdAndUpdate(
+                            productStock[0]._id,
+                            { $inc: { quantity: -product.quantity } },
+                            { session, new: true }
+                        );
+                    } else {
+                        throw new AppError(
+                            httpStatus.NOT_FOUND,
+                            'No stock found for this product'
+                        );
+                    }
+                })
+            );
+        }
+
+        await session.commitTransaction();
+        await session.endSession();
+
+        return result[0];
+    } catch (err) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Mongoose transaction failed',
+            err as string
+        );
+    }
 };
 
 // get all order

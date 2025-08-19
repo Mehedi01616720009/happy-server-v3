@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { Area } from '../modules/area/area.model';
 
-export const seedUpazilas = async () => {
+export const seedAreas = async () => {
     try {
         // Read the JSON files
         const areaFilePath = path.join('data', 'area.json');
