@@ -121,7 +121,6 @@ This document provides documentation for the available API endpoints.
                     "image": "https://example.com/image/image.jpg",
                     "orderedQuantity": 10,
                     "packedQuantity": 8,
-                    "soldQuantity": 5,
                     "stock": 100
                 }
                 // more...

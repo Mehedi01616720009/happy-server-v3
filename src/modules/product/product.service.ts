@@ -378,7 +378,11 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
     const matchStages: Record<string, unknown> = { status: 'Processing' };
 
     if (sr) {
-        matchStages.sr = { $in: sr };
+        matchStages.sr = {
+            $in: (sr as string[]).map(
+                (item: string) => new Types.ObjectId(item)
+            ),
+        };
     }
     if (createdAt) {
         matchStages.createdAt = {
@@ -415,12 +419,6 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
                 orderedQuantity: {
                     $sum: { $ifNull: ['$products.summary.orderedQuantity', 0] },
                 },
-                packedQuantity: {
-                    $sum: { $ifNull: ['$products.summary.packedQuantity', 0] },
-                },
-                soldQuantity: {
-                    $sum: { $ifNull: ['$products.summary.soldQuantity', 0] },
-                },
             },
         },
         {
@@ -454,6 +452,32 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
             },
         },
         {
+            $lookup: {
+                from: 'inventories',
+                let: { productId: '$_id' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ['$product', '$$productId'] },
+                                    { $eq: ['$warehouse', warehouseId] },
+                                    { $eq: ['$packingman', packingMan._id] },
+                                ],
+                            },
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            totalPacked: { $sum: '$outQuantity' },
+                        },
+                    },
+                ],
+                as: 'inventoryPacked',
+            },
+        },
+        {
             $addFields: {
                 stock: {
                     $ifNull: [
@@ -461,11 +485,17 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
                         0,
                     ],
                 },
+                packedQuantity: {
+                    $ifNull: [
+                        { $arrayElemAt: ['$inventoryPacked.totalPacked', 0] },
+                        0,
+                    ],
+                },
             },
         },
         {
             $project: {
-                _id: '$_id',
+                _id: 1,
                 name: '$product.name',
                 bnName: '$product.bnName',
                 packageType: '$product.packageType',
@@ -473,7 +503,6 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
                 image: '$product.image',
                 orderedQuantity: 1,
                 packedQuantity: 1,
-                soldQuantity: 1,
                 stock: 1,
             },
         },

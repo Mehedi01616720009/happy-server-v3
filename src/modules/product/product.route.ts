@@ -70,7 +70,7 @@ router.get(
 router.get(
     '/group-by-sr-status-dispatched',
     auth(USER_ROLES.packingMan),
-    ProductControllers.getProductsGroupedBySRsAndOrderedDate
+    ProductControllers.getProductsGroupedBySRsAndStatusDispatched
 );
 
 // get single product route
