@@ -23,4 +23,11 @@ router.post(
     InventoryControllers.createAltInventory
 );
 
+// get all inventories route
+router.get(
+    '/',
+    auth(USER_ROLES.packingMan),
+    InventoryControllers.getAllInventories
+);
+
 export const InventoryRoutes = router;

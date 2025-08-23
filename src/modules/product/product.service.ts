@@ -373,10 +373,17 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
     query: Record<string, unknown>,
     userPayload: JwtPayload
 ) => {
-    const sr = query.sr;
-    const createdAt = query.createdAt;
+    const sr = query?.sr;
+    const createdAt = query?.createdAt;
+    const packedAt = query?.packedAt;
     const matchStages: Record<string, unknown> = { status: 'Processing' };
+    let startDay = moment().tz(TIMEZONE).startOf('day').format();
+    let endDay = moment().tz(TIMEZONE).endOf('day').format();
 
+    if (packedAt) {
+        startDay = moment.tz(packedAt, TIMEZONE).startOf('day').format();
+        endDay = moment.tz(packedAt, TIMEZONE).endOf('day').format();
+    }
     if (sr) {
         matchStages.sr = {
             $in: (sr as string[]).map(
@@ -386,8 +393,14 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
     }
     if (createdAt) {
         matchStages.createdAt = {
-            $gte: moment.tz(createdAt, TIMEZONE).startOf('day').format(),
-            $lte: moment.tz(createdAt, TIMEZONE).endOf('day').format(),
+            $gte: moment
+                .tz((createdAt as { gte: string; lte: string }).gte, TIMEZONE)
+                .startOf('day')
+                .format(),
+            $lte: moment
+                .tz((createdAt as { gte: string; lte: string }).lte, TIMEZONE)
+                .endOf('day')
+                .format(),
         };
     }
 
@@ -397,7 +410,7 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
     }
     const packingMan = await Packingman.findOne({
         packingman: packingManUser._id,
-    });
+    }).select('warehouse packingman');
     if (!packingMan) {
         throw new AppError(httpStatus.NOT_FOUND, 'No packingMan found');
     }
@@ -462,7 +475,14 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
                                 $and: [
                                     { $eq: ['$product', '$$productId'] },
                                     { $eq: ['$warehouse', warehouseId] },
-                                    { $eq: ['$packingman', packingMan._id] },
+                                    {
+                                        $eq: [
+                                            '$packingman',
+                                            packingMan.packingman,
+                                        ],
+                                    },
+                                    { $gte: ['$createdAt', startDay] },
+                                    { $lte: ['$createdAt', endDay] },
                                 ],
                             },
                         },
@@ -496,6 +516,7 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
         {
             $project: {
                 _id: 1,
+                id: '$product.id',
                 name: '$product.name',
                 bnName: '$product.bnName',
                 packageType: '$product.packageType',

@@ -8,6 +8,7 @@ import { User } from '../user/user.model';
 import moment from 'moment-timezone';
 import mongoose from 'mongoose';
 import { PickedProduct } from '../pickupMan/pickupMan.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 // create inventory
 const createInventoryIntoDB = async (payload: IInventory) => {
@@ -214,7 +215,21 @@ const createAltInventoryIntoDB = async (payload: IInventory) => {
     }
 };
 
+// get all inventories
+const getAllInventoriesFromDB = async (query: Record<string, unknown>) => {
+    const fetchQuery = new QueryBuilder(Inventory.find(), query)
+        .filter()
+        .sort()
+        .paginate()
+        .fields();
+
+    const result = await fetchQuery.modelQuery;
+    const meta = await fetchQuery.countTotal();
+    return { result, meta };
+};
+
 export const InventoryServices = {
     createInventoryIntoDB,
     createAltInventoryIntoDB,
+    getAllInventoriesFromDB,
 };

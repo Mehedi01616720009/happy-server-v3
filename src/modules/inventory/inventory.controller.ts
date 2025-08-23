@@ -25,7 +25,19 @@ const createAltInventory = catchAsync(async (req, res) => {
     });
 });
 
+// get all inventories controller
+const getAllInventories = catchAsync(async (req, res) => {
+    const result = await InventoryServices.getAllInventoriesFromDB(req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Inventory has been retrieved successfully',
+        data: result,
+    });
+});
+
 export const InventoryControllers = {
     createInventory,
     createAltInventory,
+    getAllInventories,
 };
