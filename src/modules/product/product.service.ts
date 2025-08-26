@@ -376,7 +376,8 @@ const getProductsGroupedBySRsAndStatusDispatchedFromDB = async (
     const sr = query?.sr;
     const createdAt = query?.createdAt;
     const packedAt = query?.packedAt;
-    const matchStages: Record<string, unknown> = { status: 'Processing' };
+    const status = query?.status || 'Processing';
+    const matchStages: Record<string, unknown> = { status };
     let startDay = moment().tz(TIMEZONE).startOf('day').format();
     let endDay = moment().tz(TIMEZONE).endOf('day').format();
 

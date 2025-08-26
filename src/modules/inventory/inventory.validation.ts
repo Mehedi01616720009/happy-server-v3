@@ -10,4 +10,15 @@ const inventoryValidationSchema = z.object({
     }),
 });
 
-export const InventoryValidations = { inventoryValidationSchema };
+const updateInventoryValidationSchema = z.object({
+    body: z.object({
+        dsr: z.string({ required_error: 'Deliveryman is required' }),
+        warehouse: z.string({ required_error: 'Warehouse is required' }),
+        product: z.string({ required_error: 'Product is required' }),
+    }),
+});
+
+export const InventoryValidations = {
+    inventoryValidationSchema,
+    updateInventoryValidationSchema,
+};

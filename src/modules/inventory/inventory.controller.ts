@@ -36,8 +36,22 @@ const getAllInventories = catchAsync(async (req, res) => {
     });
 });
 
+// update return product inventory controller
+const updateReturnProductInventory = catchAsync(async (req, res) => {
+    const result = await InventoryServices.updateReturnProductInventoryIntoDB(
+        req.body
+    );
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: 'Product has been returned to inventory successfully',
+        data: result,
+    });
+});
+
 export const InventoryControllers = {
     createInventory,
     createAltInventory,
     getAllInventories,
+    updateReturnProductInventory,
 };

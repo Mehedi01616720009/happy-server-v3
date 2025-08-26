@@ -20,6 +20,22 @@ const createOrderDetailsValidationSchema = z.object({
     srTotalAmount: z.number().optional(),
 });
 
+const updateOrderDetailsValidationSchema = z.object({
+    product: z
+        .string({
+            required_error: 'Product ID is required',
+        })
+        .min(1, { message: 'Product ID be empty' }),
+    quantity: z.number({
+        required_error: 'Quantity is required',
+    }),
+    totalAmount: z.number({
+        required_error: 'Total amount is required',
+    }),
+    dealerTotalAmount: z.number().optional(),
+    srTotalAmount: z.number().optional(),
+});
+
 // create order validation
 const createOrderValidationSchema = z.object({
     body: z.object({
@@ -64,6 +80,9 @@ const updateOrderProductValidationSchema = z.object({
         quantity: z.number({
             required_error: 'Quantity is required',
         }),
+        srPrice: z.number({
+            required_error: 'Price is required',
+        }),
     }),
 });
 
@@ -85,37 +104,24 @@ const cancelOrderProductValidationSchema = z.object({
     }),
 });
 
-// dispatch order details validation
-const dispatchOrderDetailsValidationSchema = z.object({
-    product: z
-        .string({
-            required_error: 'Product ID is required',
-        })
-        .min(1, { message: 'Product ID be empty' }),
-    quantity: z.number({
-        required_error: 'Quantity is required',
-    }),
-});
-
 // dispatch order validation
 const dispatchOrderValidationSchema = z.object({
     body: z.object({
-        basket: z.string({
-            required_error: 'Collected amount is required',
+        dsr: z.string({
+            required_error: 'Dsr is required',
         }),
-        products: z.array(dispatchOrderDetailsValidationSchema),
     }),
 });
 
 // deliver order validation
 const deliverOrderValidationSchema = z.object({
     body: z.object({
-        status: z.enum(['Baki', 'Delivered'], {
-            message: 'Status is invalid',
-        }),
-        collectedAmount: z.number({
-            required_error: 'Collected amount is required',
-        }),
+        status: z
+            .enum(['Delivered'], {
+                message: 'Status is invalid',
+            })
+            .optional(),
+        products: z.array(updateOrderProductValidationSchema),
     }),
 });
 

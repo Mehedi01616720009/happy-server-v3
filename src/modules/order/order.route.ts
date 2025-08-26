@@ -65,12 +65,12 @@ router.patch(
 );
 
 // dispatch order route
-// router.patch(
-//     '/:id/dispatch-order',
-//     auth(USER_ROLES.packingMan),
-//     validateRequest(OrderValidations.dispatchOrderValidationSchema),
-//     OrderController.dispatchOrder
-// );
+router.patch(
+    '/dispatch-order', // ?sr[]=_id&status=Processing&createdAt[gte]=2024-01-01&createdAt[lte]=2024-12-31 + payload: { dsr: string }
+    auth(USER_ROLES.packingMan),
+    validateRequest(OrderValidations.dispatchOrderValidationSchema),
+    OrderController.dispatchOrder
+);
 
 // cancel order route
 router.patch(

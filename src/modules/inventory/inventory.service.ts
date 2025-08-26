@@ -9,6 +9,7 @@ import moment from 'moment-timezone';
 import mongoose from 'mongoose';
 import { PickedProduct } from '../pickupMan/pickupMan.model';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { TIMEZONE } from '../../constant';
 
 // create inventory
 const createInventoryIntoDB = async (payload: IInventory) => {
@@ -217,7 +218,10 @@ const createAltInventoryIntoDB = async (payload: IInventory) => {
 
 // get all inventories
 const getAllInventoriesFromDB = async (query: Record<string, unknown>) => {
-    const fetchQuery = new QueryBuilder(Inventory.find(), query)
+    const fetchQuery = new QueryBuilder(
+        Inventory.find().populate('product'),
+        query
+    )
         .filter()
         .sort()
         .paginate()
@@ -228,8 +232,89 @@ const getAllInventoriesFromDB = async (query: Record<string, unknown>) => {
     return { result, meta };
 };
 
+// update return product inventory
+const updateReturnProductInventoryIntoDB = async (payload: {
+    warehouse: string;
+    product: string;
+    dsr: string;
+}) => {
+    const warehouse = await Warehouse.findOne({ id: payload?.warehouse });
+    if (!warehouse) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No warehouse found');
+    }
+
+    const product = await Product.findOne({ id: payload?.product });
+    if (!product) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No product found');
+    }
+
+    const dsr = await User.findOne({ id: payload?.dsr });
+    if (!dsr) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No dsr found');
+    }
+
+    const inventory = await Inventory.findOne({
+        warehouse: warehouse._id,
+        product: product._id,
+        dsr: dsr._id,
+        createdAt: {
+            $gte: moment().startOf('day').format(),
+            $lte: moment().endOf('day').format(),
+        },
+    });
+    if (!inventory) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No inventory found');
+    }
+
+    const returnQuantity = inventory.outQuantity - inventory.sellQuantity;
+
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const result = await Inventory.findByIdAndUpdate(
+            inventory?._id,
+            { isReturned: true, updatedAt: moment().tz(TIMEZONE).format() },
+            { new: true }
+        );
+
+        const productStock = await PickedProduct.find({
+            warehouse: warehouse._id,
+            product: product._id,
+        })
+            .session(session)
+            .sort('-insertedDate')
+            .limit(1);
+
+        if (productStock.length > 0) {
+            await PickedProduct.findByIdAndUpdate(
+                productStock[0]._id,
+                { $inc: { quantity: returnQuantity } },
+                { session, new: true }
+            );
+        } else {
+            throw new AppError(httpStatus.NOT_FOUND, 'No stock found');
+        }
+
+        await session.commitTransaction();
+        await session.endSession();
+
+        return result;
+    } catch (err) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Mongoose transaction failed',
+            err as string
+        );
+    }
+};
+
 export const InventoryServices = {
     createInventoryIntoDB,
     createAltInventoryIntoDB,
     getAllInventoriesFromDB,
+    updateReturnProductInventoryIntoDB,
 };

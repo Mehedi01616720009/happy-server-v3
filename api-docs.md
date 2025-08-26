@@ -4,6 +4,31 @@ This document provides documentation for the available API endpoints.
 
 ## Inventory API
 
+### Get Inventory
+
+-   **URL:** `/inventories`
+-   **QUERY-PARAMS:** dsr=\_id&createdAt[gte]=2025-08-22&createdAt[lte]=2025-08-22
+-   **Method:** `GET`
+-   **Authentication:** Required. User must have the `dsr, dealer, sr` role.
+-   **Headers:**
+    -   `Authorization`: `Bearer <token>`
+
+### Return Product to Inventory
+
+-   **URL:** `/inventories`
+-   **Method:** `PATCH`
+-   **Authentication:** Required. User must have the `dsr` role.
+-   **Headers:**
+    -   `Authorization`: `Bearer <token>`
+-   **Request Body:**
+    ```json
+    {
+        "dsr": "string",
+        "warehouse": "string",
+        "product": "string"
+    }
+    ```
+
 ### Create Inventory
 
 -   **URL:** `/inventories`

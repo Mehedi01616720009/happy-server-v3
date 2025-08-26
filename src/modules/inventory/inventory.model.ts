@@ -39,11 +39,11 @@ const inventorySchema = new Schema<IInventory>({
     },
     createdAt: {
         type: String,
-        default: moment().tz(TIMEZONE).format(),
+        default: () => moment().tz(TIMEZONE).format(),
     },
     updatedAt: {
         type: String,
-        default: moment().tz(TIMEZONE).format(),
+        default: () => moment().tz(TIMEZONE).format(),
     },
 });
 

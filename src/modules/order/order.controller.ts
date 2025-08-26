@@ -65,20 +65,19 @@ const updateOrderProduct = catchAsync(async (req, res) => {
 });
 
 // dispatch order controller
-// const dispatchOrder = catchAsync(async (req, res) => {
-//     const { id } = req.params;
-//     const result = await OrderServices.dispatchOrderIntoDB(
-//         id,
-//         req.body,
-//         req.user
-//     );
-//     sendResponse(res, {
-//         statusCode: httpStatus.OK,
-//         success: true,
-//         message: 'Order has been dispatched successfully',
-//         data: result,
-//     });
-// });
+const dispatchOrder = catchAsync(async (req, res) => {
+    const result = await OrderServices.dispatchOrderIntoDB(
+        req.query,
+        req.body,
+        req.user
+    );
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Order has been dispatched successfully',
+        data: result,
+    });
+});
 
 // update order product by sr controller
 const updateOrderProductBySr = catchAsync(async (req, res) => {
@@ -214,7 +213,7 @@ export const OrderController = {
     getAllOrder,
     getSingleOrder,
     updateOrderProduct,
-    // dispatchOrder,
+    dispatchOrder,
     cancelOrder,
     updateOrderProductBySr,
     deliverOrder,

@@ -26,8 +26,16 @@ router.post(
 // get all inventories route
 router.get(
     '/',
-    auth(USER_ROLES.packingMan),
+    auth(USER_ROLES.deliveryMan, USER_ROLES.dealer, USER_ROLES.sr),
     InventoryControllers.getAllInventories
+);
+
+// update return product inventory route
+router.patch(
+    '/',
+    auth(USER_ROLES.deliveryMan),
+    validateRequest(InventoryValidations.updateInventoryValidationSchema),
+    InventoryControllers.updateReturnProductInventory
 );
 
 export const InventoryRoutes = router;
