@@ -1,7 +1,12 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
-import { ICreateOrder, IOrder, IOrderDetailsProduct } from './order.interface';
+import {
+    ICreateOrder,
+    IOrder,
+    IOrderDetailsProduct,
+    IOrderSummary,
+} from './order.interface';
 import generateOrderId from '../../utils/generateOrderId';
 import mongoose, { Types } from 'mongoose';
 import { Order } from './order.model';
@@ -685,12 +690,26 @@ const deliverOrderIntoDB = async (
     try {
         session.startTransaction();
 
-        if (payload.status) {
-            order.status = payload.status;
-        }
+        order.status = 'Delivered';
+        order.collectionAmount = Number(payload?.collectionAmount);
+        order.collectedAmount = Number(payload?.collectedAmount);
 
         if (payload.products && payload.products.length > 0) {
-            order.products = payload.products as any;
+            for (const updatedProd of payload.products) {
+                const existingProd = order.products.find(
+                    p => p.product.toString() === updatedProd.product.toString()
+                );
+
+                if (existingProd) {
+                    existingProd.quantity = updatedProd.quantity;
+                    existingProd.totalAmount = updatedProd.totalAmount;
+                    existingProd.dealerTotalAmount =
+                        updatedProd.dealerTotalAmount;
+                    existingProd.srTotalAmount = updatedProd.srTotalAmount;
+                    (existingProd.summary as IOrderSummary).soldQuantity =
+                        updatedProd.quantity;
+                }
+            }
         }
 
         // set delivery metadata

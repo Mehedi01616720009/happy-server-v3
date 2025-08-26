@@ -32,8 +32,12 @@ const updateOrderDetailsValidationSchema = z.object({
     totalAmount: z.number({
         required_error: 'Total amount is required',
     }),
-    dealerTotalAmount: z.number().optional(),
-    srTotalAmount: z.number().optional(),
+    dealerTotalAmount: z.number({
+        required_error: 'Dealer amount is required',
+    }),
+    srTotalAmount: z.number({
+        required_error: 'Sr amount is required',
+    }),
 });
 
 // create order validation
@@ -116,12 +120,13 @@ const dispatchOrderValidationSchema = z.object({
 // deliver order validation
 const deliverOrderValidationSchema = z.object({
     body: z.object({
-        status: z
-            .enum(['Delivered'], {
-                message: 'Status is invalid',
-            })
-            .optional(),
-        products: z.array(updateOrderProductValidationSchema),
+        collectionAmount: z.number({
+            required_error: 'Collection Amount is required',
+        }),
+        collectedAmount: z.number({
+            required_error: 'Collected Amount is required',
+        }),
+        products: z.array(updateOrderDetailsValidationSchema),
     }),
 });
 

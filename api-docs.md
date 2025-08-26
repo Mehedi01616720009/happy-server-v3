@@ -2,6 +2,48 @@
 
 This document provides documentation for the available API endpoints.
 
+## Order API
+
+### Update Order Product By SR
+
+-   **URL:** `/orders/:id/product/:productId/update-product-by-sr`
+-   **Method:** `PATCH`
+-   **Authentication:** Required. User must have the `sr` role.
+-   **Headers:**
+    -   `Authorization`: `Bearer <token>`
+-   **Request Body:**
+    ```json
+    {
+        "quantity": "number",
+        "srPrice": "number"
+    }
+    ```
+
+### Deliver Order
+
+-   **URL:** `/orders/:id/deliver-order`
+-   **Method:** `PATCH`
+-   **Authentication:** Required. User must have the `sr` role.
+-   **Headers:**
+    -   `Authorization`: `Bearer <token>`
+-   **Request Body:**
+    ```json
+    {
+        "collectionAmount": "number",
+        "collectedAmount": "number",
+        "products": [
+            {
+                "product": "_id",
+                "quantity": "number",
+                "totalAmount": "number",
+                "dealerTotalAmount": "number",
+                "srTotalAmount": "number"
+            },
+            ...
+        ]
+    }
+    ```
+
 ## Inventory API
 
 ### Get Inventory

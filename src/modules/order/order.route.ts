@@ -88,7 +88,7 @@ router.patch(
     OrderController.updateOrderProductBySr
 );
 
-// cancel order route
+// deliver order route
 router.patch(
     '/:id/deliver-order',
     auth(USER_ROLES.sr, USER_ROLES.deliveryMan),

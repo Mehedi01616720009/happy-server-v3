@@ -8,6 +8,12 @@ type TOrderStatus =
     | 'Delivered'
     | 'Cancelled';
 
+export interface IOrderSummary {
+    orderedQuantity?: number;
+    packedQuantity?: number;
+    soldQuantity?: number;
+}
+
 // order details product interface
 export interface IOrderDetailsProduct {
     product: Types.ObjectId;
@@ -18,11 +24,7 @@ export interface IOrderDetailsProduct {
     dealerTotalAmount?: number;
     srPrice?: number;
     srTotalAmount?: number;
-    summary?: {
-        orderedQuantity?: number;
-        packedQuantity?: number;
-        soldQuantity?: number;
-    };
+    summary?: IOrderSummary;
     isCancelled?: {
         isCancelled?: boolean;
         cancelledTime?: string;
