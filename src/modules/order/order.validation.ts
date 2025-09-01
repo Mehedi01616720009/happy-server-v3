@@ -130,6 +130,19 @@ const deliverOrderValidationSchema = z.object({
     }),
 });
 
+// baki order validation
+const bakiOrderValidationSchema = z.object({
+    body: z.object({
+        collectionAmount: z.number({
+            required_error: 'Collection Amount is required',
+        }),
+        collectedAmount: z.number({
+            required_error: 'Collected Amount is required',
+        }),
+        products: z.array(updateOrderDetailsValidationSchema).optional(),
+    }),
+});
+
 // delete order validation
 const deleteOrderValidationSchema = z.object({
     body: z.object({
@@ -148,5 +161,6 @@ export const OrderValidations = {
     cancelOrderProductValidationSchema,
     dispatchOrderValidationSchema,
     deliverOrderValidationSchema,
+    bakiOrderValidationSchema,
     deleteOrderValidationSchema,
 };

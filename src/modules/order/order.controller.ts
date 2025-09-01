@@ -127,26 +127,18 @@ const deliverOrder = catchAsync(async (req, res) => {
     });
 });
 
-// get order inventory controller
-const getOrderInventory = catchAsync(async (req, res) => {
-    const result = await OrderServices.getOrderInventoryFromDB(req.query);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Inventory data has been retrieved successfully',
-        data: result,
-    });
-});
-
-// get order inventory details controller
-const getOrderInventoryDetails = catchAsync(async (req, res) => {
-    const result = await OrderServices.getOrderInventoryDetailsFromDB(
-        req.query
+// update baki order controller
+const updateBakiOrder = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await OrderServices.updateBakiOrderIntoDB(
+        id,
+        req.body,
+        req.user
     );
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Inventory Details have been retrieved successfully',
+        message: 'Order has been updated successfully',
         data: result,
     });
 });
@@ -217,8 +209,7 @@ export const OrderController = {
     cancelOrder,
     updateOrderProductBySr,
     deliverOrder,
-    getOrderInventory,
-    getOrderInventoryDetails,
+    updateBakiOrder,
     getOrderSummary,
     getOrderHistory,
     getOrderCounting,

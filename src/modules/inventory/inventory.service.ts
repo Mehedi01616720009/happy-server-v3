@@ -6,7 +6,7 @@ import AppError from '../../errors/AppError';
 import { Product } from '../product/product.model';
 import { User } from '../user/user.model';
 import moment from 'moment-timezone';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { PickedProduct } from '../pickupMan/pickupMan.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { TIMEZONE } from '../../constant';
@@ -218,18 +218,27 @@ const createAltInventoryIntoDB = async (payload: IInventory) => {
 
 // get all inventories
 const getAllInventoriesFromDB = async (query: Record<string, unknown>) => {
-    const fetchQuery = new QueryBuilder(
-        Inventory.find().populate('product'),
-        query
-    )
-        .filter()
-        .sort()
-        .paginate()
-        .fields();
+    const dsr = new Types.ObjectId(query?.dsr as string);
+    const createdAt = query?.createdAt;
+    const matchStages: Record<string, unknown> = { dsr };
+    if (createdAt) {
+        matchStages.createdAt = {
+            $gte: moment
+                .tz((createdAt as { gte: string; lte: string }).gte, TIMEZONE)
+                .startOf('day')
+                .format(),
+            $lte: moment
+                .tz((createdAt as { gte: string; lte: string }).lte, TIMEZONE)
+                .endOf('day')
+                .format(),
+        };
+    }
 
-    const result = await fetchQuery.modelQuery;
-    const meta = await fetchQuery.countTotal();
-    return { result, meta };
+    const result = await Inventory.find(matchStages).populate(
+        'product',
+        '_id id name bnName packageType quantityPerPackage image'
+    );
+    return result;
 };
 
 // update return product inventory
@@ -238,17 +247,17 @@ const updateReturnProductInventoryIntoDB = async (payload: {
     product: string;
     dsr: string;
 }) => {
-    const warehouse = await Warehouse.findOne({ id: payload?.warehouse });
+    const warehouse = await Warehouse.findById(payload?.warehouse);
     if (!warehouse) {
         throw new AppError(httpStatus.NOT_FOUND, 'No warehouse found');
     }
 
-    const product = await Product.findOne({ id: payload?.product });
+    const product = await Product.findById(payload?.product);
     if (!product) {
         throw new AppError(httpStatus.NOT_FOUND, 'No product found');
     }
 
-    const dsr = await User.findOne({ id: payload?.dsr });
+    const dsr = await User.findById(payload?.dsr);
     if (!dsr) {
         throw new AppError(httpStatus.NOT_FOUND, 'No dsr found');
     }

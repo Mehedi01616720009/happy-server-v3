@@ -10,7 +10,7 @@ const router = Router();
 // get all dsr route
 router.get(
     '/',
-    auth(USER_ROLES.superAdmin, USER_ROLES.admin),
+    auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.packingMan),
     DsrControllers.getAllDsr
 );
 

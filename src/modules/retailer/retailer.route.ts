@@ -75,17 +75,23 @@ router.get(
     RetailerControllers.getAllRetailerForDeliveryman
 );
 
-// get all retailer for deliveryman optimize route
+// get all retailer for deliveryman route
 router.get(
-    '/deliveryman-optimize',
+    '/:id/deliveryman',
     auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.deliveryMan),
-    RetailerControllers.getAllRetailerForDeliverymanOptimize
+    RetailerControllers.getSingleRetailerForDeliveryman
 );
 
 // get pending retailer for deliveryman route
 router.get(
-    '/deliveryman/:date/invoices',
-    auth(USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.deliveryMan),
+    '/invoices',
+    auth(
+        USER_ROLES.superAdmin,
+        USER_ROLES.admin,
+        USER_ROLES.dealer,
+        USER_ROLES.sr,
+        USER_ROLES.deliveryMan
+    ),
     RetailerControllers.getInvoicesRetailerForDeliveryman
 );
 

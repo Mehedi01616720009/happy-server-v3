@@ -691,8 +691,11 @@ const deliverOrderIntoDB = async (
         session.startTransaction();
 
         order.status = 'Delivered';
+        order.paymentStatus = 'Paid';
         order.collectionAmount = Number(payload?.collectionAmount);
-        order.collectedAmount = Number(payload?.collectedAmount);
+        order.collectedAmount = Number(
+            payload?.collectedAmount || payload?.collectionAmount
+        );
 
         if (payload.products && payload.products.length > 0) {
             for (const updatedProd of payload.products) {
@@ -721,27 +724,30 @@ const deliverOrderIntoDB = async (
             const todayStart = moment().startOf('day').format();
             const todayEnd = moment().endOf('day').format();
 
-            const inventory = await Inventory.findOne(
+            await Inventory.findOneAndUpdate(
                 {
                     dsr: user._id,
                     product: prod.product,
                     createdAt: { $gte: todayStart, $lte: todayEnd },
                 },
-                null,
+                {
+                    $inc: { sellQuantity: prod.quantity },
+                    $set: { updatedAt: moment().endOf('day').format() },
+                },
                 { session }
             );
 
-            if (!inventory) {
-                throw new AppError(
-                    httpStatus.NOT_FOUND,
-                    `No inventory found for product ${prod.product} today`
-                );
-            }
+            // if (!inventory) {
+            //     throw new AppError(
+            //         httpStatus.NOT_FOUND,
+            //         `No inventory found for product ${prod.product} today`
+            //     );
+            // }
 
-            // increment sellQuantity
-            inventory.sellQuantity += prod.quantity;
-            inventory.updatedAt = moment().endOf('day').format();
-            await inventory.save({ session });
+            // // increment sellQuantity
+            // inventory.sellQuantity += prod.quantity;
+            // inventory.updatedAt = moment().endOf('day').format();
+            // await inventory.save({ session });
         }
 
         const result = await order.save({ session });
@@ -761,283 +767,102 @@ const deliverOrderIntoDB = async (
     }
 };
 
-// get order inventory
-const getOrderInventoryFromDB = async (query: Record<string, unknown>) => {
-    // const fetchQuery = new QueryBuilder(
-    //     Order.find({
-    //         status: {
-    //             $in: [
-    //                 'Dispatched',
-    //                 'Delivered',
-    //                 'Cancelled',
-    //                 'Pending',
-    //                 'Baki',
-    //             ],
-    //         },
-    //     }).select('_id'),
-    //     query
-    // )
-    //     .filter()
-    //     .sort()
-    //     .fields();
-    // const orders = await fetchQuery.modelQuery;
-    // if (!orders) {
-    //     throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    // }
-    // const orderIDs = orders.map(order => new Types.ObjectId(order._id));
-    // const result = await OrderDetails.aggregate([
-    //     { $match: { order: { $in: orderIDs } } },
-    //     { $unwind: '$products' },
-    //     {
-    //         $lookup: {
-    //             from: 'products',
-    //             localField: 'products.product',
-    //             foreignField: '_id',
-    //             as: 'productDetails',
-    //         },
-    //     },
-    //     { $unwind: '$productDetails' },
-    //     {
-    //         $addFields: {
-    //             srPricePerUnit: {
-    //                 $cond: [
-    //                     { $gt: ['$products.srPrice', 0] },
-    //                     {
-    //                         $divide: [
-    //                             '$products.srPrice',
-    //                             '$productDetails.quantityPerPackage',
-    //                         ],
-    //                     },
-    //                     0,
-    //                 ],
-    //             },
-    //         },
-    //     },
-    //     {
-    //         $group: {
-    //             _id: null,
-    //             totalOut: {
-    //                 $sum: {
-    //                     $ifNull: ['$products.inventory.out', 0],
-    //                 },
-    //             },
-    //             totalOutPrice: {
-    //                 $sum: {
-    //                     $cond: [
-    //                         { $gt: ['$products.inventory.out', 0] },
-    //                         {
-    //                             $multiply: [
-    //                                 '$products.inventory.out',
-    //                                 '$srPricePerUnit',
-    //                             ],
-    //                         },
-    //                         0,
-    //                     ],
-    //                 },
-    //             },
-    //             totalSale: {
-    //                 $sum: {
-    //                     $ifNull: ['$products.inventory.sale', 0],
-    //                 },
-    //             },
-    //             totalSalePrice: {
-    //                 $sum: {
-    //                     $cond: [
-    //                         { $gt: ['$products.inventory.sale', 0] },
-    //                         {
-    //                             $multiply: [
-    //                                 '$products.inventory.sale',
-    //                                 '$srPricePerUnit',
-    //                             ],
-    //                         },
-    //                         0,
-    //                     ],
-    //                 },
-    //             },
-    //             totalIn: {
-    //                 $sum: {
-    //                     $ifNull: ['$products.inventory.in', 0],
-    //                 },
-    //             },
-    //             totalInPrice: {
-    //                 $sum: {
-    //                     $multiply: [
-    //                         { $ifNull: ['$products.inventory.in', 0] },
-    //                         '$srPricePerUnit',
-    //                     ],
-    //                 },
-    //             },
-    //         },
-    //     },
-    //     {
-    //         $project: {
-    //             _id: 0,
-    //             totalOut: 1,
-    //             totalOutPrice: { $round: ['$totalOutPrice', 2] },
-    //             totalSale: 1,
-    //             totalSalePrice: { $round: ['$totalSalePrice', 2] },
-    //             totalIn: 1,
-    //             totalInPrice: { $round: ['$totalInPrice', 2] },
-    //         },
-    //     },
-    // ]);
-    // return (
-    //     result[0] || {
-    //         totalOut: 0,
-    //         totalOutPrice: 0,
-    //         totalSale: 0,
-    //         totalSalePrice: 0,
-    //         totalIn: 0,
-    //         totalInPrice: 0,
-    //     }
-    // );
-};
-
-// get order inventory details
-const getOrderInventoryDetailsFromDB = async (
-    query: Record<string, unknown>
+// update baki order
+const updateBakiOrderIntoDB = async (
+    id: string,
+    payload: Partial<IOrder>,
+    userPayload: JwtPayload
 ) => {
-    // const fetchQuery = new QueryBuilder(
-    //     Order.find({
-    //         status: {
-    //             $in: [
-    //                 'Dispatched',
-    //                 'Delivered',
-    //                 'Cancelled',
-    //                 'Pending',
-    //                 'Baki',
-    //             ],
-    //         },
-    //     }).select('_id'),
-    //     query
-    // )
-    //     .filter()
-    //     .sort()
-    //     .fields();
-    // const orders = await fetchQuery.modelQuery;
-    // if (!orders) {
-    //     throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    // }
-    // const orderIDs = orders.map(order => new Types.ObjectId(order._id));
-    // const result = await OrderDetails.aggregate([
-    //     { $match: { order: { $in: orderIDs } } },
-    //     { $unwind: '$products' },
-    //     {
-    //         $lookup: {
-    //             from: 'products',
-    //             localField: 'products.product',
-    //             foreignField: '_id',
-    //             as: 'productDetails',
-    //         },
-    //     },
-    //     { $unwind: '$productDetails' },
-    //     {
-    //         $addFields: {
-    //             srPricePerUnit: {
-    //                 $cond: [
-    //                     { $gt: ['$products.srPrice', 0] },
-    //                     {
-    //                         $divide: [
-    //                             '$products.srPrice',
-    //                             '$productDetails.quantityPerPackage',
-    //                         ],
-    //                     },
-    //                     0,
-    //                 ],
-    //             },
-    //             oc: {
-    //                 $subtract: [
-    //                     '$products.srTotalAmount',
-    //                     { $ifNull: ['$products.dealerTotalAmount', 0] },
-    //                 ],
-    //             },
-    //         },
-    //     },
-    //     {
-    //         $group: {
-    //             _id: '$productDetails._id',
-    //             id: { $first: '$productDetails.id' },
-    //             image: { $first: '$productDetails.image' },
-    //             product: { $first: '$productDetails.name' },
-    //             quantityPerPackage: {
-    //                 $first: '$productDetails.quantityPerPackage',
-    //             },
-    //             packageType: {
-    //                 $first: '$productDetails.packageType',
-    //             },
-    //             oc: { $sum: '$oc' },
-    //             totalOut: {
-    //                 $sum: {
-    //                     $ifNull: ['$products.inventory.out', 0],
-    //                 },
-    //             },
-    //             totalOutPrice: {
-    //                 $sum: {
-    //                     $cond: [
-    //                         { $gt: ['$products.inventory.out', 0] },
-    //                         {
-    //                             $multiply: [
-    //                                 '$products.inventory.out',
-    //                                 '$srPricePerUnit',
-    //                             ],
-    //                         },
-    //                         0,
-    //                     ],
-    //                 },
-    //             },
-    //             totalSale: {
-    //                 $sum: {
-    //                     $ifNull: ['$products.inventory.sale', 0],
-    //                 },
-    //             },
-    //             totalSalePrice: {
-    //                 $sum: {
-    //                     $cond: [
-    //                         { $gt: ['$products.inventory.sale', 0] },
-    //                         {
-    //                             $multiply: [
-    //                                 '$products.inventory.sale',
-    //                                 '$srPricePerUnit',
-    //                             ],
-    //                         },
-    //                         0,
-    //                     ],
-    //                 },
-    //             },
-    //             totalIn: {
-    //                 $sum: {
-    //                     $ifNull: ['$products.inventory.in', 0],
-    //                 },
-    //             },
-    //             totalInPrice: {
-    //                 $sum: {
-    //                     $multiply: [
-    //                         { $ifNull: ['$products.inventory.in', 0] },
-    //                         '$srPricePerUnit',
-    //                     ],
-    //                 },
-    //             },
-    //         },
-    //     },
-    //     {
-    //         $project: {
-    //             _id: 0,
-    //             id: 1,
-    //             image: 1,
-    //             product: 1,
-    //             quantityPerPackage: 1,
-    //             packageType: 1,
-    //             oc: 1,
-    //             totalOut: 1,
-    //             totalOutPrice: { $ceil: '$totalOutPrice' },
-    //             totalSale: 1,
-    //             totalSalePrice: { $ceil: '$totalSalePrice' },
-    //             totalIn: 1,
-    //             totalInPrice: { $ceil: '$totalInPrice' },
-    //         },
-    //     },
-    // ]);
-    // return result;
+    const user = await User.findOne({ id: userPayload.userId });
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No Dsr Found');
+    }
+
+    const order = await Order.findOne({ id, dsr: user._id });
+    if (!order) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
+    }
+
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        order.collectionAmount = Number(payload?.collectionAmount);
+        order.collectedAmount =
+            order.collectedAmount +
+            Number(payload?.collectedAmount || payload?.collectionAmount);
+        order.status =
+            order.collectionAmount === order.collectedAmount
+                ? 'Delivered'
+                : 'Baki';
+        order.paymentStatus =
+            order.collectedAmount === 0
+                ? 'Unpaid'
+                : order.collectionAmount === order.collectedAmount
+                ? 'Paid'
+                : 'Partial Paid';
+
+        if (payload.products && payload.products.length > 0) {
+            for (const updatedProd of payload.products) {
+                const existingProd = order.products.find(
+                    p => p.product.toString() === updatedProd.product.toString()
+                );
+
+                if (existingProd) {
+                    const previousSoldQuantity = (
+                        existingProd.summary as IOrderSummary
+                    ).soldQuantity;
+
+                    existingProd.quantity = updatedProd.quantity;
+                    existingProd.totalAmount = updatedProd.totalAmount;
+                    existingProd.dealerTotalAmount =
+                        updatedProd.dealerTotalAmount;
+                    existingProd.srTotalAmount = updatedProd.srTotalAmount;
+                    (existingProd.summary as IOrderSummary).soldQuantity =
+                        updatedProd.quantity;
+
+                    order.deliveredTime = moment().tz(TIMEZONE).format();
+                    order.updatedAt = moment().tz(TIMEZONE).format();
+
+                    const todayStart = moment().startOf('day').format();
+                    const todayEnd = moment().endOf('day').format();
+
+                    await Inventory.findOneAndUpdate(
+                        {
+                            dsr: user._id,
+                            product: existingProd.product,
+                            createdAt: { $gte: todayStart, $lte: todayEnd },
+                        },
+                        {
+                            $inc: {
+                                sellQuantity:
+                                    existingProd.quantity -
+                                    Number(previousSoldQuantity),
+                            },
+                            $set: { updatedAt: moment().endOf('day').format() },
+                        },
+                        { session }
+                    );
+                }
+            }
+        }
+
+        const result = await order.save({ session });
+
+        await session.commitTransaction();
+        await session.endSession();
+
+        return result;
+    } catch (err) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Mongoose transaction failed',
+            err as string
+        );
+    }
 };
 
 // get order summary
@@ -1235,8 +1060,7 @@ export const OrderServices = {
     cancelOrderIntoDB,
     updateOrderProductBySrIntoDB,
     deliverOrderIntoDB,
-    getOrderInventoryFromDB,
-    getOrderInventoryDetailsFromDB,
+    updateBakiOrderIntoDB,
     getOrderSummaryFromDB,
     getOrderHistoryFromDB,
     getOrderCountingFromDB,

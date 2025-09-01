@@ -80,26 +80,25 @@ const getAllRetailerForDeliveryman = catchAsync(async (req, res) => {
     });
 });
 
-// get all retailer for deliveryman controller
-const getAllRetailerForDeliverymanOptimize = catchAsync(async (req, res) => {
-    const result =
-        await RetailerServices.getAllRetailerForDeliverymanOptimizeFromDB(
-            req.query
-        );
+// get single retailer for deliveryman controller
+const getSingleRetailerForDeliveryman = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await RetailerServices.getSingleRetailerForDeliverymanFromDB(
+        id,
+        req.query
+    );
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'All Retailers have been retrieved successfully',
+        message: 'Retailer has been retrieved successfully',
         data: result,
     });
 });
 
 // get invoices retailer for deliveryman controller
 const getInvoicesRetailerForDeliveryman = catchAsync(async (req, res) => {
-    const { date } = req.params;
     const result =
         await RetailerServices.getInvoicesRetailerForDeliverymanFromDB(
-            date,
             req.query
         );
     sendResponse(res, {
@@ -185,7 +184,7 @@ export const RetailerControllers = {
     getAllRetailerByArea,
     getAllRetailerByAreaOptimize,
     getAllRetailerForDeliveryman,
-    getAllRetailerForDeliverymanOptimize,
+    getSingleRetailerForDeliveryman,
     getInvoicesRetailerForDeliveryman,
     getPendingRetailerForDeliveryman,
     getBakiRetailerForDeliveryman,

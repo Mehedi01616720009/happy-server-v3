@@ -91,35 +91,17 @@ router.patch(
 // deliver order route
 router.patch(
     '/:id/deliver-order',
-    auth(USER_ROLES.sr, USER_ROLES.deliveryMan),
+    auth(USER_ROLES.deliveryMan),
     validateRequest(OrderValidations.deliverOrderValidationSchema),
     OrderController.deliverOrder
 );
 
-// get order inventory route
-router.get(
-    '/inventory/data',
-    auth(
-        USER_ROLES.superAdmin,
-        USER_ROLES.admin,
-        USER_ROLES.dealer,
-        USER_ROLES.sr,
-        USER_ROLES.deliveryMan
-    ),
-    OrderController.getOrderInventory
-);
-
-// get order inventory details route
-router.get(
-    '/inventory/details',
-    auth(
-        USER_ROLES.superAdmin,
-        USER_ROLES.admin,
-        USER_ROLES.dealer,
-        USER_ROLES.sr,
-        USER_ROLES.deliveryMan
-    ),
-    OrderController.getOrderInventoryDetails
+// update baki order route
+router.patch(
+    '/:id/baki-order',
+    auth(USER_ROLES.deliveryMan),
+    validateRequest(OrderValidations.bakiOrderValidationSchema),
+    OrderController.updateBakiOrder
 );
 
 // get order summary route
