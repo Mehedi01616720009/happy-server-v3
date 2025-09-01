@@ -104,6 +104,19 @@ router.patch(
     OrderController.updateBakiOrder
 );
 
+// get delivery summary route
+router.get(
+    '/summary/delivery-summary',
+    auth(
+        USER_ROLES.superAdmin,
+        USER_ROLES.admin,
+        USER_ROLES.dealer,
+        USER_ROLES.sr,
+        USER_ROLES.deliveryMan
+    ),
+    OrderController.getDeliverySummary
+);
+
 // get order summary route
 router.get(
     '/summary/details',

@@ -8,7 +8,7 @@ import {
     IOrderSummary,
 } from './order.interface';
 import generateOrderId from '../../utils/generateOrderId';
-import mongoose, { Types } from 'mongoose';
+import mongoose, { PipelineStage, Types } from 'mongoose';
 import { Order } from './order.model';
 import { Product } from '../product/product.model';
 import QueryBuilder from '../../builder/QueryBuilder';
@@ -865,6 +865,81 @@ const updateBakiOrderIntoDB = async (
     }
 };
 
+// get delivery summary
+const getDeliverySummaryFromDB = async (query: Record<string, unknown>) => {
+    const { dsr, dealer, sr, updatedAt } = query;
+
+    const matchStages: Record<string, unknown> = {
+        status: { $in: ['Delivered', 'Baki'] }, // ✅ only Delivered or Baki
+    };
+
+    if (sr) {
+        matchStages.sr = new Types.ObjectId(sr as string);
+    }
+    if (dsr) {
+        matchStages.dsr = new Types.ObjectId(dsr as string);
+    }
+    if (dealer) {
+        matchStages.dealer = new Types.ObjectId(dealer as string);
+    }
+    if (updatedAt) {
+        matchStages.updatedAt = {
+            $gte: moment
+                .tz((updatedAt as { gte: string; lte: string }).gte, TIMEZONE)
+                .startOf('day')
+                .toDate(), // ✅ use Date instead of string
+            $lte: moment
+                .tz((updatedAt as { gte: string; lte: string }).lte, TIMEZONE)
+                .endOf('day')
+                .toDate(),
+        };
+    }
+
+    const pipeline: PipelineStage[] = [
+        { $match: matchStages },
+        {
+            $group: {
+                _id: null,
+                totalSellAmount: { $sum: '$collectionAmount' },
+                totalCollectedAmount: { $sum: '$collectedAmount' },
+                totalOCAmount: {
+                    $sum: {
+                        $sum: {
+                            $map: {
+                                input: '$products',
+                                as: 'p',
+                                in: {
+                                    $subtract: [
+                                        '$$p.srTotalAmount',
+                                        '$$p.dealerTotalAmount',
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                totalSellAmount: 1,
+                totalCollectedAmount: 1,
+                totalOCAmount: 1,
+            },
+        },
+    ];
+
+    const [result] = await Order.aggregate(pipeline);
+    return (
+        result || {
+            totalSellAmount: 0,
+            totalCollectedAmount: 0,
+            totalOCAmount: 0,
+        }
+    );
+};
+
 // get order summary
 const getOrderSummaryFromDB = async (query: Record<string, unknown>) => {
     // Order.find({ status: { $ne: 'Cancelled' } }).select('_id')
@@ -1061,6 +1136,7 @@ export const OrderServices = {
     updateOrderProductBySrIntoDB,
     deliverOrderIntoDB,
     updateBakiOrderIntoDB,
+    getDeliverySummaryFromDB,
     getOrderSummaryFromDB,
     getOrderHistoryFromDB,
     getOrderCountingFromDB,

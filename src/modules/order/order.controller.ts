@@ -143,6 +143,17 @@ const updateBakiOrder = catchAsync(async (req, res) => {
     });
 });
 
+// get delivery summary controller
+const getDeliverySummary = catchAsync(async (req, res) => {
+    const result = await OrderServices.getDeliverySummaryFromDB(req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Delivery Summary has been retrieved successfully',
+        data: result,
+    });
+});
+
 // get order summary controller
 const getOrderSummary = catchAsync(async (req, res) => {
     const result = await OrderServices.getOrderSummaryFromDB(req.query);
@@ -210,6 +221,7 @@ export const OrderController = {
     updateOrderProductBySr,
     deliverOrder,
     updateBakiOrder,
+    getDeliverySummary,
     getOrderSummary,
     getOrderHistory,
     getOrderCounting,
