@@ -610,8 +610,14 @@ const getInvoicesRetailerForDeliverymanFromDB = async (
     }
     if (updatedAt) {
         matchStages.updatedAt = {
-            $gte: moment.tz(updatedAt, TIMEZONE).startOf('day').format(),
-            $lte: moment.tz(updatedAt, TIMEZONE).endOf('day').format(),
+            $gte: moment
+                .tz((updatedAt as { gte: string; lte: string }).gte, TIMEZONE)
+                .startOf('day')
+                .format(),
+            $lte: moment
+                .tz((updatedAt as { gte: string; lte: string }).lte, TIMEZONE)
+                .endOf('day')
+                .format(),
         };
     }
 
