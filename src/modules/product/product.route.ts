@@ -32,6 +32,13 @@ router.get(
     ProductControllers.getAllProduct
 );
 
+// get all product by sr route
+router.get(
+    '/sr/:id',
+    auth(USER_ROLES.deliveryMan),
+    ProductControllers.getAllProductBySr
+);
+
 // get top selling product route
 router.get(
     '/top-selling',

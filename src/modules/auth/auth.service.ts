@@ -15,6 +15,8 @@ import moment from 'moment-timezone';
 import { TIMEZONE } from '../../constant';
 import { Packingman, Pickupman } from '../pickupMan/pickupMan.model';
 import { Company } from '../company/company.model';
+import { Dsr } from '../dsr/dsr.model';
+import { IDsr } from '../dsr/dsr.interface';
 
 // signin
 const signInFromDB = async (payload: IAuth) => {
@@ -107,11 +109,18 @@ const getMeFromDB = async (payload: JwtPayload) => {
             .populate('freelancer')
             .populate('upazilas');
     } else if (payload.role === USER_ROLES.deliveryMan) {
-        const user = await User.findOne({
-            id: payload.userId,
-        });
+        const dsr = await Dsr.findOne({ dsr: user._id })
+            .populate('dsr')
+            .populate('upazilas')
+            .populate('sr');
         const companies = await Company.find();
-        result = { ...user?.toObject(), companies };
+        const dsrData = (dsr as IDsr).dsr;
+        result = {
+            ...dsrData,
+            sr: dsr?.sr,
+            upazilas: dsr?.upazilas,
+            companies,
+        };
     } else {
         result = await User.findOne({
             id: payload.userId,

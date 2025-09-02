@@ -127,8 +127,34 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
                         )
                     ).toFixed(2)
                 ),
-                srPrice: Number(product?.srPrice?.toFixed(2)),
-                srTotalAmount: Number(product?.srTotalAmount?.toFixed(2)),
+                srPrice: product?.srPrice
+                    ? Number(product?.srPrice?.toFixed(2))
+                    : Number(
+                          (
+                              Number(product.price.toFixed(2)) +
+                              Number(
+                                  (
+                                      (singleProduct?.dealerCommission *
+                                          product.price) /
+                                      100
+                                  ).toFixed(2)
+                              )
+                          ).toFixed(2)
+                      ),
+                srTotalAmount: product?.srTotalAmount
+                    ? Number(product?.srTotalAmount?.toFixed(2))
+                    : Number(
+                          (
+                              Number(product.totalAmount.toFixed(2)) +
+                              Number(
+                                  (
+                                      (singleProduct?.dealerCommission *
+                                          product.totalAmount) /
+                                      100
+                                  ).toFixed(2)
+                              )
+                          ).toFixed(2)
+                      ),
             };
 
             if (orderData?.sr) {

@@ -16,6 +16,7 @@ import { Packingman, PickedProduct } from '../pickupMan/pickupMan.model';
 import { User } from '../user/user.model';
 import { JwtPayload } from 'jsonwebtoken';
 import { Tag } from '../tag/tag.model';
+import { Sr } from '../sr/sr.model';
 
 // create product
 const createProductIntoDB = async (
@@ -91,13 +92,94 @@ const getAllProductFromDB = async (query: Record<string, unknown>) => {
     return { result, meta };
 };
 
+// get all product by sr
+const getAllProductBySrFromDB = async (id: string, userPayload: JwtPayload) => {
+    const sr = await Sr.findOne({ sr: new Types.ObjectId(id) });
+    if (!sr) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No sr found');
+    }
+
+    const dsr = await User.findOne({ id: userPayload.userId });
+    if (!dsr) {
+        throw new AppError(httpStatus.NOT_FOUND, 'No dsr found');
+    }
+
+    const startDay = moment().tz(TIMEZONE).startOf('day').format();
+    const endDay = moment().tz(TIMEZONE).endOf('day').format();
+
+    const products = await Product.aggregate([
+        {
+            $match: {
+                dealer: { $in: sr.dealers.map(d => new Types.ObjectId(d._id)) },
+            },
+        },
+        {
+            $lookup: {
+                from: 'inventories',
+                let: { productId: '$_id' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ['$product', '$$productId'] },
+                                    { $eq: ['$dsr', dsr._id] },
+                                    { $gte: ['$createdAt', startDay] },
+                                    { $lte: ['$createdAt', endDay] },
+                                ],
+                            },
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            totalOut: {
+                                $sum: {
+                                    $subtract: [
+                                        '$outQuantity',
+                                        '$sellQuantity',
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                ],
+                as: 'inventoryData',
+            },
+        },
+        {
+            $addFields: {
+                stock: {
+                    $ifNull: [
+                        { $arrayElemAt: ['$inventoryData.totalOut', 0] },
+                        0,
+                    ],
+                },
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                id: 1,
+                name: 1,
+                bnName: 1,
+                packageType: 1,
+                quantityPerPackage: 1,
+                dealerCommission: 1,
+                price: 1,
+                image: 1,
+                stock: 1,
+            },
+        },
+    ]);
+
+    return products;
+};
+
 // get top selling product
 const getTopSellingProductFromDB = async (query: Record<string, unknown>) => {
     const last7Days = moment().subtract(7, 'days').startOf('day').format();
 
-    const matchDealer = query.dealer
-        ? { 'orderInfo.dealer': new Types.ObjectId(query.dealer as string) }
-        : {};
     const orders = await Order.find({
         dealer: query.dealer,
         createdAt: {
@@ -651,6 +733,7 @@ const deleteProductIntoDB = async (id: string) => {
 export const ProductServices = {
     createProductIntoDB,
     getAllProductFromDB,
+    getAllProductBySrFromDB,
     getTopSellingProductFromDB,
     getAllProductWithStockFromDB,
     getProductsGroupedBySRsAndOrderedDateFromDB,

@@ -28,6 +28,18 @@ const getAllProduct = catchAsync(async (req, res) => {
     });
 });
 
+// get all product by stock controller
+const getAllProductBySr = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await ProductServices.getAllProductBySrFromDB(id, req.user);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'All Products have been retrieved successfully',
+        data: result,
+    });
+});
+
 // get top selling product controller
 const getTopSellingProduct = catchAsync(async (req, res) => {
     const result = await ProductServices.getTopSellingProductFromDB(req.query);
@@ -139,6 +151,7 @@ const deleteProduct = catchAsync(async (req, res) => {
 export const ProductControllers = {
     createProduct,
     getAllProduct,
+    getAllProductBySr,
     getTopSellingProduct,
     getAllProductWithStock,
     getProductsGroupedBySRsAndOrderedDate,
