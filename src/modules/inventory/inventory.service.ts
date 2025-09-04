@@ -232,15 +232,15 @@ const createAltInventoryIntoDB = async (payload: IInventory) => {
 
 // get all inventories
 const getAllInventoriesFromDB = async (query: Record<string, unknown>) => {
-    const dsr = new Types.ObjectId(query?.dsr as string);
-    const dealer = new Types.ObjectId(query?.dealer as string);
+    const dsr = query?.dsr;
+    const dealer = query?.dealer;
     const createdAt = query?.createdAt;
     const matchStages: Record<string, unknown> = {};
-    if (createdAt) {
-        matchStages.dsr = dsr;
+    if (dsr) {
+        matchStages.dsr = new Types.ObjectId(dsr as string);
     }
     if (dealer) {
-        matchStages.dealer = dealer;
+        matchStages.dealer = new Types.ObjectId(dealer as string);
     }
     if (createdAt) {
         matchStages.createdAt = {

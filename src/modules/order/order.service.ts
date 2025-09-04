@@ -173,8 +173,58 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
 
     orderData.products = orderDetailsData;
 
-    const result = await Order.create(orderData);
-    return result;
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const result = await Order.create([orderData], { session });
+
+        if (dsr) {
+            for (const prod of result[0].products) {
+                const todayStart = moment().startOf('day').format();
+                const todayEnd = moment().endOf('day').format();
+
+                await Inventory.findOneAndUpdate(
+                    {
+                        dsr: dsr._id,
+                        product: prod.product,
+                        createdAt: { $gte: todayStart, $lte: todayEnd },
+                    },
+                    {
+                        $inc: { sellQuantity: prod.quantity },
+                        $set: { updatedAt: moment().endOf('day').format() },
+                    },
+                    { session }
+                );
+
+                // if (!inventory) {
+                //     throw new AppError(
+                //         httpStatus.NOT_FOUND,
+                //         `No inventory found for product ${prod.product} today`
+                //     );
+                // }
+
+                // // increment sellQuantity
+                // inventory.sellQuantity += prod.quantity;
+                // inventory.updatedAt = moment().endOf('day').format();
+                // await inventory.save({ session });
+            }
+        }
+
+        await session.commitTransaction();
+        await session.endSession();
+
+        return result[0];
+    } catch (err) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Mongoose transaction failed',
+            err as string
+        );
+    }
 };
 
 // create ready order

@@ -117,10 +117,77 @@ const getAllRetailerFromDB = async (query: Record<string, unknown>) => {
 
 // get retailers near me
 const getRetailersNearMeFromDB = async (query: Record<string, unknown>) => {
-    const retailers = await Retailer.find({ union: { $in: query.union } })
-        .populate('retailer', '_id id name')
-        .populate('union', '_id id name bnName')
-        .select('shopName location');
+    const union = query?.union;
+    const matchStages: Record<string, unknown> = {};
+
+    if (typeof union === 'string') {
+        matchStages.union = new Types.ObjectId(union);
+    } else if (Array.isArray(union)) {
+        matchStages.union = { $in: union.map(u => new Types.ObjectId(u)) };
+    }
+
+    const retailers = await Retailer.aggregate([
+        { $match: matchStages },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'retailer',
+                foreignField: '_id',
+                as: 'retailerUser',
+            },
+        },
+        {
+            $unwind: {
+                path: '$retailerUser',
+                preserveNullAndEmptyArrays: true,
+            },
+        },
+        {
+            $lookup: {
+                from: 'unions',
+                localField: 'union',
+                foreignField: '_id',
+                as: 'unionData',
+            },
+        },
+        { $unwind: { path: '$unionData', preserveNullAndEmptyArrays: true } },
+        {
+            $lookup: {
+                from: 'orders',
+                localField: 'retailer',
+                foreignField: 'retailer',
+                as: 'orderData',
+            },
+        },
+        {
+            $addFields: {
+                isOrdered: {
+                    $cond: [{ $gt: [{ $size: '$orderData' }, 0] }, true, false],
+                },
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                shopName: 1,
+                location: 1,
+                isOrdered: 1,
+                retailer: {
+                    _id: '$retailerUser._id',
+                    id: '$retailerUser.id',
+                    name: '$retailerUser.name',
+                    profileImg: '$retailerUser.profileImg',
+                },
+                union: {
+                    _id: '$unionData._id',
+                    id: '$unionData.id',
+                    name: '$unionData.name',
+                    bnName: '$unionData.bnName',
+                },
+            },
+        },
+    ]);
+
     if (retailers.length === 0) {
         return [];
     }
