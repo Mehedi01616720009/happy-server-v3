@@ -112,7 +112,8 @@ const getMeFromDB = async (payload: JwtPayload) => {
         const dsr = await Dsr.findOne({ dsr: user._id })
             .populate('dsr')
             .populate('upazilas')
-            .populate('sr');
+            .populate('sr')
+            .lean();
         const companies = await Company.find();
         const dsrData = (dsr as IDsr).dsr;
         result = {

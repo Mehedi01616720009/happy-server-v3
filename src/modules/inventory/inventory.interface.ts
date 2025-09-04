@@ -5,6 +5,7 @@ export interface IInventory {
     dsr: Types.ObjectId;
     warehouse: Types.ObjectId;
     product: Types.ObjectId;
+    dealer: Types.ObjectId;
     outQuantity: number;
     sellQuantity: number;
     isReturned: boolean;

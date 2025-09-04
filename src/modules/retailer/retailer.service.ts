@@ -118,8 +118,8 @@ const getAllRetailerFromDB = async (query: Record<string, unknown>) => {
 // get retailers near me
 const getRetailersNearMeFromDB = async (query: Record<string, unknown>) => {
     const retailers = await Retailer.find({ union: { $in: query.union } })
-        .populate('retailer')
-        .populate('union')
+        .populate('retailer', '_id id name')
+        .populate('union', '_id id name bnName')
         .select('shopName location');
     if (retailers.length === 0) {
         return [];
@@ -382,13 +382,13 @@ const getAllRetailerForDeliverymanFromDB = async (
         { $unwind: '$user' },
         {
             $lookup: {
-                from: 'areas',
-                localField: 'retailer.area',
+                from: 'unions',
+                localField: 'retailer.union',
                 foreignField: '_id',
-                as: 'area',
+                as: 'union',
             },
         },
-        { $unwind: '$area' },
+        { $unwind: '$union' },
         {
             $project: {
                 _id: '$user._id',
@@ -397,7 +397,7 @@ const getAllRetailerForDeliverymanFromDB = async (
                 profileImg: '$user.profileImg',
                 shopName: '$retailer.shopName',
                 location: '$retailer.location',
-                area: '$area.bnName',
+                area: '$union.bnName',
                 status: 1,
             },
         },
@@ -448,6 +448,15 @@ const getSingleRetailerForDeliverymanFromDB = async (
                 preserveNullAndEmptyArrays: false,
             },
         },
+        {
+            $lookup: {
+                from: 'unions',
+                localField: 'retailerData.union',
+                foreignField: '_id',
+                as: 'unionData',
+            },
+        },
+        { $unwind: '$unionData' },
         {
             $lookup: {
                 from: 'orders',
@@ -574,6 +583,12 @@ const getSingleRetailerForDeliverymanFromDB = async (
                 id: 1,
                 name: 1,
                 profileImg: 1,
+                union: {
+                    _id: '$unionData._id',
+                    id: '$unionData.id',
+                    name: '$unionData.name',
+                    bnName: '$unionData.bnName',
+                },
                 shopName: '$retailerData.shopName',
                 orders: 1,
             },

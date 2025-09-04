@@ -94,12 +94,14 @@ const getAllProductFromDB = async (query: Record<string, unknown>) => {
 
 // get all product by sr
 const getAllProductBySrFromDB = async (id: string, userPayload: JwtPayload) => {
-    const sr = await Sr.findOne({ sr: new Types.ObjectId(id) });
+    const sr = await Sr.findOne({ sr: new Types.ObjectId(id) }).select(
+        'dealers'
+    );
     if (!sr) {
         throw new AppError(httpStatus.NOT_FOUND, 'No sr found');
     }
 
-    const dsr = await User.findOne({ id: userPayload.userId });
+    const dsr = await User.findOne({ id: userPayload.userId }).select('_id');
     if (!dsr) {
         throw new AppError(httpStatus.NOT_FOUND, 'No dsr found');
     }
@@ -110,9 +112,18 @@ const getAllProductBySrFromDB = async (id: string, userPayload: JwtPayload) => {
     const products = await Product.aggregate([
         {
             $match: {
-                dealer: { $in: sr.dealers.map(d => new Types.ObjectId(d._id)) },
+                dealer: sr.dealers[0]._id,
             },
         },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'dealer',
+                foreignField: '_id',
+                as: 'dealer',
+            },
+        },
+        { $unwind: '$dealer' },
         {
             $lookup: {
                 from: 'inventories',
@@ -164,6 +175,11 @@ const getAllProductBySrFromDB = async (id: string, userPayload: JwtPayload) => {
                 name: 1,
                 bnName: 1,
                 packageType: 1,
+                dealer: {
+                    _id: 1,
+                    id: 1,
+                    name: 1,
+                },
                 quantityPerPackage: 1,
                 dealerCommission: 1,
                 price: 1,

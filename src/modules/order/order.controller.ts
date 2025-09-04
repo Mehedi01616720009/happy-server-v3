@@ -36,6 +36,17 @@ const getAllOrder = catchAsync(async (req, res) => {
     });
 });
 
+// get orders for sr dealer controller
+const getOrdersForSrDealer = catchAsync(async (req, res) => {
+    const result = await OrderServices.getOrdersForSrDealerFromDB(req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'All Order have been retrieved successfully',
+        data: result,
+    });
+});
+
 // get single order controller
 const getSingleOrder = catchAsync(async (req, res) => {
     const { id } = req.params;
@@ -214,6 +225,7 @@ export const OrderController = {
     createOrder,
     createReadyOrder,
     getAllOrder,
+    getOrdersForSrDealer,
     getSingleOrder,
     updateOrderProduct,
     dispatchOrder,

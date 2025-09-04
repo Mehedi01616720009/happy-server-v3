@@ -16,11 +16,9 @@ import moment from 'moment-timezone';
 import { TIMEZONE } from '../../constant';
 import { JwtPayload } from 'jsonwebtoken';
 import { Retailer } from '../retailer/retailer.model';
-import { CustomerCareData } from '../customerCare/customerCare.model';
-import { Packingman, PickedProduct } from '../pickupMan/pickupMan.model';
+import { PickedProduct } from '../pickupMan/pickupMan.model';
 import { Union } from '../union/union.model';
 import { Warehouse } from '../warehouse/warehouse.model';
-import { stat } from 'fs';
 import { Inventory } from '../inventory/inventory.model';
 
 // create order
@@ -86,7 +84,7 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
     orderData.id = await generateOrderId([
         String(payload?.retailer),
         String(dealer.id),
-        String(payload?.sr || payload?.dsr),
+        String(payload?.sr),
     ]);
 
     const orderDetailsData: IOrderDetailsProduct[] = await Promise.all(
@@ -157,16 +155,15 @@ const createOrderIntoDB = async (payload: ICreateOrder) => {
                       ),
             };
 
-            if (orderData?.sr) {
-                orderDetails.summary = {
-                    orderedQuantity: product.quantity,
-                    soldQuantity: 0,
-                };
-            }
             if (orderData?.dsr) {
                 orderDetails.summary = {
                     orderedQuantity: product.quantity,
                     soldQuantity: product.quantity,
+                };
+            } else {
+                orderDetails.summary = {
+                    orderedQuantity: product.quantity,
+                    soldQuantity: 0,
                 };
             }
 
@@ -384,6 +381,174 @@ const getAllOrderFromDB = async (query: Record<string, unknown>) => {
     const result = await fetchQuery.modelQuery;
     const meta = await fetchQuery.countTotal();
     return { result, meta };
+};
+
+// get orders for sr dealer
+const getOrdersForSrDealerFromDB = async (query: Record<string, unknown>) => {
+    const sr = query?.sr;
+    const dealer = query?.dealer;
+    const createdAt = query?.createdAt;
+    const matchStages: Record<string, unknown> = {};
+    let startDay = moment().tz(TIMEZONE).startOf('day').format();
+    let endDay = moment().tz(TIMEZONE).endOf('day').format();
+
+    if (sr) {
+        matchStages.sr = new Types.ObjectId(sr as string);
+    }
+    if (dealer) {
+        matchStages.dealer = new Types.ObjectId(dealer as string);
+    }
+    if (createdAt) {
+        matchStages.createdAt = {
+            $gte: createdAt
+                ? moment
+                      .tz(
+                          (createdAt as { gte: string; lte: string }).gte,
+                          TIMEZONE
+                      )
+                      .startOf('day')
+                      .format()
+                : startDay,
+            $lte: createdAt
+                ? moment
+                      .tz(
+                          (createdAt as { gte: string; lte: string }).lte,
+                          TIMEZONE
+                      )
+                      .endOf('day')
+                      .format()
+                : endDay,
+        };
+    }
+
+    const result = await Order.aggregate([
+        { $match: matchStages },
+        {
+            $lookup: {
+                from: 'retailers',
+                localField: 'retailer',
+                foreignField: 'retailer',
+                as: 'retailerData',
+            },
+        },
+        { $unwind: '$retailerData' },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'retailer',
+                foreignField: '_id',
+                as: 'retailer',
+            },
+        },
+        { $unwind: '$retailer' },
+        {
+            $lookup: {
+                from: 'unions',
+                localField: 'area',
+                foreignField: '_id',
+                as: 'area',
+            },
+        },
+        { $unwind: '$area' },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'dealer',
+                foreignField: '_id',
+                as: 'dealer',
+            },
+        },
+        { $unwind: '$dealer' },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'products.product',
+                foreignField: '_id',
+                as: 'productDetails',
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 1,
+                            id: 1,
+                            name: 1,
+                            bnName: 1,
+                            dealer: 1,
+                            packageType: 1,
+                            quantityPerPackage: 1,
+                            image: 1,
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            $addFields: {
+                products: {
+                    $map: {
+                        input: '$products',
+                        as: 'p',
+                        in: {
+                            quantity: '$$p.quantity',
+                            price: '$$p.price',
+                            totalAmount: '$$p.totalAmount',
+                            dealerPrice: '$$p.dealerPrice',
+                            dealerTotalAmount: '$$p.dealerTotalAmount',
+                            srPrice: '$$p.srPrice',
+                            srTotalAmount: '$$p.srTotalAmount',
+                            summary: '$$p.summary',
+                            product: {
+                                $arrayElemAt: [
+                                    {
+                                        $filter: {
+                                            input: '$productDetails',
+                                            cond: {
+                                                $eq: [
+                                                    '$$this._id',
+                                                    '$$p.product',
+                                                ],
+                                            },
+                                        },
+                                    },
+                                    0,
+                                ],
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        { $sort: { 'area.bnName': 1, 'retailerData.shopName': -1 } },
+        {
+            $project: {
+                _id: 1,
+                id: 1,
+                status: 1,
+                paymentStatus: 1,
+                collectionAmount: 1,
+                collectedAmount: 1,
+                retailer: {
+                    _id: '$retailer._id',
+                    id: '$retailer.id',
+                    name: '$retailer.name',
+                    shopName: '$retailerData.shopName',
+                },
+                area: {
+                    _id: '$area._id',
+                    id: '$area.id',
+                    name: '$area.name',
+                    bnName: '$area.bnName',
+                },
+                dealer: {
+                    _id: '$dealer._id',
+                    id: '$dealer.id',
+                    name: '$dealer.name',
+                },
+                products: 1,
+            },
+        },
+    ]);
+
+    return result;
 };
 
 // get single order
@@ -816,8 +981,7 @@ const updateBakiOrderIntoDB = async (
 
         order.collectionAmount = Number(payload?.collectionAmount);
         order.collectedAmount =
-            order.collectedAmount +
-            Number(payload?.collectedAmount || payload?.collectionAmount);
+            order.collectedAmount + Number(payload?.collectedAmount);
         order.status =
             order.collectionAmount === order.collectedAmount
                 ? 'Delivered'
@@ -896,7 +1060,7 @@ const getDeliverySummaryFromDB = async (query: Record<string, unknown>) => {
     const { dsr, dealer, sr, updatedAt } = query;
 
     const matchStages: Record<string, unknown> = {
-        status: { $in: ['Delivered', 'Baki'] }, // ✅ only Delivered or Baki
+        status: { $in: ['Delivered', 'Baki'] },
     };
 
     if (sr) {
@@ -913,11 +1077,11 @@ const getDeliverySummaryFromDB = async (query: Record<string, unknown>) => {
             $gte: moment
                 .tz((updatedAt as { gte: string; lte: string }).gte, TIMEZONE)
                 .startOf('day')
-                .toDate(), // ✅ use Date instead of string
+                .format(),
             $lte: moment
                 .tz((updatedAt as { gte: string; lte: string }).lte, TIMEZONE)
                 .endOf('day')
-                .toDate(),
+                .format(),
         };
     }
 
@@ -1155,6 +1319,7 @@ export const OrderServices = {
     createOrderIntoDB,
     createReadyOrderIntoDB,
     getAllOrderFromDB,
+    getOrdersForSrDealerFromDB,
     getSingleOrderFromDB,
     updateOrderProductIntoDB,
     dispatchOrderIntoDB,

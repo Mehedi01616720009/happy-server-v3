@@ -24,6 +24,11 @@ const inventorySchema = new Schema<IInventory>({
         ref: 'Product',
         required: true,
     },
+    dealer: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     outQuantity: {
         type: Number,
         required: true,

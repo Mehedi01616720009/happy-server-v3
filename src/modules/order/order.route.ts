@@ -42,6 +42,18 @@ router.get(
     OrderController.getAllOrder
 );
 
+// get orders for sr route
+router.get(
+    '/sr-dealer',
+    auth(
+        USER_ROLES.superAdmin,
+        USER_ROLES.admin,
+        USER_ROLES.dealer,
+        USER_ROLES.sr
+    ),
+    OrderController.getOrdersForSrDealer
+);
+
 // get single order route
 router.get(
     '/:id',

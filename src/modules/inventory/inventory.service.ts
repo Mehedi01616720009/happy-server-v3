@@ -13,22 +13,28 @@ import { TIMEZONE } from '../../constant';
 
 // create inventory
 const createInventoryIntoDB = async (payload: IInventory) => {
-    const warehouse = await Warehouse.findOne({ id: payload?.warehouse });
+    const warehouse = await Warehouse.findOne({
+        id: payload?.warehouse,
+    }).select('_id');
     if (!warehouse) {
         throw new AppError(httpStatus.NOT_FOUND, 'No warehouse found');
     }
 
-    const product = await Product.findOne({ id: payload?.product });
+    const product = await Product.findOne({ id: payload?.product }).select(
+        '_id dealer'
+    );
     if (!product) {
         throw new AppError(httpStatus.NOT_FOUND, 'No product found');
     }
 
-    const packingman = await User.findOne({ id: payload?.packingman });
+    const packingman = await User.findOne({ id: payload?.packingman }).select(
+        '_id'
+    );
     if (!packingman) {
         throw new AppError(httpStatus.NOT_FOUND, 'No packingman found');
     }
 
-    const dsr = await User.findOne({ id: payload?.dsr });
+    const dsr = await User.findOne({ id: payload?.dsr }).select('_id');
     if (!dsr) {
         throw new AppError(httpStatus.NOT_FOUND, 'No dsr found');
     }
@@ -56,6 +62,7 @@ const createInventoryIntoDB = async (payload: IInventory) => {
     inventoryData.product = product._id;
     inventoryData.packingman = packingman._id;
     inventoryData.dsr = dsr._id;
+    inventoryData.dealer = product.dealer;
 
     const session = await mongoose.startSession();
 
@@ -119,22 +126,28 @@ const createInventoryIntoDB = async (payload: IInventory) => {
 
 // create alt inventory
 const createAltInventoryIntoDB = async (payload: IInventory) => {
-    const warehouse = await Warehouse.findOne({ id: payload?.warehouse });
+    const warehouse = await Warehouse.findOne({
+        id: payload?.warehouse,
+    }).select('_id');
     if (!warehouse) {
         throw new AppError(httpStatus.NOT_FOUND, 'No warehouse found');
     }
 
-    const product = await Product.findOne({ id: payload?.product });
+    const product = await Product.findOne({ id: payload?.product }).select(
+        '_id dealer'
+    );
     if (!product) {
         throw new AppError(httpStatus.NOT_FOUND, 'No product found');
     }
 
-    const packingman = await User.findOne({ id: payload?.packingman });
+    const packingman = await User.findOne({ id: payload?.packingman }).select(
+        '_id'
+    );
     if (!packingman) {
         throw new AppError(httpStatus.NOT_FOUND, 'No packingman found');
     }
 
-    const dsr = await User.findOne({ id: payload?.dsr });
+    const dsr = await User.findOne({ id: payload?.dsr }).select('_id');
     if (!dsr) {
         throw new AppError(httpStatus.NOT_FOUND, 'No dsr found');
     }
@@ -146,6 +159,7 @@ const createAltInventoryIntoDB = async (payload: IInventory) => {
     inventoryData.product = product._id;
     inventoryData.packingman = packingman._id;
     inventoryData.dsr = dsr._id;
+    inventoryData.dealer = product.dealer;
 
     const session = await mongoose.startSession();
 
@@ -219,8 +233,15 @@ const createAltInventoryIntoDB = async (payload: IInventory) => {
 // get all inventories
 const getAllInventoriesFromDB = async (query: Record<string, unknown>) => {
     const dsr = new Types.ObjectId(query?.dsr as string);
+    const dealer = new Types.ObjectId(query?.dealer as string);
     const createdAt = query?.createdAt;
-    const matchStages: Record<string, unknown> = { dsr };
+    const matchStages: Record<string, unknown> = {};
+    if (createdAt) {
+        matchStages.dsr = dsr;
+    }
+    if (dealer) {
+        matchStages.dealer = dealer;
+    }
     if (createdAt) {
         matchStages.createdAt = {
             $gte: moment
@@ -247,17 +268,19 @@ const updateReturnProductInventoryIntoDB = async (payload: {
     product: string;
     dsr: string;
 }) => {
-    const warehouse = await Warehouse.findById(payload?.warehouse);
+    const warehouse = await Warehouse.findById(payload?.warehouse).select(
+        '_id'
+    );
     if (!warehouse) {
         throw new AppError(httpStatus.NOT_FOUND, 'No warehouse found');
     }
 
-    const product = await Product.findById(payload?.product);
+    const product = await Product.findById(payload?.product).select('_id');
     if (!product) {
         throw new AppError(httpStatus.NOT_FOUND, 'No product found');
     }
 
-    const dsr = await User.findById(payload?.dsr);
+    const dsr = await User.findById(payload?.dsr).select('_id');
     if (!dsr) {
         throw new AppError(httpStatus.NOT_FOUND, 'No dsr found');
     }
