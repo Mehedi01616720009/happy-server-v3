@@ -491,6 +491,9 @@ const getSingleRetailerForDeliverymanFromDB = async (
 ) => {
     const { dsr } = query;
 
+    const startDay = moment().tz(TIMEZONE).startOf('day').format();
+    const endDay = moment().tz(TIMEZONE).endOf('day').format();
+
     const pipeline = [
         { $match: { id } },
         {
@@ -564,6 +567,28 @@ const getSingleRetailerForDeliverymanFromDB = async (
                             preserveNullAndEmptyArrays: true,
                         },
                     },
+                    // {
+                    //     $lookup: {
+                    //         from: 'products',
+                    //         localField: 'products.product',
+                    //         foreignField: '_id',
+                    //         as: 'productDetails',
+                    //         pipeline: [
+                    //             {
+                    //                 $project: {
+                    //                     _id: 1,
+                    //                     id: 1,
+                    //                     name: 1,
+                    //                     bnName: 1,
+                    //                     packageType: 1,
+                    //                     quantityPerPackage: 1,
+                    //                     price: 1,
+                    //                     image: 1,
+                    //                 },
+                    //             },
+                    //         ],
+                    //     },
+                    // },
                     {
                         $lookup: {
                             from: 'products',
@@ -581,6 +606,78 @@ const getSingleRetailerForDeliverymanFromDB = async (
                                         quantityPerPackage: 1,
                                         price: 1,
                                         image: 1,
+                                    },
+                                },
+                                // 👇 Add inventory lookup here
+                                {
+                                    $lookup: {
+                                        from: 'inventories',
+                                        let: { productId: '$_id' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $and: [
+                                                            {
+                                                                $eq: [
+                                                                    '$product',
+                                                                    '$$productId',
+                                                                ],
+                                                            },
+                                                            {
+                                                                $eq: [
+                                                                    '$dsr',
+                                                                    new Types.ObjectId(
+                                                                        dsr as string
+                                                                    ),
+                                                                ],
+                                                            },
+                                                            {
+                                                                $gte: [
+                                                                    '$createdAt',
+                                                                    startDay,
+                                                                ],
+                                                            },
+                                                            {
+                                                                $lte: [
+                                                                    '$createdAt',
+                                                                    endDay,
+                                                                ],
+                                                            },
+                                                        ],
+                                                    },
+                                                },
+                                            },
+                                            {
+                                                $group: {
+                                                    _id: null,
+                                                    totalOut: {
+                                                        $sum: {
+                                                            $subtract: [
+                                                                '$outQuantity',
+                                                                '$sellQuantity',
+                                                            ],
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        ],
+                                        as: 'inventoryData',
+                                    },
+                                },
+                                {
+                                    $addFields: {
+                                        stock: {
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: [
+                                                        '$inventoryData.totalOut',
+                                                        0,
+                                                    ],
+                                                },
+                                                0,
+                                            ],
+                                        },
                                     },
                                 },
                             ],
@@ -620,6 +717,37 @@ const getSingleRetailerForDeliverymanFromDB = async (
                                         summary: '$$p.summary',
                                     },
                                 },
+                                // $map: {
+                                //     input: '$products',
+                                //     as: 'p',
+                                //     in: {
+                                //         product: {
+                                //             $arrayElemAt: [
+                                //                 {
+                                //                     $filter: {
+                                //                         input: '$productDetails',
+                                //                         cond: {
+                                //                             $eq: [
+                                //                                 '$$this._id',
+                                //                                 '$$p.product',
+                                //                             ],
+                                //                         },
+                                //                     },
+                                //                 },
+                                //                 0,
+                                //             ],
+                                //         },
+                                //         quantity: '$$p.quantity',
+                                //         price: '$$p.price',
+                                //         totalAmount: '$$p.totalAmount',
+                                //         dealerPrice: '$$p.dealerPrice',
+                                //         dealerTotalAmount:
+                                //             '$$p.dealerTotalAmount',
+                                //         srPrice: '$$p.srPrice',
+                                //         srTotalAmount: '$$p.srTotalAmount',
+                                //         summary: '$$p.summary',
+                                //     },
+                                // },
                             },
                         },
                     },

@@ -196,16 +196,15 @@ const getAllProductBySrFromDB = async (id: string, userPayload: JwtPayload) => {
 const getTopSellingProductFromDB = async (query: Record<string, unknown>) => {
     const last7Days = moment().subtract(7, 'days').startOf('day').format();
 
-    const orders = await Order.find({
-        dealer: query.dealer,
-        createdAt: {
-            $gte: last7Days,
-        },
-    }).select('_id');
-    const orderIDs = orders.map(item => item._id);
-
     const topSellingProducts = await Order.aggregate([
-        { $match: { order: { $in: orderIDs } } },
+        {
+            $match: {
+                dealer: new Types.ObjectId(String(query?.dealer)),
+                createdAt: {
+                    $gte: last7Days,
+                },
+            },
+        },
         { $unwind: '$products' },
         {
             $match: {
@@ -269,7 +268,12 @@ const getTopSellingProductFromDB = async (query: Record<string, unknown>) => {
 
     return {
         result: topSellingProducts,
-        meta: { limit: 10, page: 1, totalPage: 1, totalDoc: 10 },
+        meta: {
+            limit: 25,
+            page: 1,
+            totalPage: 1,
+            totalDoc: topSellingProducts?.length || 0,
+        },
     };
 };
 
@@ -278,10 +282,10 @@ const getAllProductWithStockFromDB = async (query: Record<string, unknown>) => {
     const { warehouse, ...restQuery } = query;
     const fetchQuery = new QueryBuilder(
         Product.find({ isDeleted: false })
-            .populate('category')
-            .populate('company')
-            .populate('dealer')
-            .populate('tags'),
+            .select(
+                '_id id bnName price dealer dealerCommission packageType quantityPerPackage image'
+            )
+            .populate('dealer', '_id id name phone'),
         restQuery
     )
         .search(['name', 'bnName'])

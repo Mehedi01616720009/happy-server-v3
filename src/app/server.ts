@@ -13,6 +13,7 @@ let server: Server;
 async function main() {
     try {
         // database connection
+        console.log(config.databaseUrl);
         await mongoose.connect(config.databaseUrl as string);
 
         // check and seed super admin

@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "start": "pm2 restart api.v2.happybd.org --update-env",
-        "start:prod": "node ./dist/app/server.js",
+        "start": "pm2 restart api.v3.happybangladesh.com --update-env",
+        "start:prod": "pm2 start ./dist/app/server.js --name \"api.v3.happybangladesh.com\"",
         "start:dev": "ts-node-dev --respawn --transpile-only src/app/server.ts",
         "build": "tsc",
         "lint": "npx eslint src --ignore-pattern .ts",

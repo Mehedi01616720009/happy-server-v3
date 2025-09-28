@@ -10,7 +10,7 @@ export default {
     port: process.env.PORT,
     databaseUrl:
         process.env.NODE_ENV === 'production'
-            ? process.env.DATABASE_URL
+            ? process.env.DB_URL
             : process.env.LOCAL_DATABASE_URL,
     companyName: process.env.COMPANY_NAME,
     accessSecret: process.env.ACCESS_TOKEN_SECRET,

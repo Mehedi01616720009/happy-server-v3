@@ -580,6 +580,7 @@ const getOrdersForSrDealerFromDB = async (query: Record<string, unknown>) => {
                     _id: '$retailer._id',
                     id: '$retailer.id',
                     name: '$retailer.name',
+                    profileImg: '$retailer.profileImg',
                     shopName: '$retailerData.shopName',
                 },
                 area: {
@@ -838,6 +839,8 @@ const updateOrderProductBySrIntoDB = async (
     try {
         session.startTransaction();
 
+        console.log(payload);
+
         await Order.findByIdAndUpdate(
             order?._id,
             {
@@ -876,17 +879,20 @@ const updateOrderProductBySrIntoDB = async (
                 arrayFilters: [{ 'product.product': product._id }],
             }
         );
-        const orderDetailsForPrices = await Order.findOne({
-            order: order?._id,
-        })
+
+        console.log(payload);
+
+        const orderDetailsForPrices = await Order.findById(order?._id)
             .session(session)
             .select('products');
+
         const collectionAmount = (
             orderDetailsForPrices as IOrder
         ).products.reduce(
             (acc, product) => (acc += Number(product.srTotalAmount)),
             0
         );
+
         const result = await Order.findByIdAndUpdate(
             order?._id,
             {
@@ -895,6 +901,7 @@ const updateOrderProductBySrIntoDB = async (
             },
             { session, new: true }
         );
+
         await session.commitTransaction();
         await session.endSession();
 
@@ -962,8 +969,8 @@ const deliverOrderIntoDB = async (
 
         // update inventory for each delivered product
         for (const prod of order.products) {
-            const todayStart = moment().startOf('day').format();
-            const todayEnd = moment().endOf('day').format();
+            const todayStart = moment().tz(TIMEZONE).startOf('day').format();
+            const todayEnd = moment().tz(TIMEZONE).endOf('day').format();
 
             await Inventory.findOneAndUpdate(
                 {
@@ -977,18 +984,6 @@ const deliverOrderIntoDB = async (
                 },
                 { session }
             );
-
-            // if (!inventory) {
-            //     throw new AppError(
-            //         httpStatus.NOT_FOUND,
-            //         `No inventory found for product ${prod.product} today`
-            //     );
-            // }
-
-            // // increment sellQuantity
-            // inventory.sellQuantity += prod.quantity;
-            // inventory.updatedAt = moment().endOf('day').format();
-            // await inventory.save({ session });
         }
 
         const result = await order.save({ session });
@@ -1065,8 +1060,14 @@ const updateBakiOrderIntoDB = async (
                     order.deliveredTime = moment().tz(TIMEZONE).format();
                     order.updatedAt = moment().tz(TIMEZONE).format();
 
-                    const todayStart = moment().startOf('day').format();
-                    const todayEnd = moment().endOf('day').format();
+                    const todayStart = moment()
+                        .tz(TIMEZONE)
+                        .startOf('day')
+                        .format();
+                    const todayEnd = moment()
+                        .tz(TIMEZONE)
+                        .endOf('day')
+                        .format();
 
                     await Inventory.findOneAndUpdate(
                         {
