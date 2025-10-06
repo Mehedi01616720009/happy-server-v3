@@ -303,7 +303,30 @@ const getDealerDashboardDataFromDB = async (
 };
 
 // get dealer stock data
-const getDealerStockDataFromDB = async (id: string) => {
+const getDealerStockDataFromDB = async (
+    id: string,
+    query: Record<string, unknown>
+) => {
+    const dateFilter: Record<string, unknown> = {};
+    if (query?.createdAt) {
+        dateFilter.createdAt = {
+            $gte: moment
+                .tz(
+                    (query.createdAt as { gte: string; lte: string }).gte,
+                    TIMEZONE
+                )
+                .startOf('day')
+                .format(),
+            $lte: moment
+                .tz(
+                    (query.createdAt as { gte: string; lte: string }).lte,
+                    TIMEZONE
+                )
+                .endOf('day')
+                .format(),
+        };
+    }
+
     const user = await User.findOne({ id, isDeleted: false });
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, 'No Dealer Found');
@@ -313,6 +336,7 @@ const getDealerStockDataFromDB = async (id: string) => {
         {
             $match: {
                 dealer: user._id,
+                ...dateFilter,
             },
         },
         {
@@ -328,6 +352,7 @@ const getDealerStockDataFromDB = async (id: string) => {
             $match: {
                 dealer: user._id,
                 status: { $in: ['Delivered', 'Baki'] },
+                ...dateFilter,
             },
         },
         {
@@ -340,18 +365,10 @@ const getDealerStockDataFromDB = async (id: string) => {
 
     const totalProfit = await Order.aggregate([
         {
-            $lookup: {
-                from: 'orders',
-                localField: 'order',
-                foreignField: '_id',
-                as: 'order',
-            },
-        },
-        { $unwind: '$order' },
-        {
             $match: {
-                'order.dealer': user._id,
-                'order.status': { $in: ['Delivered', 'Baki'] },
+                dealer: user._id,
+                status: { $in: ['Delivered', 'Baki'] },
+                ...dateFilter,
             },
         },
         { $unwind: '$products' },
@@ -380,18 +397,10 @@ const getDealerStockDataFromDB = async (id: string) => {
 
     const totalOverCommission = await Order.aggregate([
         {
-            $lookup: {
-                from: 'orders',
-                localField: 'order',
-                foreignField: '_id',
-                as: 'order',
-            },
-        },
-        { $unwind: '$order' },
-        {
             $match: {
-                'order.dealer': user._id,
-                'order.status': { $in: ['Delivered', 'Baki'] },
+                dealer: user._id,
+                status: { $in: ['Delivered', 'Baki'] },
+                ...dateFilter,
             },
         },
         { $unwind: '$products' },

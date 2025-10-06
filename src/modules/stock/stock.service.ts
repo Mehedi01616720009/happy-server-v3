@@ -5,6 +5,8 @@ import { PickedProduct } from '../pickupMan/pickupMan.model';
 import { Warehouse } from '../warehouse/warehouse.model';
 import AppError from '../../errors/AppError';
 import { Types } from 'mongoose';
+import moment from 'moment-timezone';
+import { TIMEZONE } from '../../constant';
 
 // get all product stock
 const getAllProductStockFromDB = async (
@@ -17,13 +19,32 @@ const getAllProductStockFromDB = async (
     if (!warehouse) {
         throw new AppError(httpStatus.NOT_FOUND, 'No warehouse found');
     }
-    const fetchQuery = new QueryBuilder(Product.find().limit(200), query)
-        .filter()
-        .sort()
-        .paginate()
-        .fields();
 
-    const products = await fetchQuery.modelQuery;
+    const matchStages: Record<string, unknown> = {};
+    if (query?.dealer) {
+        matchStages.dealer = query.dealer;
+    }
+
+    if (query?.createdAt) {
+        matchStages.createdAt = {
+            $gte: moment
+                .tz(
+                    (query.createdAt as { gte: string; lte: string }).gte,
+                    TIMEZONE
+                )
+                .startOf('day')
+                .format(),
+            $lte: moment
+                .tz(
+                    (query.createdAt as { gte: string; lte: string }).lte,
+                    TIMEZONE
+                )
+                .endOf('day')
+                .format(),
+        };
+    }
+
+    const products = await Product.find(matchStages);
 
     const stocks = await Promise.all(
         products.map(async product => {
@@ -50,7 +71,6 @@ const getAllProductStockFromDB = async (
     */
 
     const result = stocks.filter(item => item !== null);
-    console.log({ result, stocks });
     return result;
 };
 

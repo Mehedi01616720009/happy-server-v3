@@ -1183,72 +1183,95 @@ const getDeliverySummaryFromDB = async (query: Record<string, unknown>) => {
 
 // get order summary
 const getOrderSummaryFromDB = async (query: Record<string, unknown>) => {
-    // Order.find({ status: { $ne: 'Cancelled' } }).select('_id')
-    // const fetchQuery = new QueryBuilder(Order.find().select('_id'), query)
-    //     .filter()
-    //     .sort()
-    //     .fields();
-    // const orders = await fetchQuery.modelQuery;
-    // if (!orders) {
-    //     throw new AppError(httpStatus.NOT_FOUND, 'No Order Found');
-    // }
-    // const orderIDs = orders.map(order => new Types.ObjectId(order._id));
-    // const result = await OrderDetails.aggregate([
-    //     { $match: { order: { $in: orderIDs } } },
-    //     { $unwind: '$products' },
-    //     {
-    //         $lookup: {
-    //             from: 'products',
-    //             localField: 'products.product',
-    //             foreignField: '_id',
-    //             as: 'productDetails',
-    //         },
-    //     },
-    //     {
-    //         $unwind: '$productDetails',
-    //     },
-    //     {
-    //         $addFields: {
-    //             oc: {
-    //                 $subtract: [
-    //                     '$products.srTotalAmount',
-    //                     { $ifNull: ['$products.dealerTotalAmount', 0] },
-    //                 ],
-    //             },
-    //         },
-    //     },
-    //     {
-    //         $group: {
-    //             _id: '$products.product',
-    //             productName: { $first: '$productDetails.name' },
-    //             quantityPerPackage: {
-    //                 $first: '$productDetails.quantityPerPackage',
-    //             },
-    //             packageType: { $first: '$productDetails.packageType' },
-    //             image: { $first: '$productDetails.image' },
-    //             totalQuantity: { $sum: '$products.inventory.out' },
-    //             totalSaleQuantity: { $sum: '$products.inventory.sale' },
-    //             totalOrder: { $sum: 1 },
-    //             totalOc: { $sum: '$oc' },
-    //             totalPrice: { $sum: '$products.srTotalAmount' },
-    //         },
-    //     },
-    //     {
-    //         $project: {
-    //             _id: 0,
-    //             productName: 1,
-    //             packageType: 1,
-    //             image: 1,
-    //             quantityPerPackage: 1,
-    //             totalQuantity: 1,
-    //             totalSaleQuantity: 1,
-    //             totalOrder: 1,
-    //             totalOc: 1,
-    //             totalPrice: 1,
-    //         },
-    //     },
-    // ]);
-    // return result;
+    const matchStages: Record<string, unknown> = {
+        createdAt: {
+            $gte: moment
+                .tz(
+                    (query.createdAt as { gte: string; lte: string }).gte,
+                    TIMEZONE
+                )
+                .startOf('day')
+                .format(),
+            $lte: moment
+                .tz(
+                    (query.createdAt as { gte: string; lte: string }).lte,
+                    TIMEZONE
+                )
+                .endOf('day')
+                .format(),
+        },
+    };
+
+    if (query?.sr) {
+        matchStages.sr = new Types.ObjectId(query.sr as string);
+    }
+    if (query?.dealer) {
+        matchStages.dealer = new Types.ObjectId(query.dealer as string);
+    }
+
+    const results = await Order.aggregate([
+        { $match: matchStages },
+        { $unwind: '$products' },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'products.product',
+                foreignField: '_id',
+                as: 'productData',
+            },
+        },
+        { $unwind: '$productData' },
+        {
+            $addFields: {
+                oc: {
+                    $subtract: [
+                        '$products.srTotalAmount',
+                        '$products.dealerTotalAmount',
+                    ],
+                },
+            },
+        },
+        {
+            $group: {
+                _id: '$products.product',
+                id: { $first: '$productData.id' },
+                name: { $first: '$productData.bnName' },
+                packageType: { $first: '$productData.packageType' },
+                quantityPerPackage: {
+                    $first: '$productData.quantityPerPackage',
+                },
+                image: { $first: '$productData.image' },
+                orderedQuantity: {
+                    $sum: { $ifNull: ['$products.summary.orderedQuantity', 0] },
+                },
+                soldQuantity: {
+                    $sum: { $ifNull: ['$products.summary.soldQuantity', 0] },
+                },
+                totalOrder: { $sum: 1 },
+                totalOc: { $sum: '$oc' },
+                totalPrice: {
+                    $sum: { $ifNull: ['$products.srTotalAmount', 0] },
+                },
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                id: 1,
+                name: 1,
+                packageType: 1,
+                quantityPerPackage: 1,
+                image: 1,
+                orderedQuantity: 1,
+                soldQuantity: 1,
+                totalOrder: 1,
+                totalOc: 1,
+                totalPrice: 1,
+            },
+        },
+    ]);
+
+    return results;
 };
 
 // get order history

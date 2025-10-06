@@ -98,7 +98,7 @@ const getDealerDashboardData = catchAsync(async (req, res) => {
 // get dealer stock data controller
 const getDealerStockData = catchAsync(async (req, res) => {
     const { id } = req.params;
-    const result = await DealerServices.getDealerStockDataFromDB(id);
+    const result = await DealerServices.getDealerStockDataFromDB(id, req.query);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

@@ -8,7 +8,6 @@ import { User } from '../user/user.model';
 import moment from 'moment-timezone';
 import mongoose, { Types } from 'mongoose';
 import { PickedProduct } from '../pickupMan/pickupMan.model';
-import QueryBuilder from '../../builder/QueryBuilder';
 import { TIMEZONE } from '../../constant';
 
 // create inventory
